@@ -64,7 +64,7 @@ class Application(Frame):
         Frame.__init__(self)
         self.pack()
         Button(self,text='Configure Device', command=lambda: self.Keithley7002ConfigMenu()).pack()
-        Button(self, text = 'Switch Menu').pack()
+        Button(self, text = 'Switch Menu',command=lambda:self.Keithley7002SwitchMenu()).pack()
         Button(self,text='Back',command=lambda:self.DeviceMen()).pack()
     def Keithley7002ConfigMenu(self):
         self.destroy()
@@ -73,6 +73,19 @@ class Application(Frame):
         Button(self,text='Display ON',command=lambda:self.Keithley7002('write','DISPlay:ENABle 1')).pack()
         Button(self,text='Display OFF',command=lambda:self.Keithley7002('write','DISPlay:ENABle 0')).pack()
         Button(self,text='Factory Reset Device',command=lambda:self.Keithley7002('write','STATus:PRESet')).pack()
+        Button(self,text='Back',command=lambda:self.Keithley7002MainMenu()).pack()
+    def Keithley7002SwitchMenu(self):
+    	card = StringVar()
+    	inputs = StringVar()
+    	self.destroy()
+        Frame.__init__(self)
+        self.pack()
+        Label(self,text='Slot Number (1-10)').pack()
+        Entry(self,textvariable=card).pack()
+        Label(self,text='Input Number (1-40)').pack()        
+        Entry(self,textvariable=inputs).pack()
+        Button(self,text='Close',command=lambda:self.Keithley7002('write','close (@'+str(card.get())+'!'+str(inputs.get())+')')).pack()
+        Button(self,text='Open All',command=lambda:self.Keithley7002('write','open all')).pack()
         Button(self,text='Back',command=lambda:self.Keithley7002MainMenu()).pack()
     def Keithley7002(self, option, command):
         settings = open('settings.txt' , 'r')
