@@ -20,6 +20,7 @@ class Application(Frame):
         Button(self,text='Agilent 34410A DMM',command=lambda:self.Agilent34410AMainMenu()).pack()
         Button(self,text='Keithley 7002 Switching Machine',command=lambda:self.Keithley7002MainMenu()).pack()
         Button(self,text='Yokogawa GS200',command=lambda:self.YokogawaGS200MainMenu()).pack()
+        Button(self,text='Arduino Board',command=lambda:self.ArduinoMenu()).pack()
         Label(self,text='Automation Menu').pack()
         Button(self,text='Automation Menu',command=lambda:self.AutomationMenu()).pack()
     def Agilent34410AMainMenu(self):
@@ -29,7 +30,7 @@ class Application(Frame):
         Label(self,text='Connected to:').pack()
         Label(self,text=self.Agilent34410A('ask','*IDN?')).pack()
         Button(self,text='Configure Device',command=lambda:self.Agilent34410AConfigMenu()).pack()
-        Button(self,text='Take a Measurment').pack()
+        Button(self,text='Take a Measurment',command=lambda:self.Agilent34410AMeasurmentMenu()).pack()
         Button(self,text='Back',command=lambda:self.DeviceMen()).pack()
     def Agilent34410AConfigMenu(self):
         self.destroy()
@@ -38,6 +39,11 @@ class Application(Frame):
         Button(self,text='Display ON',command=lambda:self.Agilent34410A('write','DISPlay ON')).pack()
         Button(self,text='Display OFF',command=lambda:self.Agilent34410A('write','DISPlay OFF')).pack()
         Button(self,text='Factory Reset Device',command=lambda:self.Agilent34410A('write','*RST')).pack()
+        Button(self,text='Back',command=lambda:self.Agilent34410AMainMenu()).pack()
+    def Agilent34410AMeasurmentMenu(self):
+        self.destroy()
+        Frame.__init__(self)
+        self.pack()
         Button(self,text='Back',command=lambda:self.Agilent34410AMainMenu()).pack()
     def Agilent34410A(self, option, command):
         settings = open('settings.txt' , 'r')
@@ -105,6 +111,13 @@ class Application(Frame):
         if option == 'ask':
             return inst.query(command)
         inst.close()
+    def ArduinoMenu(self):
+        self.destroy()
+        Frame.__init__(self)
+        self.pack()
+        Button(self,text='Raise Device').pack()
+        Button(self,text='Lower Device').pack()
+        Button(self,text='Back',command=lambda:self.DeviceMen()).pack()
     def AutomationMenu(self):
         global forced
         global range
