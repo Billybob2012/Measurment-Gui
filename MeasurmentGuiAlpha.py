@@ -3,6 +3,7 @@ from Tkinter import *
 import time
 import xlsxwriter
 from collections import Counter
+import serial
 class Application(Frame):
     def __init__(self, master):
         Frame.__init__(self,master)
@@ -125,11 +126,13 @@ class Application(Frame):
             return inst.query(command)
         inst.close()
     def ArduinoMenu(self):
+        arduino = serial.Serial('COM7', 9600)
+        time.sleep(2)
         self.destroy()
         Frame.__init__(self)
         self.pack()
-        Button(self,text='Raise Device').pack()
-        Button(self,text='Lower Device').pack()
+        Button(self,text='Raise Device',command=lambda:arduino.write('1')).pack()
+        Button(self,text='Lower Device',command=lambda:arduino.write('2')).pack()
         Button(self,text='Back',command=lambda:self.DeviceMen()).pack()
     def AutomationMenu(self):
         global forced
@@ -155,6 +158,7 @@ class Application(Frame):
         self.pack()
         Label(self,text='Select Automation Process').pack()
         Button(self,text='4 Wire Current vs Voltage',command=lambda:self.FourWireCurrentvsVoltaqgeMenu()).pack()
+        Button(self,text='2 Wire Currnt vs Voltage',command=lambda:self.TwoWireCurrentvsVoltaqgeMenu()).pack()
         Button(self,text='4 Wire Voltage vs Current',command=lambda:self.FourWireVoltagevsCurrentMenu()).pack()
         Button(self,text='Voltage vs Time').pack()
         Button(self,text='Exicute Process Que',command=lambda:self.UserProgramableTest1Process()).pack()
@@ -193,7 +197,7 @@ class Application(Frame):
         Label(self,text='Processes in Que:').pack()
         Label(self,text=count).pack()
         Button(self,text='Back',command = lambda:self.AutomationMenu()).pack()
-        measure = 'Forced Voltage vs Current'
+        measure = '4 Wire Forced Voltage vs Current'
     def FourWireCurrentvsVoltaqgeMenu(self):
         global forced
         global count
@@ -226,7 +230,40 @@ class Application(Frame):
         Label(self,text='Processes in Que:').pack()
         Label(self,text=count).pack()
         Button(self,text='Back',command = lambda:self.AutomationMenu()).pack()
-        measure = 'Forced Current vs Voltage'
+        measure = '4 Wire Forced Current vs Voltage'
+    def TwoWireCurrentvsVoltaqgeMenu(self):
+        global forced
+        global count
+        global range
+        global input
+        global output
+        global name
+        global measure
+        global to
+        global fr
+        self.destroy()
+        Frame.__init__(self)
+        self.pack()
+        Label(self,text='Input For Forced Current:').pack()
+        Entry(self,textvariable=input).pack()
+        Label(self,text='Output For Sense:').pack()
+        Entry(self,textvariable=output).pack()
+        Label(self,text='Amount forced (Amps)').pack()
+        Entry(self,textvariable=forced).pack()
+        Label(self,text='Range (Amps):').pack()
+        Entry(self,textvariable=range).pack()
+        Label(self,text='Select switch inputs From:').pack()
+        Entry(self,textvariable=fr).pack()
+        Label(self,text='To:').pack()
+        Entry(self,textvariable=to).pack()
+        Label(self,text='Name of exell file that will be created:').pack()
+        Entry(self,textvariable=name).pack()
+        Button(self,text='Add this Process to Que',command=lambda:self.AddProcessToQue()).pack()
+        Button(self,text='Exicute Process Que',command=lambda:self.UserProgramableTest1Process()).pack()
+        Label(self,text='Processes in Que:').pack()
+        Label(self,text=count).pack()
+        Button(self,text='Back',command = lambda:self.AutomationMenu()).pack()
+        measure = '2 Wire Forced Current vs Voltage'
     def AddProcessToQue(self):
         global tm
         global measure
@@ -306,7 +343,7 @@ class Application(Frame):
                 tme=tme+float(tm)
                 time.sleep(float(tm))
                 self.Keithley7002('write','open all')
-        if str(measure.rstrip()) == 'Forced Current vs Voltage':
+        if str(measure.rstrip()) == '4 Wire Forced Current vs Voltage':
              worksheet.write(row,col,'Current',format)
              worksheet.write(row,col+1,'Voltage',format)
              while int(fr) < int(to)+1:
@@ -325,7 +362,7 @@ class Application(Frame):
                 worksheet.write(row,col+1,'='+str(self.YokogawaGS200('ask','MEAS?')))
                 self.YokogawaGS200('write','OUTP OFF')
                 self.Keithley7002('write','open all')
-        if str(measure.rstrip())=='Forced Voltage vs Current':
+        if str(measure.rstrip())=='4 Wire Forced Voltage vs Current':
             worksheet.write(row,col,'Voltage',format)
             worksheet.write(row,col+1,'Current',format)
             while int(fr) < int(to)+1:
@@ -336,6 +373,25 @@ class Application(Frame):
                 self.YokogawaGS200('write','SENS:REM ON')
                 self.YokogawaGS200('write','SENS:TRIG IMM')
                 self.YokogawaGS200('write','SOUR:FUNC VOLT')
+                self.YokogawaGS200('write','SOUR:RANG '+str(range.rstrip()))
+                self.YokogawaGS200('write','SOUR:LEV '+str(forced.rstrip()))
+                self.YokogawaGS200('write','OUTP ON')
+                time.sleep(.25)
+                worksheet.write(row,col,'='+str(forced.rstrip()))
+                worksheet.write(row,col+1,'='+str(self.YokogawaGS200('ask','MEAS?')))
+                self.YokogawaGS200('write','OUTP OFF')
+                self.Keithley7002('write','open all')
+        if str(measure.rstrip())=='2 Wire Forced Current vs Voltage':
+             worksheet.write(row,col,'Current',format)
+             worksheet.write(row,col+1,'Voltage',format)
+             while int(fr) < int(to)+1:
+                row+=1
+                fr = str(fr).rstrip()
+                self.Keithley7002('write','close (@1!'+(str(fr)).rstrip()+',1!'+str(int(fr)+1)+',1!'+str(input.rstrip())+',1!'+str(output.rstrip())+')')
+                fr = int(fr)+2
+                self.YokogawaGS200('write','SENS:REM OFF')
+                self.YokogawaGS200('write','SENS:TRIG IMM')
+                self.YokogawaGS200('write','SOUR:FUNC CURR')
                 self.YokogawaGS200('write','SOUR:RANG '+str(range.rstrip()))
                 self.YokogawaGS200('write','SOUR:LEV '+str(forced.rstrip()))
                 self.YokogawaGS200('write','OUTP ON')
