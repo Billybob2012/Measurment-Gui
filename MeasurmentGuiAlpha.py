@@ -21,6 +21,7 @@ class Application(Frame):
         Button(self,text='Agilent 34410A DMM',command=lambda:self.Agilent34410AMainMenu()).pack()
         Button(self,text='Keithley 7002 Switching Machine',command=lambda:self.Keithley7002MainMenu()).pack()
         Button(self,text='Yokogawa GS200',command=lambda:self.YokogawaGS200MainMenu()).pack()
+        Button(self,text='LakeShore 336 Tempurature Controler',command=lambda:self.LakeShore336MainMenu()).pack()
         Button(self,text='Arduino Board',command=lambda:self.ArduinoMenu()).pack()
         Label(self,text='Automation Menu').pack()
         Button(self,text='Automation Menu',command=lambda:self.AutomationMenu()).pack()
@@ -133,6 +134,11 @@ class Application(Frame):
         self.pack()
         Button(self,text='Raise Device',command=lambda:arduino.write('1')).pack()
         Button(self,text='Lower Device',command=lambda:arduino.write('2')).pack()
+        Button(self,text='Back',command=lambda:self.DeviceMen()).pack()
+    def LakeShore336MainMenu(self):
+    	self.destroy()
+        Frame.__init__(self)
+        self.pack()
         Button(self,text='Back',command=lambda:self.DeviceMen()).pack()
     def AutomationMenu(self):
         global forced
