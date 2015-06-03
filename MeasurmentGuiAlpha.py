@@ -1,4 +1,7 @@
-import visa
+try:
+	import visa
+except ImportError:
+	print 'Please install all libraries'
 from Tkinter import *
 import time
 import xlsxwriter
@@ -11,6 +14,8 @@ class Application(Frame):
         self.DeviceMen()
     def DeviceMen(self):
         global count
+        global var
+        var = '0'
         count = 0
         process = open('process_que.txt' , 'w') #Overides the old process que document with a blank one on startup
         process.close()  #closes the file
@@ -43,12 +48,16 @@ class Application(Frame):
         Button(self,text='Factory Reset Device',command=lambda:self.Agilent34410A('write','*RST')).pack()
         Button(self,text='Back',command=lambda:self.Agilent34410AMainMenu()).pack()
     def Agilent34410AMeasurmentMenu(self):
+    	global var
         self.destroy()
         Frame.__init__(self)
         self.pack()
+        Button(self,text='Measure DC Voltage',command=(lambda:self.Agilent34410A('test','MEAS?'))).pack()
+        Label(self,text=float(var)/.2).pack()
         Button(self,text='Back',command=lambda:self.Agilent34410AMainMenu()).pack()
     def Agilent34410A(self, option, command):
         settings = open('settings.txt' , 'r')
+        global var
         adress = settings.readline()
         while adress.rstrip() !='Agilent34410A':
             adress = settings.readline()
@@ -56,6 +65,9 @@ class Application(Frame):
         settings.close()
         inst = visa.ResourceManager()
         inst = inst.open_resource(adress.rstrip())
+        if option == 'test':
+        	var=inst.query(command)
+        	self.Agilent34410AMeasurmentMenu()
         if option =='write':
             inst.write(command)
         if option == 'ask':
@@ -127,14 +139,32 @@ class Application(Frame):
             return inst.query(command)
         inst.close()
     def ArduinoMenu(self):
-        arduino = serial.Serial('COM7', 9600)
-        time.sleep(2)
         self.destroy()
         Frame.__init__(self)
         self.pack()
-        Button(self,text='Raise Device',command=lambda:arduino.write('1')).pack()
-        Button(self,text='Lower Device',command=lambda:arduino.write('2')).pack()
+        Button(self,text='Raise Device',command=lambda:self.ArduinoBoard('write','1')).pack()
+        Button(self,text='Lower Device',command=lambda:self.ArduinoBoard('write','2')).pack()
         Button(self,text='Back',command=lambda:self.DeviceMen()).pack()
+    def ArduinoBoard(self,option,command):
+    	settings=open('settings.txt' , 'r')
+        adress=settings.readline()
+        while adress.rstrip()!='Arduino Board':
+            adress=settings.readline()
+        adress=settings.readline()
+        settings.close()
+        try:
+        	arduino=serial.Serial(adress.rstrip(),9600)
+        except serial.SerialException:
+        	print 'No Arduino Baord Found on '+adress.rstrip()
+        # arduino=serial.Serial(adress.rstrip(),9600)
+        time.sleep(.5)
+        if option=='write':
+        	try:
+        		arduino.write(command)
+        	except:
+        		print ''
+        if option=='ask':
+        	print 'nothing to do'
     def LakeShore336MainMenu(self):
     	self.destroy()
         Frame.__init__(self)
@@ -365,7 +395,7 @@ class Application(Frame):
                 self.YokogawaGS200('write','OUTP ON')
                 time.sleep(.25)
                 worksheet.write(row,col,'='+str(forced.rstrip()))
-                worksheet.write(row,col+1,'='+str(self.YokogawaGS200('ask','MEAS?')))
+                worksheet.write(row,col+1,'='+str(self.Agilent34410A('ask','MEAS?')))
                 self.YokogawaGS200('write','OUTP OFF')
                 self.Keithley7002('write','open all')
         if str(measure.rstrip())=='4 Wire Forced Voltage vs Current':
