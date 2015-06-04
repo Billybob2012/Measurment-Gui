@@ -175,6 +175,10 @@ class Application(Frame):
     	self.destroy()
         Frame.__init__(self)
         self.pack()
+        Button (self, text = "Configure").pack()
+        Button (self, text = "Display On").pack()
+        Button (self, text = "Display Off").pack()
+        Button (self, text = "Temperature").pack()
         Button(self,text='Back',command=lambda:self.DeviceMen()).pack()
     def AutomationMenu(self):
         global forced
