@@ -4,7 +4,10 @@ except ImportError:
 	print 'Please install all libraries'
 from Tkinter import *
 import time
-import xlsxwriter
+try:
+	import xlsxwriter
+except:
+	print 'Please install all libraries'
 from collections import Counter
 import serial
 class Application(Frame):
@@ -17,7 +20,7 @@ class Application(Frame):
         global var
         var = '0'
         count = 0
-        process = open('process_que.txt' , 'w') #Overides the old process que document with a blank one on startup
+        process = open('process_que.txt' , 'w') #Overrides the old process Que document with a blank one on startup
         process.close()  #closes the file
         self.destroy()
         Frame.__init__(self)
@@ -26,7 +29,7 @@ class Application(Frame):
         Button(self,text='Agilent 34410A DMM',command=lambda:self.Agilent34410AMainMenu()).pack()
         Button(self,text='Keithley 7002 Switching Machine',command=lambda:self.Keithley7002MainMenu()).pack()
         Button(self,text='Yokogawa GS200',command=lambda:self.YokogawaGS200MainMenu()).pack()
-        Button(self,text='LakeShore 336 Tempurature Controler',command=lambda:self.LakeShore336MainMenu()).pack()
+        Button(self,text='LakeShore 336 Temperature Controller',command=lambda:self.LakeShore336MainMenu()).pack()
         Button(self,text='Arduino Board',command=lambda:self.ArduinoMenu()).pack()
         Label(self,text='Automation Menu').pack()
         Button(self,text='Automation Menu',command=lambda:self.AutomationMenu()).pack()
@@ -37,7 +40,7 @@ class Application(Frame):
         Label(self,text='Connected to:').pack()
         Label(self,text=self.Agilent34410A('ask','*IDN?')).pack()
         Button(self,text='Configure Device',command=lambda:self.Agilent34410AConfigMenu()).pack()
-        Button(self,text='Take a Measurment',command=lambda:self.Agilent34410AMeasurmentMenu()).pack()
+        Button(self,text='Take a Measurement',command=lambda:self.Agilent34410AMeasurementMenu()).pack()
         Button(self,text='Back',command=lambda:self.DeviceMen()).pack()
     def Agilent34410AConfigMenu(self):
         self.destroy()
@@ -47,13 +50,15 @@ class Application(Frame):
         Button(self,text='Display OFF',command=lambda:self.Agilent34410A('write','DISPlay OFF')).pack()
         Button(self,text='Factory Reset Device',command=lambda:self.Agilent34410A('write','*RST')).pack()
         Button(self,text='Back',command=lambda:self.Agilent34410AMainMenu()).pack()
-    def Agilent34410AMeasurmentMenu(self):
+    def Agilent34410AMeasurementMenu(self):
     	global var
+    	var = float(var)
         self.destroy()
         Frame.__init__(self)
         self.pack()
-        Button(self,text='Measure DC Voltage',command=(lambda:self.Agilent34410A('test','MEAS?'))).pack()
-        Label(self,text=float(var)/.2).pack()
+        Button(self,text='Measure Resistance',command=(lambda:self.Agilent34410A('test','MEAS?'))).pack()
+        Label(self,text=(str((var/.2)-0.247479758))+' Ohms').pack()
+        print (var/.2)
         Button(self,text='Back',command=lambda:self.Agilent34410AMainMenu()).pack()
     def Agilent34410A(self, option, command):
         settings = open('settings.txt' , 'r')
@@ -67,7 +72,7 @@ class Application(Frame):
         inst = inst.open_resource(adress.rstrip())
         if option == 'test':
         	var=inst.query(command)
-        	self.Agilent34410AMeasurmentMenu()
+        	self.Agilent34410AMeasurementMenu()
         if option =='write':
             inst.write(command)
         if option == 'ask':
@@ -194,10 +199,10 @@ class Application(Frame):
         self.pack()
         Label(self,text='Select Automation Process').pack()
         Button(self,text='4 Wire Current vs Voltage',command=lambda:self.FourWireCurrentvsVoltaqgeMenu()).pack()
-        Button(self,text='2 Wire Currnt vs Voltage',command=lambda:self.TwoWireCurrentvsVoltaqgeMenu()).pack()
+        Button(self,text='2 Wire Current vs Voltage',command=lambda:self.TwoWireCurrentvsVoltaqgeMenu()).pack()
         Button(self,text='4 Wire Voltage vs Current',command=lambda:self.FourWireVoltagevsCurrentMenu()).pack()
         Button(self,text='Voltage vs Time').pack()
-        Button(self,text='Exicute Process Que',command=lambda:self.UserProgramableTest1Process()).pack()
+        Button(self,text='Execute Process Que',command=lambda:self.UserProgramableTest1Process()).pack()
         Label(self,text='Processes in Que:').pack()
         Label(self,text=count).pack()
         Button(self,text='Back',command=lambda:self.DeviceMen()).pack()
@@ -226,10 +231,10 @@ class Application(Frame):
         Entry(self,textvariable=fr).pack()
         Label(self,text='To:').pack()
         Entry(self,textvariable=to).pack()
-        Label(self,text='Name of exell file that will be created:').pack()
+        Label(self,text='Name of Excel file that will be created:').pack()
         Entry(self,textvariable=name).pack()
         Button(self,text='Add this Process to Que',command=lambda:self.AddProcessToQue()).pack()
-        Button(self,text='Exicute Process Que',command=lambda:self.UserProgramableTest1Process()).pack()
+        Button(self,text='Execute Process Que',command=lambda:self.UserProgramableTest1Process()).pack()
         Label(self,text='Processes in Que:').pack()
         Label(self,text=count).pack()
         Button(self,text='Back',command = lambda:self.AutomationMenu()).pack()
@@ -259,10 +264,10 @@ class Application(Frame):
         Entry(self,textvariable=fr).pack()
         Label(self,text='To:').pack()
         Entry(self,textvariable=to).pack()
-        Label(self,text='Name of exell file that will be created:').pack()
+        Label(self,text='Name of Excel file that will be created:').pack()
         Entry(self,textvariable=name).pack()
         Button(self,text='Add this Process to Que',command=lambda:self.AddProcessToQue()).pack()
-        Button(self,text='Exicute Process Que',command=lambda:self.UserProgramableTest1Process()).pack()
+        Button(self,text='Execute Process Que',command=lambda:self.UserProgramableTest1Process()).pack()
         Label(self,text='Processes in Que:').pack()
         Label(self,text=count).pack()
         Button(self,text='Back',command = lambda:self.AutomationMenu()).pack()
@@ -292,10 +297,10 @@ class Application(Frame):
         Entry(self,textvariable=fr).pack()
         Label(self,text='To:').pack()
         Entry(self,textvariable=to).pack()
-        Label(self,text='Name of exell file that will be created:').pack()
+        Label(self,text='Name of Excel file that will be created:').pack()
         Entry(self,textvariable=name).pack()
         Button(self,text='Add this Process to Que',command=lambda:self.AddProcessToQue()).pack()
-        Button(self,text='Exicute Process Que',command=lambda:self.UserProgramableTest1Process()).pack()
+        Button(self,text='Execute Process Que',command=lambda:self.UserProgramableTest1Process()).pack()
         Label(self,text='Processes in Que:').pack()
         Label(self,text=count).pack()
         Button(self,text='Back',command = lambda:self.AutomationMenu()).pack()
@@ -369,7 +374,7 @@ class Application(Frame):
         row = 0
         tme = 0
         self.Keithley7002('write','open all')
-        if str(measure).rstrip()=='Ressistance vs Time':  # If the user checked the resistants meassurement 
+        if str(measure).rstrip()=='Resistance vs Time':  # If the user checked the resistants meassurement 
             while int(fr) != int(to)+1:
                 self.Keithley7002('write','close (@1!'+(str(fr)).rstrip()+',1!10)')
                 fr = int(fr)+1
@@ -437,7 +442,7 @@ class Application(Frame):
                 self.YokogawaGS200('write','OUTP OFF')
                 self.Keithley7002('write','open all')
 root = Tk()
-root.title("Measurment System GUI Alpha")
+root.title("Measurement System GUI Alpha")
 root.geometry("600x500")
 app = Application(root)
 root.mainloop() 
