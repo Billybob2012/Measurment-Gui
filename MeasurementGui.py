@@ -374,7 +374,7 @@ class Application(Frame):
         row = 0
         tme = 0
         self.Keithley7002('write','open all')
-        if str(measure).rstrip()=='Resistance vs Time':  # If the user checked the resistants meassurement 
+        if str(measure).rstrip()=='Ressistance vs Time':  # If the user checked the resistants meassurement 
             while int(fr) != int(to)+1:
                 self.Keithley7002('write','close (@1!'+(str(fr)).rstrip()+',1!10)')
                 fr = int(fr)+1
