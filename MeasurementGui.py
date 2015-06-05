@@ -57,7 +57,7 @@ class Application(Frame):
         Frame.__init__(self)
         self.pack()
         Button(self,text='Measure Resistance',command=(lambda:self.Agilent34410A('test','MEAS?'))).pack()
-        Label(self,text=(str((var/.2)-0.247479758))+' Ohms').pack()
+        Label(self,text=(str((var/.2)))+' Ohms').pack()
         print (var/.2)
         Button(self,text='Back',command=lambda:self.Agilent34410AMainMenu()).pack()
     def Agilent34410A(self, option, command):
