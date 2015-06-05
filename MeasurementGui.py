@@ -1,3 +1,4 @@
+#Megha
 try:
 	import visa
 except ImportError:
@@ -174,6 +175,10 @@ class Application(Frame):
     	self.destroy()
         Frame.__init__(self)
         self.pack()
+        Button (self, text = "Configure").pack()
+        Button (self, text = "Display On").pack()
+        Button (self, text = "Display Off").pack()
+        Button (self, text = "Temperature").pack()
         Button(self,text='Back',command=lambda:self.DeviceMen()).pack()
     def LakeShore336(self,option,command):
     	settings = open('settings.txt' , 'r')
