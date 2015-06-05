@@ -176,7 +176,7 @@ class Application(Frame):
         Frame.__init__(self)
         self.pack()
         Button (self, text = "Configure").pack()
-        Button (self, text = "Display On").pack()
+        Button (self, text = "Display On",command=lambda:self.LakeShore336('write','BRIGT 5')).pack()
         Button (self, text = "Display Off").pack()
         Button (self, text = "Temperature").pack()
         Button(self,text='Back',command=lambda:self.DeviceMen()).pack()
