@@ -172,13 +172,16 @@ class Application(Frame):
         if option=='ask':
         	print 'nothing to do'
     def LakeShore336MainMenu(self):
+        Kelvin = StringVar ()
     	self.destroy()
         Frame.__init__(self)
         self.pack()
-        Button (self, text = "Configure").pack()
-        Button (self, text = "Display On",command=lambda:self.LakeShore336('write','BRIGT 5')).pack()
-        Button (self, text = "Display Off").pack()
-        Button (self, text = "Temperature").pack()
+        Button(self, text = "Configure").pack()
+        Button(self, text = "Brightness UP",command=lambda:self.LakeShore336('write','BRIGT 32')).pack()
+        Button(self, text = "Display Down").pack()
+        Label(self, text = "Input Temperature").pack() #Allows Temperature Input (K)
+        Entry(self, textvariable = Kelvin).pack()
+        Button(self, text ="Send", command = lambda: self.LakeShore336("write", ans.get())).pack()
         Button(self,text='Back',command=lambda:self.DeviceMen()).pack()
     def LakeShore336(self,option,command):
     	settings = open('settings.txt' , 'r')
