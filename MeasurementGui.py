@@ -123,12 +123,18 @@ class Application(Frame):
         inst.close()
     def YokogawaGS200MainMenu(self):
         ans = StringVar()
+        Interval = StringVar()
         self.destroy()
         Frame.__init__(self)
         self.pack()
         Button(self,text='Configure Device').pack()
         Entry(self,textvariable=ans).pack()
         Button(self,text='Send',command=lambda:self.YokogawaGS200('write',ans.get())).pack()
+        Entry (self, textvariable = Interval).pack() #Time Interval (s)
+        Button (self, text = "Send", command= lambda:self.YokogawaGS200("write", Interval.get())).pack()
+        Button (self, text = "Repeat Execution", command =lambda: self.YokogawaGS200 ).pack()
+        Button (self, text = "Pause Execution").pack()
+        Button (self, text = "Resume Execution").pack()
         Button(self,text='Back',command=lambda:self.DeviceMen()).pack()
     def YokogawaGS200(self, option, command):
         settings = open('settings.txt' , 'r')
