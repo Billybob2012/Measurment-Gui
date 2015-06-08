@@ -342,12 +342,8 @@ class Application(Frame):
         global name
         global count
         global forced
-        global range
-        global input
-        global output
+        global ranges
         process = open('process_que.txt', 'a')
-        process.write(str(input.get())+'\n')
-        process.write(str(output.get())+'\n')
         process.write(str(measure)+'\n')
         process.write(str(forced.get())+'\n')
         process.write(str(range.get())+'\n')
