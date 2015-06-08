@@ -180,7 +180,7 @@ class Application(Frame):
     def LakeShore336MainMenu(self):
         Kelvin=StringVar ()
         var=0
-    	self.destroy()
+        self.destroy()
         Frame.__init__(self)
         self.pack()
         Button(self, text = "Configure").pack()
