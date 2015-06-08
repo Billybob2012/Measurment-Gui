@@ -1,14 +1,14 @@
 #Megha
 try:
-	import visa
+    import visa
 except ImportError:
-	print 'Please install all libraries'
+    print 'Please install all libraries'
 from Tkinter import *
 import time
 try:
-	import xlsxwriter
+    import xlsxwriter
 except:
-	print 'Please install all libraries'
+    print 'Please install all libraries'
 from collections import Counter
 import serial
 class Application(Frame):
@@ -52,13 +52,13 @@ class Application(Frame):
         Button(self,text='Factory Reset Device',command=lambda:self.Agilent34410A('write','*RST')).pack()
         Button(self,text='Back',command=lambda:self.Agilent34410AMainMenu()).pack()
     def Agilent34410AMeasurementMenu(self):
-    	global var
-    	var = float(var)
+        global var
+        var = float(var)
         self.destroy()
         Frame.__init__(self)
         self.pack()
         Button(self,text='Measure Resistance',command=(lambda:self.Agilent34410A('test','MEAS?'))).pack()
-        Label(self,text=(str((var/.2)-0.247479758))+' Ohms').pack()
+        Label(self,text=(str((var/.2)))+' Ohms').pack()
         print (var/.2)
         Button(self,text='Back',command=lambda:self.Agilent34410AMainMenu()).pack()
     def Agilent34410A(self, option, command):
@@ -72,8 +72,8 @@ class Application(Frame):
         inst = visa.ResourceManager()
         inst = inst.open_resource(adress.rstrip())
         if option == 'test':
-        	var=inst.query(command)
-        	self.Agilent34410AMeasurementMenu()
+            var=inst.query(command)
+            self.Agilent34410AMeasurementMenu()
         if option =='write':
             inst.write(command)
         if option == 'ask':
@@ -95,9 +95,9 @@ class Application(Frame):
         Button(self,text='Factory Reset Device',command=lambda:self.Keithley7002('write','STATus:PRESet')).pack()
         Button(self,text='Back',command=lambda:self.Keithley7002MainMenu()).pack()
     def Keithley7002SwitchMenu(self):
-    	card = StringVar()
-    	inputs = StringVar()
-    	self.destroy()
+        card = StringVar()
+        inputs = StringVar()
+        self.destroy()
         Frame.__init__(self)
         self.pack()
         Label(self,text='Slot Number (1-10)').pack()
@@ -123,12 +123,18 @@ class Application(Frame):
         inst.close()
     def YokogawaGS200MainMenu(self):
         ans = StringVar()
+        Interval = StringVar()
         self.destroy()
         Frame.__init__(self)
         self.pack()
         Button(self,text='Configure Device').pack()
         Entry(self,textvariable=ans).pack()
         Button(self,text='Send',command=lambda:self.YokogawaGS200('write',ans.get())).pack()
+        Entry (self, textvariable = Interval).pack() #Time Interval (s)
+        Button (self, text = "Send", command= lambda:self.YokogawaGS200("write", Interval.get())).pack()
+        Button (self, text = "Repeat Execution", command =lambda: self.YokogawaGS200 ).pack()
+        Button (self, text = "Pause Execution").pack()
+        Button (self, text = "Resume Execution").pack()
         Button(self,text='Back',command=lambda:self.DeviceMen()).pack()
     def YokogawaGS200(self, option, command):
         settings = open('settings.txt' , 'r')
@@ -152,37 +158,52 @@ class Application(Frame):
         Button(self,text='Lower Device',command=lambda:self.ArduinoBoard('write','2')).pack()
         Button(self,text='Back',command=lambda:self.DeviceMen()).pack()
     def ArduinoBoard(self,option,command):
-    	settings=open('settings.txt' , 'r')
+        settings=open('settings.txt' , 'r')
         adress=settings.readline()
         while adress.rstrip()!='Arduino Board':
             adress=settings.readline()
         adress=settings.readline()
         settings.close()
         try:
-        	arduino=serial.Serial(adress.rstrip(),9600)
+            arduino=serial.Serial(adress.rstrip(),9600)
         except serial.SerialException:
-        	print 'No Arduino Baord Found on '+adress.rstrip()
+            print 'No Arduino Baord Found on '+adress.rstrip()
         # arduino=serial.Serial(adress.rstrip(),9600)
         time.sleep(.5)
         if option=='write':
-        	try:
-        		arduino.write(command)
-        	except:
-        		print ''
+            try:
+                arduino.write(command)
+            except:
+                print ''
         if option=='ask':
-        	print 'nothing to do'
+            print 'nothing to do'
     def LakeShore336MainMenu(self):
-        Kelvin = StringVar ()
-    	self.destroy()
+        Kelvin=StringVar ()
+        var=0
+        self.destroy()
         Frame.__init__(self)
         self.pack()
-        Button (self, text = "Configure").pack()
-        Button (self, text = "Brightness UP").pack()
-        Button (self, text = "Display Down").pack()
-        Label (self, text = "Input Temperature").pack() #Allows Temperature Input (K)
-        Entry (self, textvariable = Kelvin).pack()
-        Button (self, text ="Send", command = lambda: self.LakeShore336("write", ans.get())).pack()
+        Button(self, text = "Configure").pack()
+        Button(self, text = "Brightness UP",command=lambda:self.LakeShore336('write','BRIGT 32')).pack()
+        Button(self, text = "Display Down",command=lambda:self.LakeShore336('write','BRIGT 0')).pack()
+        Label(self, text = "Input Temperature").pack() #Allows Temperature Input (K)
+        Entry(self, textvariable = Kelvin).pack()
+        Button(self, text ="Send", command = lambda:self.LakeShore336("write", Kelvin.get())).pack()
         Button(self,text='Back',command=lambda:self.DeviceMen()).pack()
+    def LakeShore336(self,option,command):
+        settings = open('settings.txt' , 'r')
+        adress = settings.readline()
+        while adress.rstrip() !='LakeShore336':
+            adress = settings.readline()
+        adress = settings.readline()
+        settings.close()
+        inst = visa.ResourceManager()
+        inst = inst.open_resource(adress.rstrip())
+        if option == 'write':
+            inst.write(command)
+        if option == 'ask':
+            return inst.query(command)
+        inst.close()
     def AutomationMenu(self):
         global forced
         global range
