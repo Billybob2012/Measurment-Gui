@@ -180,11 +180,7 @@ class Application(Frame):
     def LakeShore336MainMenu(self):
         Kelvin=StringVar ()
         var=0
-<<<<<<< HEAD
     	self.destroy()
-=======
-        self.destroy()
->>>>>>> origin/Megha
         Frame.__init__(self)
         self.pack()
         Button(self, text = "Configure").pack()
@@ -195,11 +191,7 @@ class Application(Frame):
         Button(self, text ="Send", command = lambda:self.LakeShore336("write", Kelvin.get())).pack()
         Button(self,text='Back',command=lambda:self.DeviceMen()).pack()
     def LakeShore336(self,option,command):
-<<<<<<< HEAD
-    	settings = open('settings.txt' , 'r')
-=======
         settings = open('settings.txt' , 'r')
->>>>>>> origin/Megha
         adress = settings.readline()
         while adress.rstrip() !='LakeShore336':
             adress = settings.readline()
