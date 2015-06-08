@@ -365,7 +365,7 @@ class Application(Frame):
           to = process.readline()
           name = process.readline()
           processNumber = processNumber + 1
-          workbook = xlsxwriter.Workbook(str(name)+'.xlsx')
+          workbook = xlsxwriter.Workbook(str(name).rstrip()+'.xlsx')
           format=workbook.add_format()
           format.set_text_wrap()
           worksheet = workbook.add_worksheet()
@@ -386,7 +386,7 @@ class Application(Frame):
         tme = 0
         self.Keithley7002('write','open all')
         if str(measure).rstrip()=='Ressistance vs Time':  # If the user checked the resistants meassurement 
-            while int(fr) != int(to)+1:
+            while int(fr) != int(to):
                 self.Keithley7002('write','close (@1!'+(str(fr)).rstrip()+',1!10)')
                 fr = int(fr)+1
                 worksheet.write(row,col,'='+str(tme))
@@ -410,7 +410,7 @@ class Application(Frame):
                 self.YokogawaGS200('write','OUTP ON')
                 time.sleep(.25)
                 worksheet.write(row,col,'='+str(forced.rstrip()))
-                worksheet.write(row,col+1,'='+str(self.Agilent34410A('ask','MEAS:CURR:DC?')))
+                worksheet.write(row,col+1,'='+str(self.Agilent34410A('ask','MEAS:VOLT:DC?')))
                 self.YokogawaGS200('write','OUTP OFF')
                 self.Keithley7002('write','open all')
         if str(measure.rstrip())=='4 Wire Forced Voltage vs Current':
