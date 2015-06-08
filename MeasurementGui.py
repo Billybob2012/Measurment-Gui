@@ -178,8 +178,8 @@ class Application(Frame):
         if option=='ask':
         	print 'nothing to do'
     def LakeShore336MainMenu(self):
-        Kelvin = StringVar ()
-        var = 0
+        Kelvin=StringVar ()
+        var=0
     	self.destroy()
         Frame.__init__(self)
         self.pack()
