@@ -1,14 +1,14 @@
 #Megha
 try:
-	import visa
+    import visa
 except ImportError:
-	print 'Please install all libraries'
+    print 'Please install all libraries'
 from Tkinter import *
 import time
 try:
-	import xlsxwriter
+    import xlsxwriter
 except:
-	print 'Please install all libraries'
+    print 'Please install all libraries'
 from collections import Counter
 import serial
 class Application(Frame):
@@ -52,8 +52,8 @@ class Application(Frame):
         Button(self,text='Factory Reset Device',command=lambda:self.Agilent34410A('write','*RST')).pack()
         Button(self,text='Back',command=lambda:self.Agilent34410AMainMenu()).pack()
     def Agilent34410AMeasurementMenu(self):
-    	global var
-    	var = float(var)
+        global var
+        var = float(var)
         self.destroy()
         Frame.__init__(self)
         self.pack()
@@ -72,8 +72,8 @@ class Application(Frame):
         inst = visa.ResourceManager()
         inst = inst.open_resource(adress.rstrip())
         if option == 'test':
-        	var=inst.query(command)
-        	self.Agilent34410AMeasurementMenu()
+            var=inst.query(command)
+            self.Agilent34410AMeasurementMenu()
         if option =='write':
             inst.write(command)
         if option == 'ask':
@@ -95,9 +95,9 @@ class Application(Frame):
         Button(self,text='Factory Reset Device',command=lambda:self.Keithley7002('write','STATus:PRESet')).pack()
         Button(self,text='Back',command=lambda:self.Keithley7002MainMenu()).pack()
     def Keithley7002SwitchMenu(self):
-    	card = StringVar()
-    	inputs = StringVar()
-    	self.destroy()
+        card = StringVar()
+        inputs = StringVar()
+        self.destroy()
         Frame.__init__(self)
         self.pack()
         Label(self,text='Slot Number (1-10)').pack()
@@ -158,29 +158,33 @@ class Application(Frame):
         Button(self,text='Lower Device',command=lambda:self.ArduinoBoard('write','2')).pack()
         Button(self,text='Back',command=lambda:self.DeviceMen()).pack()
     def ArduinoBoard(self,option,command):
-    	settings=open('settings.txt' , 'r')
+        settings=open('settings.txt' , 'r')
         adress=settings.readline()
         while adress.rstrip()!='Arduino Board':
             adress=settings.readline()
         adress=settings.readline()
         settings.close()
         try:
-        	arduino=serial.Serial(adress.rstrip(),9600)
+            arduino=serial.Serial(adress.rstrip(),9600)
         except serial.SerialException:
-        	print 'No Arduino Baord Found on '+adress.rstrip()
+            print 'No Arduino Baord Found on '+adress.rstrip()
         # arduino=serial.Serial(adress.rstrip(),9600)
         time.sleep(.5)
         if option=='write':
-        	try:
-        		arduino.write(command)
-        	except:
-        		print ''
+            try:
+                arduino.write(command)
+            except:
+                print ''
         if option=='ask':
-        	print 'nothing to do'
+            print 'nothing to do'
     def LakeShore336MainMenu(self):
         Kelvin=StringVar ()
         var=0
+<<<<<<< HEAD
     	self.destroy()
+=======
+        self.destroy()
+>>>>>>> origin/Megha
         Frame.__init__(self)
         self.pack()
         Button(self, text = "Configure").pack()
@@ -191,7 +195,11 @@ class Application(Frame):
         Button(self, text ="Send", command = lambda:self.LakeShore336("write", Kelvin.get())).pack()
         Button(self,text='Back',command=lambda:self.DeviceMen()).pack()
     def LakeShore336(self,option,command):
+<<<<<<< HEAD
     	settings = open('settings.txt' , 'r')
+=======
+        settings = open('settings.txt' , 'r')
+>>>>>>> origin/Megha
         adress = settings.readline()
         while adress.rstrip() !='LakeShore336':
             adress = settings.readline()
