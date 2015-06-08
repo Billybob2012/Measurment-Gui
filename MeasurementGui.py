@@ -277,10 +277,6 @@ class Application(Frame):
         self.destroy()
         Frame.__init__(self)
         self.pack()
-        Label(self,text='Input For Forced Current:').pack()
-        Entry(self,textvariable=input).pack()
-        Label(self,text='Output For Sense:').pack()
-        Entry(self,textvariable=output).pack()
         Label(self,text='Amount forced (Amps)').pack()
         Entry(self,textvariable=forced).pack()
         Label(self,text='Range (Amps):').pack()
@@ -310,10 +306,6 @@ class Application(Frame):
         self.destroy()
         Frame.__init__(self)
         self.pack()
-        Label(self,text='Input For Forced Current:').pack()
-        Entry(self,textvariable=input).pack()
-        Label(self,text='Output For Sense:').pack()
-        Entry(self,textvariable=output).pack()
         Label(self,text='Amount forced (Amps)').pack()
         Entry(self,textvariable=forced).pack()
         Label(self,text='Range (Amps):').pack()
@@ -365,8 +357,6 @@ class Application(Frame):
         processNumber = 0
         process = open('process_que.txt', 'r') 
         while processNumber < count:
-          input = process.readline()
-          output = process.readline()
           measure = process.readline()
           forced = process.readline()
           range = process.readline()
@@ -411,17 +401,16 @@ class Application(Frame):
              while int(fr) < int(to)+1:
                 row+=1
                 fr = str(fr).rstrip()
-                self.Keithley7002('write','close (@1!'+(str(fr)).rstrip()+',1!'+str(int(fr)+1)+',1!'+str(input.rstrip())+',1!'+str(output.rstrip())+')')
-                fr = int(fr)+2
-                self.YokogawaGS200('write','SENS:REM ON')
-                self.YokogawaGS200('write','SENS:TRIG IMM')
+                self.Keithley7002('write','close (@1!'+(str(fr)).rstrip()+')')
+                fr = int(fr)+1
+                self.YokogawaGS200('write','SENS:REM OFF')
                 self.YokogawaGS200('write','SOUR:FUNC CURR')
                 self.YokogawaGS200('write','SOUR:RANG '+str(range.rstrip()))
                 self.YokogawaGS200('write','SOUR:LEV '+str(forced.rstrip()))
                 self.YokogawaGS200('write','OUTP ON')
                 time.sleep(.25)
                 worksheet.write(row,col,'='+str(forced.rstrip()))
-                worksheet.write(row,col+1,'='+str(self.Agilent34410A('ask','MEAS?')))
+                worksheet.write(row,col+1,'='+str(self.Agilent34410A('ask','MEAS:CURR:DC?')))
                 self.YokogawaGS200('write','OUTP OFF')
                 self.Keithley7002('write','open all')
         if str(measure.rstrip())=='4 Wire Forced Voltage vs Current':
