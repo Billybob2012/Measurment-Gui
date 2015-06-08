@@ -227,6 +227,9 @@ class Application(Frame):
         Frame.__init__(self)
         self.pack()
         Label(self,text='Select Automation Process').pack()
+        Button(self,text='4 Wire Current vs Voltage',command=lambda:self.FourWireCurrentvsVoltaqgeMenu()).pack()
+        Button(self,text='2 Wire Current vs Voltage',command=lambda:self.TwoWireCurrentvsVoltaqgeMenu()).pack()
+        Button(self,text='4 Wire Voltage vs Current',command=lambda:self.FourWireVoltagevsCurrentMenu()).pack()
         Button(self,text='Voltage vs Time').pack()
         Button(self,text='Execute Process Que',command=lambda:self.UserProgramableTest1Process()).pack()
         Label(self,text='Processes in Que:').pack()
@@ -327,12 +330,8 @@ class Application(Frame):
         global name
         global count
         global forced
-        global range
-        global input
-        global output
+        global ranges
         process = open('process_que.txt', 'a')
-        process.write(str(input.get())+'\n')
-        process.write(str(output.get())+'\n')
         process.write(str(measure)+'\n')
         process.write(str(forced.get())+'\n')
         process.write(str(range.get())+'\n')
