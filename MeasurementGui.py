@@ -238,9 +238,8 @@ class Application(Frame):
         Frame.__init__(self)
         self.pack()
         Label(self,text='Select Automation Process').pack()
-        Button(self,text='4 Wire Current vs Voltage',command=lambda:self.FourWireCurrentvsVoltaqgeMenu()).pack()
-        Button(self,text='2 Wire Current vs Voltage',command=lambda:self.TwoWireCurrentvsVoltaqgeMenu()).pack()
-        Button(self,text='4 Wire Voltage vs Current',command=lambda:self.FourWireVoltagevsCurrentMenu()).pack()
+        Button(self,text='4 Wire Current vs Voltage Resistance Test',command=lambda:self.FourWireCurrentvsVoltaqgeMenu()).pack()
+        Button(self,text='4 Wire Voltage vs Current Resistance Test',command=lambda:self.FourWireVoltagevsCurrentMenu()).pack()
         Button(self,text='Voltage vs Time').pack()
         Button(self,text='Execute Process Que',command=lambda:self.UserProgramableTest1Process()).pack()
         Label(self,text='Processes in Que:').pack()
@@ -362,8 +361,6 @@ class Application(Frame):
         global worksheet
         global forced
         global range
-        global input
-        global output
         global format
         processNumber = 0
         process = open('process_que.txt', 'r') 
@@ -409,6 +406,7 @@ class Application(Frame):
         if str(measure.rstrip()) == '4 Wire Forced Current vs Voltage':
              worksheet.write(row,col,'Current',format)
              worksheet.write(row,col+1,'Voltage',format)
+             worksheet.write(row,col+2,'Ressistance',format)
              while int(fr) < int(to)+1:
                 row+=1
                 fr = str(fr).rstrip()
@@ -422,6 +420,7 @@ class Application(Frame):
                 time.sleep(.25)
                 worksheet.write(row,col,'='+str(forced.rstrip()))
                 worksheet.write(row,col+1,'='+str(self.Agilent34410A('ask','MEAS:VOLT:DC?')))
+                worksheet.write(row,col+2,'='+str(float(self.Agilent34410A('ask','MEAS:VOLT:DC?'))/float(str(forced.rstrip()))))
                 self.YokogawaGS200('write','OUTP OFF')
                 self.Keithley7002('write','open all')
         if str(measure.rstrip())=='4 Wire Forced Voltage vs Current':
