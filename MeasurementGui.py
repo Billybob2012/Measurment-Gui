@@ -1,4 +1,3 @@
-#Megha
 try:
     import visa
 except ImportError:
@@ -9,7 +8,6 @@ try:
     import xlsxwriter
 except:
     print 'Please install all libraries'
-from collections import Counter
 import serial
 ans='0'
 class Application(Frame):
