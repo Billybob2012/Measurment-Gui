@@ -11,6 +11,7 @@ except:
     print 'Please install all libraries'
 from collections import Counter
 import serial
+ans='0'
 class Application(Frame):
     def __init__(self, master):
         Frame.__init__(self,master)
@@ -124,17 +125,21 @@ class Application(Frame):
     def YokogawaGS200MainMenu(self):
         ans = StringVar()
         Interval = StringVar()
+        SlopeTime = StringVar()
         self.destroy()
         Frame.__init__(self)
         self.pack()
         Button(self,text='Configure Device').pack()
         Entry(self,textvariable=ans).pack()
         Button(self,text='Send',command=lambda:self.YokogawaGS200('write',ans.get())).pack()
+        Label (self, text = "Time Interval").pack()
         Entry (self, textvariable = Interval).pack() #Time Interval (s)
         Button (self, text = "Send", command= lambda:self.YokogawaGS200("write", Interval.get())).pack()
-        Button (self, text = "Repeat Execution", command =lambda: self.YokogawaGS200 ).pack()
+        Label (self, text = "SlopeTime").pack()
+        Entry (self, textvariable = SlopeTime).pack()
+        Button (self, text = "Send", command = lambda: self. YokogawaGS200("write", SlopeTIme.get()))
+        Button (self, text = "Repeat Execution").pack()
         Button (self, text = "Pause Execution").pack()
-        Button (self, text = "Resume Execution").pack()
         Button(self,text='Back',command=lambda:self.DeviceMen()).pack()
     def YokogawaGS200(self, option, command):
         settings = open('settings.txt' , 'r')
@@ -179,16 +184,24 @@ class Application(Frame):
             print 'nothing to do'
     def LakeShore336MainMenu(self):
         Kelvin=StringVar ()
+        TempLim = StringVar()
+        global ans
+        global kelv
         var=0
         self.destroy()
         Frame.__init__(self)
         self.pack()
-        Button(self, text = "Configure").pack()
-        Button(self, text = "Brightness UP",command=lambda:self.LakeShore336('write','BRIGT 32')).pack()
-        Button(self, text = "Display Down",command=lambda:self.LakeShore336('write','BRIGT 0')).pack()
+        Button (self, text = "Reset Device", command = lambda:self.LakeShore336 ("write", "*RST")).pack()
+        Button(self, text = "Brightness Up",command=lambda:self.LakeShore336('write','BRIGT 32')).pack()
+        Button(self, text = "Brightness Down",command=lambda:self.LakeShore336('write','BRIGT 0')).pack()
+        Label (self, text = ans).pack()
+        Button (self, text = "Celsius Reading", command = lambda:self.LakeShore336("celsius", "CRDG? A")).pack()
+        Label (self, text = kelv).pack()
+        Button (self, text = "Kelvin Reading", command = lambda:self.LakeShore336("kelvin", "KRDG? A")).pack()
         Label(self, text = "Input Temperature").pack() #Allows Temperature Input (K)
         Entry(self, textvariable = Kelvin).pack()
         Button(self, text ="Send", command = lambda:self.LakeShore336("write", Kelvin.get())).pack()
+        Button (self, text = "Temperature Limit On", command = lambda:self.LakeShore336 ("write", "TLIMIT A, 100")).pack() #Temp limit in Kelvin is 100 part
         Button(self,text='Back',command=lambda:self.DeviceMen()).pack()
     def LakeShore336(self,option,command):
         settings = open('settings.txt' , 'r')
