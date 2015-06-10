@@ -285,6 +285,9 @@ class Application(Frame):
         global measure
         global to
         global fr
+        global graph
+        graph = StringVar()
+        graph.set('column')
         self.destroy()
         Frame.__init__(self)
         self.pack()
@@ -299,6 +302,8 @@ class Application(Frame):
         Entry(self,textvariable=to).pack()
         Label(self,text='Name of Excel file that will be created:').pack()
         Entry(self,textvariable=name).pack()
+        Label(self,text='Pick graph type').pack()
+        OptionMenu(self,graph,'column','scatter','bar').pack()
         Button(self,text='Add this Process to Que',command=lambda:self.AddProcessToQue()).pack()
         Button(self,text='Execute Process Que',command=lambda:self.UserProgramableTest1Process()).pack()
         Label(self,text='Processes in Que:').pack()
@@ -314,6 +319,7 @@ class Application(Frame):
         global count
         global forced
         global ranges
+        global graph
         process = open('process_que.txt', 'a')
         process.write(str(measure)+'\n')
         process.write(str(forced.get())+'\n')
@@ -322,6 +328,7 @@ class Application(Frame):
         process.write(str(fr.get())+'\n')
         process.write(str(to.get())+'\n')
         process.write(str(name.get())+'\n')
+        process.write(str(graph.get())+'\n')
         count+=1
         process.close()
         self.AutomationMenu()
@@ -336,6 +343,7 @@ class Application(Frame):
         global forced
         global range
         global format
+        global graph
         processNumber = 0
         process = open('process_que.txt', 'r') 
         while processNumber < count:
@@ -346,6 +354,7 @@ class Application(Frame):
           fr = process.readline()
           to = process.readline()
           name = process.readline()
+          graph = process.readline()
           processNumber = processNumber + 1
           workbook = xlsxwriter.Workbook(str(name).rstrip()+'.xlsx')
           format=workbook.add_format()
@@ -398,7 +407,7 @@ class Application(Frame):
                 worksheet.write(row,col+2,'='+str(float(self.Agilent34410A('ask','MEAS:VOLT:DC?'))/float(str(forced.rstrip()))))
                 self.YokogawaGS200('write','OUTP OFF')
                 self.Keithley7002('write','open all')
-             chart=workbook.add_chart({'type':'column'})
+             chart=workbook.add_chart({'type':graph.rstrip()})
              chart.add_series({'values':'=Sheet1!$B$2:$B$4'})
              worksheet.insert_chart('A7', chart)
         if str(measure.rstrip())=='4 Wire Forced Voltage vs Current':
@@ -412,25 +421,6 @@ class Application(Frame):
                 self.YokogawaGS200('write','SENS:REM ON')
                 self.YokogawaGS200('write','SENS:TRIG IMM')
                 self.YokogawaGS200('write','SOUR:FUNC VOLT')
-                self.YokogawaGS200('write','SOUR:RANG '+str(range.rstrip()))
-                self.YokogawaGS200('write','SOUR:LEV '+str(forced.rstrip()))
-                self.YokogawaGS200('write','OUTP ON')
-                time.sleep(.25)
-                worksheet.write(row,col,'='+str(forced.rstrip()))
-                worksheet.write(row,col+1,'='+str(self.YokogawaGS200('ask','MEAS?')))
-                self.YokogawaGS200('write','OUTP OFF')
-                self.Keithley7002('write','open all')
-        if str(measure.rstrip())=='2 Wire Forced Current vs Voltage':
-             worksheet.write(row,col,'Current',format)
-             worksheet.write(row,col+1,'Voltage',format)
-             while int(fr) < int(to)+1:
-                row+=1
-                fr = str(fr).rstrip()
-                self.Keithley7002('write','close (@1!'+(str(fr)).rstrip()+',1!'+str(int(fr)+1)+',1!'+str(input.rstrip())+',1!'+str(output.rstrip())+')')
-                fr = int(fr)+2
-                self.YokogawaGS200('write','SENS:REM OFF')
-                self.YokogawaGS200('write','SENS:TRIG IMM')
-                self.YokogawaGS200('write','SOUR:FUNC CURR')
                 self.YokogawaGS200('write','SOUR:RANG '+str(range.rstrip()))
                 self.YokogawaGS200('write','SOUR:LEV '+str(forced.rstrip()))
                 self.YokogawaGS200('write','OUTP ON')
