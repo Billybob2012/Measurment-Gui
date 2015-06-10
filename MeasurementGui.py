@@ -205,6 +205,8 @@ class Application(Frame):
         Button (self, text = "Temperature Limit On", command = lambda:self.LakeShore336 ("write", "TLIMIT A, 315")).pack() #Temp limit in Kelvin is 100 part
         Button(self,text='Back',command=lambda:self.DeviceMen()).pack()
     def LakeShore336(self,option,command):
+        global ans
+        global kelv
         settings = open('settings.txt' , 'r')
         adress = settings.readline()
         while adress.rstrip() !='LakeShore336':
@@ -217,6 +219,12 @@ class Application(Frame):
             inst.write(command)
         if option == 'ask':
             return inst.query(command)
+        if option == "celsius":
+            ans = self.LakeShore336("ask", "CRDG? A")
+            self.LakeShore336MainMenu()
+        if option == "kelvin":
+            kelv = self.LakeShore336("ask", "KRDG? A")
+            self.LakeShore336MainMenu()
         inst.close()
     def AutomationMenu(self):
         global forced
