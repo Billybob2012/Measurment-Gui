@@ -262,7 +262,8 @@ class Application(Frame):
         Entry(self,textvariable=forced).pack()
         Label(self,text='Range (Volts):').pack()
         Entry(self,textvariable=range).pack()
-        Label(self,text='Select switch inputs From:').pack()
+        Label(self,text='Select switch inputs').pack()
+        Label(self,text='From:').pack()
         Entry(self,textvariable=fr).pack()
         Label(self,text='To:').pack()
         Entry(self,textvariable=to).pack()
@@ -291,7 +292,8 @@ class Application(Frame):
         Entry(self,textvariable=forced).pack()
         Label(self,text='Range (Amps):').pack()
         Entry(self,textvariable=range).pack()
-        Label(self,text='Select switch inputs From:').pack()
+        Label(self,text='Select switch inputs').pack()
+        Label(self,text='From:').pack()
         Entry(self,textvariable=fr).pack()
         Label(self,text='To:').pack()
         Entry(self,textvariable=to).pack()
@@ -303,35 +305,6 @@ class Application(Frame):
         Label(self,text=count).pack()
         Button(self,text='Back',command = lambda:self.AutomationMenu()).pack()
         measure = '4 Wire Forced Current vs Voltage'
-    def TwoWireCurrentvsVoltaqgeMenu(self):
-        global forced
-        global count
-        global range
-        global input
-        global output
-        global name
-        global measure
-        global to
-        global fr
-        self.destroy()
-        Frame.__init__(self)
-        self.pack()
-        Label(self,text='Amount forced (Amps)').pack()
-        Entry(self,textvariable=forced).pack()
-        Label(self,text='Range (Amps):').pack()
-        Entry(self,textvariable=range).pack()
-        Label(self,text='Select switch inputs From:').pack()
-        Entry(self,textvariable=fr).pack()
-        Label(self,text='To:').pack()
-        Entry(self,textvariable=to).pack()
-        Label(self,text='Name of Excel file that will be created:').pack()
-        Entry(self,textvariable=name).pack()
-        Button(self,text='Add this Process to Que',command=lambda:self.AddProcessToQue()).pack()
-        Button(self,text='Execute Process Que',command=lambda:self.UserProgramableTest1Process()).pack()
-        Label(self,text='Processes in Que:').pack()
-        Label(self,text=count).pack()
-        Button(self,text='Back',command = lambda:self.AutomationMenu()).pack()
-        measure = '2 Wire Forced Current vs Voltage'
     def AddProcessToQue(self):
         global tm
         global measure
@@ -359,6 +332,7 @@ class Application(Frame):
         global to
         global name
         global worksheet
+        global workbook
         global forced
         global range
         global format
@@ -386,6 +360,7 @@ class Application(Frame):
         global tm
         global measure
         global worksheet
+        global workbook
         global fr
         global forced
         global format
@@ -423,6 +398,9 @@ class Application(Frame):
                 worksheet.write(row,col+2,'='+str(float(self.Agilent34410A('ask','MEAS:VOLT:DC?'))/float(str(forced.rstrip()))))
                 self.YokogawaGS200('write','OUTP OFF')
                 self.Keithley7002('write','open all')
+             chart=workbook.add_chart({'type':'column'})
+             chart.add_series({'values':'=Sheet1!$B$2:$B$4'})
+             worksheet.insert_chart('A7', chart)
         if str(measure.rstrip())=='4 Wire Forced Voltage vs Current':
             worksheet.write(row,col,'Voltage',format)
             worksheet.write(row,col+1,'Current',format)
