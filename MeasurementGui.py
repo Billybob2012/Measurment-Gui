@@ -12,6 +12,7 @@ except:
 from collections import Counter
 import serial
 ans='0'
+kelv = "0"
 class Application(Frame):
     def __init__(self, master):
         Frame.__init__(self,master)
@@ -201,7 +202,7 @@ class Application(Frame):
         Label(self, text = "Input Temperature").pack() #Allows Temperature Input (K)
         Entry(self, textvariable = Kelvin).pack()
         Button(self, text ="Send", command = lambda:self.LakeShore336("write", Kelvin.get())).pack()
-        Button (self, text = "Temperature Limit On", command = lambda:self.LakeShore336 ("write", "TLIMIT A, 100")).pack() #Temp limit in Kelvin is 100 part
+        Button (self, text = "Temperature Limit On", command = lambda:self.LakeShore336 ("write", "TLIMIT A, 315")).pack() #Temp limit in Kelvin is 100 part
         Button(self,text='Back',command=lambda:self.DeviceMen()).pack()
     def LakeShore336(self,option,command):
         settings = open('settings.txt' , 'r')
