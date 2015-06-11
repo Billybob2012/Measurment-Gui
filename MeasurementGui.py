@@ -210,6 +210,10 @@ class Application(Frame):
         Entry (self, textvariable = Low).pack()
         Button (self, text = "Send", command = lambda:self.LakeShore336("write", "ALARM A,1," + High.get() +"," + Low.get() + ",0,1,1,1")).pack()
         Button (self, text= "Alarm Off", command = lambda:self.LakeShore336("write", "ALARM A,0")).pack()
+        Label (self, text = "Heater Range").pack()
+        Button (self, text = "High", command = lambda:self.LakeShore336("write", "RANGE 1,3")).pack(side = LEFT)
+        Button (self, text = "Medium", command = lambda:self.LakeShore336("write", "RANGE 1,2")).pack(side = LEFT)
+        Button (self, text = "Low", command = lambda:self.LakeShore336("write", "RANGE 1,1")).pack()
         Button (self,text='Back',command=lambda:self.DeviceMen()).pack()
     def LakeShore336(self,option,command):
         global ans
