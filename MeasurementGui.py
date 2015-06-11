@@ -12,6 +12,7 @@ except:
 from collections import Counter
 import serial
 ans='0'
+kelv = "0"
 class Application(Frame):
     def __init__(self, master):
         Frame.__init__(self,master)
@@ -185,25 +186,70 @@ class Application(Frame):
     def LakeShore336MainMenu(self):
         Kelvin=StringVar ()
         TempLim = StringVar()
-        global ans
-        global kelv
+        High = StringVar()
+        Low = StringVar()
         var=0
         self.destroy()
         Frame.__init__(self)
         self.pack()
-        Button (self, text = "Reset Device", command = lambda:self.LakeShore336 ("write", "*RST")).pack()
+        Button (self, text = "Configuration Menu", command = lambda:self.LakeShore336ConfigMenu()).pack()
+        Button (self, text = "Temperature Readings", command = lambda:self.LakeShore336TempReadMenu()).pack()
+        Button (self, text = "Heater Settings", command = lambda:self.LakeShore336HeatMenu()).pack()
+        Button (self,text='Back',command=lambda:self.DeviceMen()).pack()
+    def LakeShore336ConfigMenu(self):
+        var=0
+        self.destroy()
+        Frame.__init__(self)
+        self.pack()
+        Button (self, text = "Reset Device", command = lambda:self.LakeShore336("write", "*RST")).pack()
         Button(self, text = "Brightness Up",command=lambda:self.LakeShore336('write','BRIGT 32')).pack()
         Button(self, text = "Brightness Down",command=lambda:self.LakeShore336('write','BRIGT 0')).pack()
+        Button (self, text = "Alarm Settings", command=lambda:self.LakeShore336AlarmMenu()).pack()
+        Button (self, text = "Back",command = lambda:self.LakeShore336MainMenu()).pack()
+    def LakeShore336AlarmMenu(self):
+        High = StringVar()
+        Low = StringVar()
+        var=0
+        self.destroy()
+        Frame.__init__(self)
+        self.pack()
+        Label (self, text = "Alarm High Settings (K)").pack()
+        Entry (self, textvariable = High).pack()
+        Label (self, text = "Alarm Low Settings (K)").pack()
+        Entry (self, textvariable = Low).pack()
+        Button (self, text = "Send", command = lambda:self.LakeShore336("write", "ALARM A,1," + High.get() +"," + Low.get() + ",0,1,1,1")).pack()
+        Button (self, text= "Alarm Off", command = lambda:self.LakeShore336("write", "ALARM A,0")).pack()
+        Button (self, text = "Back", command = lambda:self.LakeShore336MainMenu()).pack()
+    def LakeShore336TempReadMenu(self):
+        var=0
+        self.destroy()
+        Frame.__init__(self)
+        self.pack()
+        global ans
+        global kelv
         Label (self, text = ans).pack()
         Button (self, text = "Celsius Reading", command = lambda:self.LakeShore336("celsius", "CRDG? A")).pack()
         Label (self, text = kelv).pack()
         Button (self, text = "Kelvin Reading", command = lambda:self.LakeShore336("kelvin", "KRDG? A")).pack()
-        Label(self, text = "Input Temperature").pack() #Allows Temperature Input (K)
-        Entry(self, textvariable = Kelvin).pack()
-        Button(self, text ="Send", command = lambda:self.LakeShore336("write", Kelvin.get())).pack()
-        Button (self, text = "Temperature Limit On", command = lambda:self.LakeShore336 ("write", "TLIMIT A, 100")).pack() #Temp limit in Kelvin is 100 part
-        Button(self,text='Back',command=lambda:self.DeviceMen()).pack()
+        Button (self, text = "Back", command = lambda:self.LakeShore336MainMenu()).pack()
+    def LakeShore336HeatMenu(self):
+        var=0
+        self.destroy()
+        Frame.__init__(self)
+        self.pack()
+        TempLim = StringVar()
+        Label (self, text = "Temperature Limit (K)").pack()
+        Entry (self, textvariable = TempLim).pack()
+        Button(self, text ="Send", command = lambda:self.LakeShore336("write","TLIMIT A," + TempLim.get())).pack()
+        Label (self, text = "Heater Range").pack()
+        Button (self, text = "High", command = lambda:self.LakeShore336("write", "RANGE 1,3")).pack()
+        Button (self, text = "Medium", command = lambda:self.LakeShore336("write", "RANGE 1,2")).pack()
+        Button (self, text = "Low", command = lambda:self.LakeShore336("write", "RANGE 1,1")).pack()
+        Button (self, text = "OFF", command = lambda:self.LakeShore336("write", "RANGE 1,0")).pack()
+        Button (self, text = "Back", command = lambda:self.LakeShore336MainMenu()).pack()
     def LakeShore336(self,option,command):
+        global ans
+        global kelv
         settings = open('settings.txt' , 'r')
         adress = settings.readline()
         while adress.rstrip() !='LakeShore336':
@@ -216,6 +262,12 @@ class Application(Frame):
             inst.write(command)
         if option == 'ask':
             return inst.query(command)
+        if option == "celsius":
+            ans = self.LakeShore336("ask", "CRDG? A")
+            self.LakeShore336TempReadMenu()
+        if option == "kelvin":
+            kelv = self.LakeShore336("ask", "KRDG? A")
+            self.LakeShore336TempReadMenu()
         inst.close()
     def AutomationMenu(self):
         global forced
