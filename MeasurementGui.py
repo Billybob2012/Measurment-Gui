@@ -554,7 +554,7 @@ class Application(Frame):
                 self.YokogawaGS200('write', 'OUTP OFF')
                 self.Keithley7002('write', 'open all')
             chart = workbook.add_chart({'type': graph.rstrip()})
-            chart.add_series({'values': '=Sheet1!$B$2:$B$4'})
+            chart.add_series({'values': '=Sheet1!$B$2:$B$'+str(row+1)})
             worksheet.insert_chart('A7', chart)
         if str(measure.rstrip()) == '4 Wire Forced Voltage vs Current':
             worksheet.write(row, col, 'Voltage', format)
@@ -592,7 +592,9 @@ class Application(Frame):
                 time.sleep(float(wait))
                 tme = tme + float(tm)
             self.LakeShore336('write','RANGE  '+ outp.rstrip() + ',0')
-
+            chart = workbook.add_chart({'type': 'scatter'})
+            chart.add_series({'categories':'=Sheet1!$A$2:$A$'+str(row+1),'values':'=Sheet1!$B$2:$B$'+str(row+1)})
+            worksheet.insert_chart('D2', chart)
 root = Tk()
 root.title("Measurement System GUI Alpha")
 root.geometry("600x500")
