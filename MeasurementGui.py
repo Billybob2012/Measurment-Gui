@@ -240,6 +240,7 @@ class Application(Frame):
         Label(self,text='Select Automation Process').pack()
         Button(self,text='4 Wire Current vs Voltage Resistance Test',command=lambda:self.FourWireCurrentvsVoltaqgeMenu()).pack()
         Button(self,text='4 Wire Voltage vs Current Resistance Test',command=lambda:self.FourWireVoltagevsCurrentMenu()).pack()
+        Button(self,text='Heat Vs Time',command=lambda:self.HeatVsTime()).pack()
         Button(self,text='Voltage vs Time').pack()
         Button(self,text='Execute Process Que',command=lambda:self.UserProgramableTest1Process()).pack()
         Label(self,text='Processes in Que:').pack()
@@ -310,6 +311,32 @@ class Application(Frame):
         Label(self,text=count).pack()
         Button(self,text='Back',command = lambda:self.AutomationMenu()).pack()
         measure = '4 Wire Forced Current vs Voltage'
+    def HeatVsTime(self):
+        self.destroy()
+        Frame.__init__(self)
+        self.pack()
+        global measure
+        global name
+        global graph
+        global rate
+        global count
+        global wanted_temp
+        graph = StringVar()
+        measure = StringVar()
+        wanted_temp = StringVar()
+        rate = StringVar()
+        Label(self,text='Wanted Temperature (Kelvin)').pack()
+        Entry(self,textvariable=wanted_temp).pack()
+        Label(self,text='Choose Heating Rate').pack()
+        OptionMenu(self,rate,'low','medium','high').pack()
+        Label(self,text='Name Excel file that will be created').pack()
+        Entry(self).pack()
+        Button(self,text='Add this Process to Que',command=lambda:self.AddProcessToQue()).pack()
+        Button(self,text='Execute Process Que',command=lambda:self.UserProgramableTest1Process()).pack()
+        Label(self,text='Processes in Que:').pack()
+        Label(self,text=count).pack()
+        Button(self,text='Back',command=lambda:self.AutomationMenu()).pack()
+        measure = 'Temperature Vs Time'
     def AddProcessToQue(self):
         global tm
         global measure
@@ -320,6 +347,8 @@ class Application(Frame):
         global forced
         global ranges
         global graph
+        global rate
+        global wanted_temp
         process = open('process_que.txt', 'a')
         process.write(str(measure)+'\n')
         process.write(str(forced.get())+'\n')
@@ -329,6 +358,8 @@ class Application(Frame):
         process.write(str(to.get())+'\n')
         process.write(str(name.get())+'\n')
         process.write(str(graph.get())+'\n')
+        process.write(str(rate.get())+'\n')
+        process.write(str(wanted_temp.get())+'\n')
         count+=1
         process.close()
         self.AutomationMenu()
@@ -345,7 +376,7 @@ class Application(Frame):
         global format
         global graph
         processNumber = 0
-        process = open('process_que.txt', 'r') 
+        process = open('process_que.txt', 'r')
         while processNumber < count:
           measure = process.readline()
           forced = process.readline()
@@ -365,7 +396,7 @@ class Application(Frame):
         workbook.close()
         self.AutomationMenu()
     def AutoMeasure(self):
-        global name 
+        global name
         global tm
         global measure
         global worksheet
@@ -377,7 +408,7 @@ class Application(Frame):
         row = 0
         tme = 0
         self.Keithley7002('write','open all')
-        if str(measure).rstrip()=='Ressistance vs Time':  # If the user checked the resistants meassurement 
+        if str(measure).rstrip()=='Ressistance vs Time':  # If the user checked the resistants meassurement
             while int(fr) != int(to):
                 self.Keithley7002('write','close (@1!'+(str(fr)).rstrip()+',1!10)')
                 fr = int(fr)+1
@@ -429,6 +460,9 @@ class Application(Frame):
                 worksheet.write(row,col+1,'='+str(self.YokogawaGS200('ask','MEAS?')))
                 self.YokogawaGS200('write','OUTP OFF')
                 self.Keithley7002('write','open all')
+
+
+
 root = Tk()
 root.title("Measurement System GUI Alpha")
 root.geometry("600x500")
