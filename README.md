@@ -1,13 +1,16 @@
 Measurment-Gui README 
 ======================
- Created by Steffen Sullivan
+Created by Steffen Sullivan
 
-### Getting Started ###
+### Things You Will Need ###
 
-1. First download and install Python 2.7x - https://www.python.org/downloads/
+* [Python 2.7x] (https://www.python.org/downloads/)
+* [ Keysight IO Libraries Suite] (https://www.keysight.com/main/gated.jspx?lb=1&gatedId=2579846&cc=US&lc=eng&parentContId=1184883&parentContType=sd&parentNid=-33330.977662&pageType=SW-Current%20Version|.Win&sd=Y)
+* [Py Visa Library] (https://github.com/hgrecco/pyvisa-py.git) 
+* [Micrsoft Excel Library] (https://github.com/jmcnamara/excel-writer-xlsx)
 
-2. Next download and install Keysight IO Libraries Suite - https://www.keysight.com/main/gated.jspx?lb=1&gatedId=2579846&cc=US&lc=eng&parentContId=1184883&parentContType=sd&parentNid=-33330.977662&pageType=SW-Current%20Version|.Win&sd=Y
+### How To Setup Python On Windows ###
 
-3. Next download and install the  Py Visa Library - https://github.com/hgrecco/pyvisa-py
+1. Run the Python setup program
+2. Add Python to the system path
 
-4. Next download and install the Micrsoft Excel Library - https://github.com/jmcnamara/excel-writer-xlsx
