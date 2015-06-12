@@ -583,8 +583,10 @@ class Application(Frame):
             to = self.LakeShore336('ask','KRDG? '+inp.rstrip())
             worksheet.write(row, col, 'Time', format)
             worksheet.write(row, col + 1, 'Temperature', format)
-            worksheet.write(row, col + 2, 'Total Time Elapsed', format)
+            worksheet.write(row, col + 2, 'Total Time Elapsed (Seconds)', format)
             worksheet.write(row, col + 3, 'Average Kelvins per Second', format)
+            worksheet.write(row, col + 4, 'Heating Rate (1-3)', format)
+            worksheet.write(row + 1, col + 4, str(rate.rstrip()))
             while float(wanted_temp) > float(to):
                 row += 1
                 worksheet.write(row,col+1,'='+str(self.LakeShore336('ask','KRDG? '+inp.rstrip())))
