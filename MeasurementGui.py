@@ -583,6 +583,8 @@ class Application(Frame):
             to = self.LakeShore336('ask','KRDG? '+inp.rstrip())
             worksheet.write(row, col, 'Time', format)
             worksheet.write(row, col + 1, 'Temperature', format)
+            worksheet.write(row, col + 2, 'Total Time Elapsed', format)
+            worksheet.write(row, col + 3, 'Average Kelvins per Second', format)
             while float(wanted_temp) > float(to):
                 row += 1
                 worksheet.write(row,col+1,'='+str(self.LakeShore336('ask','KRDG? '+inp.rstrip())))
@@ -592,9 +594,11 @@ class Application(Frame):
                 time.sleep(float(wait))
                 tme = tme + float(tm)
             self.LakeShore336('write','RANGE  '+ outp.rstrip() + ',0')
+            worksheet.write(1, 2, tme, format)
+            worksheet.write(1, 3, '=(B'+str(row)+'-B2)/'+str(tme), format)
             chart = workbook.add_chart({'type': 'scatter'})
             chart.add_series({'categories':'=Sheet1!$A$2:$A$'+str(row+1),'values':'=Sheet1!$B$2:$B$'+str(row+1)})
-            worksheet.insert_chart('D2', chart)
+            worksheet.insert_chart('G2', chart)
 root = Tk()
 root.title("Measurement System GUI Alpha")
 root.geometry("600x500")
