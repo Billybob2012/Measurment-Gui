@@ -326,6 +326,7 @@ class Application(Frame):
                command=lambda: self.FourWireCurrentvsVoltaqgeMenu()).pack()
         Button(self, text='4 Wire Voltage vs Current Resistance Test',
                command=lambda: self.FourWireVoltagevsCurrentMenu()).pack()
+        Button(self, text='2 Wire Current vs Voltage Resistance Test', command=lambda:self.TwoWireCurrentvsVoltageMenu()).pack()
         Button(self, text='Heat Vs Time', command=lambda: self.HeatVsTime()).pack()
         Button(self, text='Voltage vs Time').pack()
         Button(self, text='Execute Process Que', command=lambda: self.UserProgramableTest1Process()).pack()
@@ -399,6 +400,37 @@ class Application(Frame):
         Label(self, text=count).pack()
         Button(self, text='Back', command=lambda: self.AutomationMenu()).pack()
         measure = '4 Wire Forced Current vs Voltage'
+
+    def TwoWireCurrentvsVoltageMenu(self):
+        global forced
+        global count
+        global range
+        global input
+        global output
+        global name
+        global measure
+        global to
+        global fr
+        self.destroy()
+        Frame.__init__(self)
+        self.pack()
+        Label(self, text='Amount forced (Amps)').pack()
+        Entry(self, textvariable=forced).pack()
+        Label(self, text='Select switch inputs').pack()
+        Label(self, text='From:').pack()
+        Entry(self, textvariable=fr).pack()
+        Label(self, text='To:').pack()
+        Entry(self, textvariable=to).pack()
+        Label(self, text='Name of Excel file that will be created:').pack()
+        Entry(self, textvariable=name).pack()
+        Label(self, text='Pick graph type').pack()
+        OptionMenu(self, graph, 'column', 'scatter', 'bar').pack()
+        Button(self, text='Add this Process to Que', command=lambda: self.AddProcessToQue()).pack()
+        Button(self, text='Execute Process Que', command=lambda: self.UserProgramableTest1Process()).pack()
+        Label(self, text='Processes in Que:').pack()
+        Label(self, text=count).pack()
+        Button(self, text='Back', command=lambda: self.AutomationMenu()).pack()
+        measure = '2 Wire Forced Current vs Voltage'
 
     def HeatVsTime(self):
         self.destroy()
@@ -532,6 +564,30 @@ class Application(Frame):
                 tme = tme + float(tm)
                 time.sleep(float(tm))
                 self.Keithley7002('write', 'open all')
+        if str(measure.rstrip()) == '2 Wire Forced Current vs Voltage':
+            worksheet.write(row, col, 'Current', format)
+            worksheet.write(row, col + 1, 'Voltage', format)
+            worksheet.write(row, col + 2, 'Ressistance', format)
+            while int(fr) < int(to) + 1:
+                row += 1
+                fr = str(fr).rstrip()
+                self.Keithley7002('write', 'close (@1!' + (str(fr)).rstrip() + ')')
+                fr = int(fr) + 1
+                self.YokogawaGS200('write', 'SENS:REM ON')
+                self.YokogawaGS200('write', 'SOUR:FUNC CURR')
+                self.YokogawaGS200('write', 'SOUR:RANG ' + str(range.rstrip()))
+                self.YokogawaGS200('write', 'SOUR:LEV ' + str(forced.rstrip()))
+                self.YokogawaGS200('write', 'OUTP ON')
+                time.sleep(.25)
+                worksheet.write(row, col, '=' + str(forced.rstrip()))
+                worksheet.write(row, col + 1, '=' + str(self.YokogawaGS200('ask', 'MEAS?')))
+                worksheet.write(row, col + 2, '=' + str(
+                    float(self.YokogawaGS200('ask', 'MEAS?')) / float(str(forced.rstrip()))))
+                self.YokogawaGS200('write', 'OUTP OFF')
+                self.Keithley7002('write', 'open all')
+            chart = workbook.add_chart({'type': graph.rstrip()})
+            chart.add_series({'values': '=Sheet1!$C$2:$C$'+str(row+1)})
+            worksheet.insert_chart('G2', chart)
         if str(measure.rstrip()) == '4 Wire Forced Current vs Voltage':
             worksheet.write(row, col, 'Current', format)
             worksheet.write(row, col + 1, 'Voltage', format)
