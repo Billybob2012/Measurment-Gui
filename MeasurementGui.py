@@ -36,7 +36,6 @@ class Application(Frame):
         Button(self, text='Keithley 7002 Switching Machine', command=lambda: self.Keithley7002MainMenu()).pack()
         Button(self, text='Yokogawa GS200', command=lambda: self.YokogawaGS200MainMenu()).pack()
         Button(self, text='LakeShore 336 Temperature Controller', command=lambda: self.LakeShore336MainMenu()).pack()
-        Button(self, text='Arduino Board', command=lambda: self.ArduinoMenu()).pack()
         Label(self, text='Automation Menu').pack()
         Button(self, text='Automation Menu', command=lambda: self.AutomationMenu()).pack()
 
@@ -170,14 +169,6 @@ class Application(Frame):
         if option == 'ask':
             return inst.query(command)
         inst.close()
-
-    def ArduinoMenu(self):
-        self.destroy()
-        Frame.__init__(self)
-        self.pack()
-        Button(self, text='Raise Device', command=lambda: self.ArduinoBoard('write', '1')).pack()
-        Button(self, text='Lower Device', command=lambda: self.ArduinoBoard('write', '2')).pack()
-        Button(self, text='Back', command=lambda: self.DeviceMen()).pack()
 
     def LakeShore336MainMenu(self):
         Kelvin = StringVar()
