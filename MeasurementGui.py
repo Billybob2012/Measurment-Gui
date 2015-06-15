@@ -306,6 +306,7 @@ class Application(Frame):
         global rate
         global wanted_temp
         global graph
+        global slot
         graph = StringVar()
         range = StringVar()
         measure = StringVar()
@@ -318,6 +319,7 @@ class Application(Frame):
         outp = StringVar()
         rate = StringVar()
         wanted_temp = StringVar()
+        slot = StringVar()
         self.destroy()
         Frame.__init__(self)
         self.pack()
@@ -376,6 +378,7 @@ class Application(Frame):
         global to
         global fr
         global graph
+        global slot
         graph = StringVar()
         graph.set('column')
         self.destroy()
@@ -385,6 +388,8 @@ class Application(Frame):
         Entry(self, textvariable=forced).pack()
         Label(self, text='Range (Amps):').pack()
         Entry(self, textvariable=range).pack()
+        Label(self, text='Input Card Slot Cumner (1-10)').pack()
+        Entry(self, textvariable=slot).pack()
         Label(self, text='Select switch inputs').pack()
         Label(self, text='From:').pack()
         Entry(self, textvariable=fr).pack()
@@ -411,11 +416,16 @@ class Application(Frame):
         global measure
         global to
         global fr
+        global slot
         self.destroy()
         Frame.__init__(self)
         self.pack()
         Label(self, text='Amount forced (Amps)').pack()
         Entry(self, textvariable=forced).pack()
+        Label(self, text='Range (Amps):').pack()
+        Entry(self, textvariable=range).pack()
+        Label(self, text='Input Card Slot Cumner (1-10)').pack()
+        Entry(self, textvariable=slot).pack()
         Label(self, text='Select switch inputs').pack()
         Label(self, text='From:').pack()
         Entry(self, textvariable=fr).pack()
@@ -478,6 +488,7 @@ class Application(Frame):
         global wanted_temp
         global outp
         global inp
+        global slot
         process = open('process_que.txt', 'a')
         process.write(str(measure) + '\n')
         process.write(str(forced.get()) + '\n')
@@ -491,6 +502,7 @@ class Application(Frame):
         process.write(str(wanted_temp.get()) + '\n')
         process.write(str(outp.get()) + '\n')
         process.write(str(inp.get()) + '\n')
+        process.write(str(slot.get())+'\n')
         count += 1
         process.close()
         self.AutomationMenu()
@@ -511,6 +523,7 @@ class Application(Frame):
         global wanted_temp
         global inp
         global outp
+        global slot
         processNumber = 0
         process = open('process_que.txt', 'r')
         while processNumber < count:
@@ -526,6 +539,7 @@ class Application(Frame):
             wanted_temp = process.readline()
             outp = process.readline()
             inp = process.readline()
+            slot = process.readline()
             processNumber = processNumber + 1
             workbook = xlsxwriter.Workbook(str(name).rstrip() + '.xlsx')
             format = workbook.add_format()
@@ -550,6 +564,7 @@ class Application(Frame):
         global to
         global inp
         global outp
+        global slot
         col = 0
         row = 0
         tme = 0
@@ -565,13 +580,15 @@ class Application(Frame):
                 time.sleep(float(tm))
                 self.Keithley7002('write', 'open all')
         if str(measure.rstrip()) == '2 Wire Forced Current vs Voltage':
+            self.Keithley7002('write','CONF:SLOT'+str(slot).rstrip()+':POLE 2')
+            time.sleep(.5)
             worksheet.write(row, col, 'Current', format)
             worksheet.write(row, col + 1, 'Voltage', format)
             worksheet.write(row, col + 2, 'Ressistance', format)
             while int(fr) < int(to) + 1:
                 row += 1
                 fr = str(fr).rstrip()
-                self.Keithley7002('write', 'close (@1!' + (str(fr)).rstrip() + ')')
+                self.Keithley7002('write', 'close (@'+str(slot).rstrip()+'!' + (str(fr)).rstrip() + ')')
                 fr = int(fr) + 1
                 self.YokogawaGS200('write', 'SENS:REM ON')
                 self.YokogawaGS200('write', 'SOUR:FUNC CURR')
@@ -589,13 +606,15 @@ class Application(Frame):
             chart.add_series({'values': '=Sheet1!$C$2:$C$'+str(row+1)})
             worksheet.insert_chart('G2', chart)
         if str(measure.rstrip()) == '4 Wire Forced Current vs Voltage':
+            self.Keithley7002('write','CONF:SLOT'+str(slot).rstrip()+':POLE 2')
+            time.sleep(.5)
             worksheet.write(row, col, 'Current', format)
             worksheet.write(row, col + 1, 'Voltage', format)
             worksheet.write(row, col + 2, 'Ressistance', format)
             while int(fr) < int(to) + 1:
                 row += 1
                 fr = str(fr).rstrip()
-                self.Keithley7002('write', 'close (@1!' + (str(fr)).rstrip() + ')')
+                self.Keithley7002('write', 'close (@'+str(slot).rstrip()+'!' + (str(fr)).rstrip() + ')')
                 fr = int(fr) + 1
                 self.YokogawaGS200('write', 'SENS:REM OFF')
                 self.YokogawaGS200('write', 'SOUR:FUNC CURR')
