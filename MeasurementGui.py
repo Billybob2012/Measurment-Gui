@@ -11,6 +11,7 @@ except:
     print 'Please install all libraries'
 import serial
 
+kelv = 0
 ans = '0'
 
 
@@ -178,103 +179,88 @@ class Application(Frame):
         Button(self, text='Lower Device', command=lambda: self.ArduinoBoard('write', '2')).pack()
         Button(self, text='Back', command=lambda: self.DeviceMen()).pack()
 
-    def ArduinoBoard(self, option, command):
-        settings = open('settings.txt', 'r')
-        adress = settings.readline()
-        while adress.rstrip() != 'Arduino Board':
-            adress = settings.readline()
-        adress = settings.readline()
-        settings.close()
-        try:
-            arduino = serial.Serial(adress.rstrip(), 9600)
-        except serial.SerialException:
-            print 'No Arduino Baord Found on ' + adress.rstrip()
-        # arduino=serial.Serial(adress.rstrip(),9600)
-        time.sleep(.5)
-        if option == 'write':
-            try:
-                arduino.write(command)
-            except:
-                print ''
-        if option == 'ask':
-            print 'nothing to do'
-
     def LakeShore336MainMenu(self):
-        Kelvin=StringVar ()
+        Kelvin = StringVar()
         TempLim = StringVar()
         High = StringVar()
         Low = StringVar()
-        var=0
+        var = 0
         self.destroy()
         Frame.__init__(self)
         self.pack()
-        Button (self, text = "Configuration Menu", command = lambda:self.LakeShore336ConfigMenu()).pack()
-        Button (self, text = "Temperature Readings", command = lambda:self.LakeShore336TempReadMenu()).pack()
-        Button (self, text = "Heater Settings", command = lambda:self.LakeShore336HeatMenu()).pack()
-        Button (self,text='Back',command=lambda:self.DeviceMen()).pack()
+        Button(self, text="Configuration Menu", command=lambda: self.LakeShore336ConfigMenu()).pack()
+        Button(self, text="Temperature Readings", command=lambda: self.LakeShore336TempReadMenu()).pack()
+        Button(self, text="Heater Settings", command=lambda: self.LakeShore336HeatMenu()).pack()
+        Button(self, text='Back', command=lambda: self.DeviceMen()).pack()
+
     def LakeShore336ConfigMenu(self):
-        var=0
+        var = 0
         self.destroy()
         Frame.__init__(self)
         self.pack()
-        Button (self, text = "Power Up Reset Device", command = lambda:self.LakeShore336("write", "*RST")).pack()
-        Button (self, text = "Factory Reset", command = lambda:self.LakeShore336("write", "DFLT 99")).pack()
-        Button(self, text = "Brightness Up",command=lambda:self.LakeShore336('write','BRIGT 32')).pack()
-        Button(self, text = "Brightness Down",command=lambda:self.LakeShore336('write','BRIGT 0')).pack()
-        Button (self, text = "Alarm Settings", command=lambda:self.LakeShore336AlarmMenu()).pack()
-        Button (self, text = "PID Autotune", command = lambda:self.LakeShore336("write", "ATUNE 1,2")).pack()
-        Button (self, text = "Back",command = lambda:self.LakeShore336MainMenu()).pack()
+        Button(self, text="Power Up Reset Device", command=lambda: self.LakeShore336("write", "*RST")).pack()
+        Button(self, text="Factory Reset", command=lambda: self.LakeShore336("write", "DFLT 99")).pack()
+        Button(self, text="Brightness Up", command=lambda: self.LakeShore336('write', 'BRIGT 32')).pack()
+        Button(self, text="Brightness Down", command=lambda: self.LakeShore336('write', 'BRIGT 0')).pack()
+        Button(self, text="Alarm Settings", command=lambda: self.LakeShore336AlarmMenu()).pack()
+        Button(self, text="PID Autotune", command=lambda: self.LakeShore336("write", "ATUNE 1,2")).pack()
+        Button(self, text="Back", command=lambda: self.LakeShore336MainMenu()).pack()
+
     def LakeShore336AlarmMenu(self):
         High = StringVar()
         Low = StringVar()
-        var=0
+        var = 0
         self.destroy()
         Frame.__init__(self)
         self.pack()
-        Label (self, text = "Alarm High Settings (K)").pack()
-        Entry (self, textvariable = High).pack()
-        Label (self, text = "Alarm Low Settings (K)").pack()
-        Entry (self, textvariable = Low).pack()
-        Button (self, text = "Send", command = lambda:self.LakeShore336("write", "ALARM A,1," + High.get() +"," + Low.get() + ",0,1,1,1")).pack()
-        Button (self, text= "Alarm Off", command = lambda:self.LakeShore336("write", "ALARM A,0")).pack()
-        Button (self, text = "Back", command = lambda:self.LakeShore336MainMenu()).pack()
+        Label(self, text="Alarm High Settings (K)").pack()
+        Entry(self, textvariable=High).pack()
+        Label(self, text="Alarm Low Settings (K)").pack()
+        Entry(self, textvariable=Low).pack()
+        Button(self, text="Send", command=lambda: self.LakeShore336("write",
+                                                                    "ALARM A,1," + High.get() + "," + Low.get() + ",0,1,1,1")).pack()
+        Button(self, text="Alarm Off", command=lambda: self.LakeShore336("write", "ALARM A,0")).pack()
+        Button(self, text="Back", command=lambda: self.LakeShore336MainMenu()).pack()
+
     def LakeShore336TempReadMenu(self):
-        var=0
+        var = 0
         self.destroy()
         Frame.__init__(self)
         self.pack()
         global ans
         global kelv
-        Label (self, text = ans).pack()
-        Button (self, text = "Celsius Reading", command = lambda:self.LakeShore336("celsius", "CRDG? A")).pack()
-        Label (self, text = kelv).pack()
-        Button (self, text = "Kelvin Reading", command = lambda:self.LakeShore336("kelvin", "KRDG? A")).pack()
-        Button (self, text = "Back", command = lambda:self.LakeShore336MainMenu()).pack()
+        Label(self, text=ans).pack()
+        Button(self, text="Celsius Reading", command=lambda: self.LakeShore336("celsius", "CRDG? A")).pack()
+        Label(self, text=kelv).pack()
+        Button(self, text="Kelvin Reading", command=lambda: self.LakeShore336("kelvin", "KRDG? A")).pack()
+        Button(self, text="Back", command=lambda: self.LakeShore336MainMenu()).pack()
+
     def LakeShore336HeatMenu(self):
-        var=0
+        var = 0
         self.destroy()
         Frame.__init__(self)
         self.pack()
         TempLim = StringVar()
         Setpt = StringVar()
-        Label (self, text = "Temperature Limit (K)").pack()
-        Entry (self, textvariable = TempLim).pack()
-        Button(self, text ="Send", command = lambda:self.LakeShore336("write","TLIMIT A," + TempLim.get())).pack()
-        Label (self, text = "Setpoint (K)").pack()
-        Entry (self, textvariable = Setpt).pack()
-        Button (self, text = "Send", command = lambda:self.LakeShore336("write", "SETP 1," + Setpt.get())).pack()
-        Label (self, text = "Heater Range").pack()
-        Button (self, text = "High", command = lambda:self.LakeShore336("write", "RANGE 1,3")).pack()
-        Button (self, text = "Medium", command = lambda:self.LakeShore336("write", "RANGE 1,2")).pack()
-        Button (self, text = "Low", command = lambda:self.LakeShore336("write", "RANGE 1,1")).pack()
-        Button (self, text = "OFF", command = lambda:self.LakeShore336("write", "RANGE 1,0")).pack()
-        Button (self, text = "Back", command = lambda:self.LakeShore336MainMenu()).pack()
-    def LakeShore336(self,option,command):
+        Label(self, text="Temperature Limit (K)").pack()
+        Entry(self, textvariable=TempLim).pack()
+        Button(self, text="Send", command=lambda: self.LakeShore336("write", "TLIMIT A," + TempLim.get())).pack()
+        Label(self, text="Setpoint (K)").pack()
+        Entry(self, textvariable=Setpt).pack()
+        Button(self, text="Send", command=lambda: self.LakeShore336("write", "SETP 1," + Setpt.get())).pack()
+        Label(self, text="Heater Range").pack()
+        Button(self, text="High", command=lambda: self.LakeShore336("write", "RANGE 1,3")).pack()
+        Button(self, text="Medium", command=lambda: self.LakeShore336("write", "RANGE 1,2")).pack()
+        Button(self, text="Low", command=lambda: self.LakeShore336("write", "RANGE 1,1")).pack()
+        Button(self, text="OFF", command=lambda: self.LakeShore336("write", "RANGE 1,0")).pack()
+        Button(self, text="Back", command=lambda: self.LakeShore336MainMenu()).pack()
+
+    def LakeShore336(self, option, command):
         global ans
         global kelv
-        settings = open('settings.txt' , 'r')
+        settings = open('settings.txt', 'r')
         adress = settings.readline()
-        while adress.rstrip() !='LakeShore336':
+        while adress.rstrip() != 'LakeShore336':
             adress = settings.readline()
         adress = settings.readline()
         settings.close()
@@ -291,6 +277,7 @@ class Application(Frame):
             kelv = self.LakeShore336("ask", "KRDG? A")
             self.LakeShore336TempReadMenu()
         inst.close()
+
     def AutomationMenu(self):
         global forced
         global range
@@ -301,12 +288,14 @@ class Application(Frame):
         global to
         global fr
         global tm
-        global inp
-        global outp
         global rate
         global wanted_temp
         global graph
         global slot
+        global outp
+        global inp
+        inp = StringVar()
+        outp = StringVar()
         graph = StringVar()
         range = StringVar()
         measure = StringVar()
@@ -315,8 +304,6 @@ class Application(Frame):
         to = StringVar()
         name = StringVar()
         tm = StringVar()
-        inp = StringVar()
-        outp = StringVar()
         rate = StringVar()
         wanted_temp = StringVar()
         slot = StringVar()
@@ -326,53 +313,18 @@ class Application(Frame):
         Label(self, text='Select Automation Process').pack()
         Button(self, text='4 Wire Current vs Voltage Resistance Test',
                command=lambda: self.FourWireCurrentvsVoltaqgeMenu()).pack()
-        Button(self, text='4 Wire Voltage vs Current Resistance Test',
-               command=lambda: self.FourWireVoltagevsCurrentMenu()).pack()
-        Button(self, text='2 Wire Current vs Voltage Resistance Test', command=lambda:self.TwoWireCurrentvsVoltageMenu()).pack()
+        Button(self, text='2 Wire Current vs Voltage Resistance Test',
+               command=lambda: self.TwoWireCurrentvsVoltageMenu()).pack()
         Button(self, text='Heat Vs Time', command=lambda: self.HeatVsTime()).pack()
-        Button(self, text='Voltage vs Time').pack()
         Button(self, text='Execute Process Que', command=lambda: self.UserProgramableTest1Process()).pack()
         Label(self, text='Processes in Que:').pack()
         Label(self, text=count).pack()
         Button(self, text='Back', command=lambda: self.DeviceMen()).pack()
 
-    def FourWireVoltagevsCurrentMenu(self):
-        global forced
-        global count
-        global range
-        global input
-        global output
-        global name
-        global measure
-        global to
-        global fr
-        self.destroy()
-        Frame.__init__(self)
-        self.pack()
-        Label(self, text='Amount forced (Volts)').pack()
-        Entry(self, textvariable=forced).pack()
-        Label(self, text='Range (Volts):').pack()
-        Entry(self, textvariable=range).pack()
-        Label(self, text='Select switch inputs').pack()
-        Label(self, text='From:').pack()
-        Entry(self, textvariable=fr).pack()
-        Label(self, text='To:').pack()
-        Entry(self, textvariable=to).pack()
-        Label(self, text='Name of Excel file that will be created:').pack()
-        Entry(self, textvariable=name).pack()
-        Button(self, text='Add this Process to Que', command=lambda: self.AddProcessToQue()).pack()
-        Button(self, text='Execute Process Que', command=lambda: self.UserProgramableTest1Process()).pack()
-        Label(self, text='Processes in Que:').pack()
-        Label(self, text=count).pack()
-        Button(self, text='Back', command=lambda: self.AutomationMenu()).pack()
-        measure = '4 Wire Forced Voltage vs Current'
-
     def FourWireCurrentvsVoltaqgeMenu(self):
         global forced
         global count
         global range
-        global input
-        global output
         global name
         global measure
         global to
@@ -410,8 +362,6 @@ class Application(Frame):
         global forced
         global count
         global range
-        global input
-        global output
         global name
         global measure
         global to
@@ -455,16 +405,16 @@ class Application(Frame):
         global tm
         global outp
         global inp
-        Label(self,text='Choose Heater Output').pack()
-        OptionMenu(self,outp,'1','2').pack()
-        Label(self,text='Choose Sensor Input').pack()
-        OptionMenu(self,inp,'A','B','C','D').pack()
+        Label(self, text='Choose Heater Output').pack()
+        OptionMenu(self, outp, '1', '2').pack()
+        Label(self, text='Choose Sensor Input').pack()
+        OptionMenu(self, inp, 'A', 'B', 'C', 'D').pack()
         Label(self, text='Wanted Temperature (Kelvin)').pack()
         Entry(self, textvariable=wanted_temp).pack()
         Label(self, text='Choose Heating Rate').pack()
         OptionMenu(self, rate, '1', '2', '3').pack()
-        Label(self,text='Time interval for checking temperature (Seconds)').pack()
-        Entry(self,textvariable=tm).pack()
+        Label(self, text='Time interval for checking temperature (Seconds)').pack()
+        Entry(self, textvariable=tm).pack()
         Label(self, text='Name Excel file that will be created').pack()
         Entry(self, textvariable=name).pack()
         Button(self, text='Add this Process to Que', command=lambda: self.AddProcessToQue()).pack()
@@ -502,7 +452,7 @@ class Application(Frame):
         process.write(str(wanted_temp.get()) + '\n')
         process.write(str(outp.get()) + '\n')
         process.write(str(inp.get()) + '\n')
-        process.write(str(slot.get())+'\n')
+        process.write(str(slot.get()) + '\n')
         count += 1
         process.close()
         self.AutomationMenu()
@@ -569,18 +519,8 @@ class Application(Frame):
         row = 0
         tme = 0
         self.Keithley7002('write', 'open all')
-        if str(measure).rstrip() == 'Ressistance vs Time':  # If the user checked the resistants meassurement
-            while int(fr) != int(to):
-                self.Keithley7002('write', 'close (@1!' + (str(fr)).rstrip() + ',1!10)')
-                fr = int(fr) + 1
-                worksheet.write(row, col, '=' + str(tme))
-                worksheet.write(row, col + 1, '=' + self.Agilent34410A('ask', 'MEAS:RES?'))
-                row += 1
-                tme = tme + float(tm)
-                time.sleep(float(tm))
-                self.Keithley7002('write', 'open all')
         if str(measure.rstrip()) == '2 Wire Forced Current vs Voltage':
-            self.Keithley7002('write','CONF:SLOT'+str(slot).rstrip()+':POLE 2')
+            self.Keithley7002('write', 'CONF:SLOT' + str(slot).rstrip() + ':POLE 2')
             time.sleep(.5)
             worksheet.write(row, col, 'Current', format)
             worksheet.write(row, col + 1, 'Voltage', format)
@@ -588,7 +528,7 @@ class Application(Frame):
             while int(fr) < int(to) + 1:
                 row += 1
                 fr = str(fr).rstrip()
-                self.Keithley7002('write', 'close (@'+str(slot).rstrip()+'!' + (str(fr)).rstrip() + ')')
+                self.Keithley7002('write', 'close (@' + str(slot).rstrip() + '!' + (str(fr)).rstrip() + ')')
                 fr = int(fr) + 1
                 self.YokogawaGS200('write', 'SENS:REM ON')
                 self.YokogawaGS200('write', 'SOUR:FUNC CURR')
@@ -603,10 +543,10 @@ class Application(Frame):
                 self.YokogawaGS200('write', 'OUTP OFF')
                 self.Keithley7002('write', 'open all')
             chart = workbook.add_chart({'type': graph.rstrip()})
-            chart.add_series({'values': '=Sheet1!$C$2:$C$'+str(row+1)})
+            chart.add_series({'values': '=Sheet1!$C$2:$C$' + str(row + 1)})
             worksheet.insert_chart('G2', chart)
         if str(measure.rstrip()) == '4 Wire Forced Current vs Voltage':
-            self.Keithley7002('write','CONF:SLOT'+str(slot).rstrip()+':POLE 2')
+            self.Keithley7002('write', 'CONF:SLOT' + str(slot).rstrip() + ':POLE 2')
             time.sleep(.5)
             worksheet.write(row, col, 'Current', format)
             worksheet.write(row, col + 1, 'Voltage', format)
@@ -614,7 +554,7 @@ class Application(Frame):
             while int(fr) < int(to) + 1:
                 row += 1
                 fr = str(fr).rstrip()
-                self.Keithley7002('write', 'close (@'+str(slot).rstrip()+'!' + (str(fr)).rstrip() + ')')
+                self.Keithley7002('write', 'close (@' + str(slot).rstrip() + '!' + (str(fr)).rstrip() + ')')
                 fr = int(fr) + 1
                 self.YokogawaGS200('write', 'SENS:REM OFF')
                 self.YokogawaGS200('write', 'SOUR:FUNC CURR')
@@ -629,33 +569,13 @@ class Application(Frame):
                 self.YokogawaGS200('write', 'OUTP OFF')
                 self.Keithley7002('write', 'open all')
             chart = workbook.add_chart({'type': graph.rstrip()})
-            chart.add_series({'values': '=Sheet1!$B$2:$B$'+str(row+1)})
+            chart.add_series({'values': '=Sheet1!$B$2:$B$' + str(row + 1)})
             worksheet.insert_chart('A7', chart)
-        if str(measure.rstrip()) == '4 Wire Forced Voltage vs Current':
-            worksheet.write(row, col, 'Voltage', format)
-            worksheet.write(row, col + 1, 'Current', format)
-            while int(fr) < int(to) + 1:
-                row += 1
-                fr = str(fr).rstrip()
-                self.Keithley7002('write', 'close (@1!' + (str(fr)).rstrip() + ',1!' + str(int(fr) + 1) + ',1!' + str(
-                    input.rstrip()) + ',1!' + str(output.rstrip()) + ')')
-                fr = int(fr) + 2
-                self.YokogawaGS200('write', 'SENS:REM ON')
-                self.YokogawaGS200('write', 'SENS:TRIG IMM')
-                self.YokogawaGS200('write', 'SOUR:FUNC VOLT')
-                self.YokogawaGS200('write', 'SOUR:RANG ' + str(range.rstrip()))
-                self.YokogawaGS200('write', 'SOUR:LEV ' + str(forced.rstrip()))
-                self.YokogawaGS200('write', 'OUTP ON')
-                time.sleep(.25)
-                worksheet.write(row, col, '=' + str(forced.rstrip()))
-                worksheet.write(row, col + 1, '=' + str(self.YokogawaGS200('ask', 'MEAS?')))
-                self.YokogawaGS200('write', 'OUTP OFF')
-                self.Keithley7002('write', 'open all')
         if str(measure.rstrip()) == 'Temperature Vs Time':
             tm = tm.rstrip()
             wait = tm
             tme = 0.00
-            to = self.LakeShore336('ask','KRDG? '+inp.rstrip())
+            to = self.LakeShore336('ask', 'KRDG? ' + inp.rstrip())
             worksheet.write(row, col, 'Time', format)
             worksheet.write(row, col + 1, 'Temperature', format)
             worksheet.write(row, col + 2, 'Total Time Elapsed (Seconds)', format)
@@ -664,18 +584,21 @@ class Application(Frame):
             worksheet.write(row + 1, col + 4, str(rate.rstrip()))
             while float(wanted_temp) > float(to):
                 row += 1
-                worksheet.write(row,col+1,'='+str(self.LakeShore336('ask','KRDG? '+inp.rstrip())))
-                worksheet.write(row,col,'='+str(tme))
-                self.LakeShore336('write','RANGE '+ outp.rstrip() + ',' + rate.rstrip())
-                to = self.LakeShore336('ask','KRDG? '+ inp.rstrip())
+                worksheet.write(row, col + 1, '=' + str(self.LakeShore336('ask', 'KRDG? ' + inp.rstrip())))
+                worksheet.write(row, col, '=' + str(tme))
+                self.LakeShore336('write', 'RANGE ' + outp.rstrip() + ',' + rate.rstrip())
+                to = self.LakeShore336('ask', 'KRDG? ' + inp.rstrip())
                 time.sleep(float(wait))
                 tme = tme + float(tm)
-            self.LakeShore336('write','RANGE  '+ outp.rstrip() + ',0')
+            self.LakeShore336('write', 'RANGE  ' + outp.rstrip() + ',0')
             worksheet.write(1, 2, tme, format)
-            worksheet.write(1, 3, '=(B'+str(row)+'-B2)/'+str(tme), format)
+            worksheet.write(1, 3, '=(B' + str(row) + '-B2)/' + str(tme), format)
             chart = workbook.add_chart({'type': 'scatter'})
-            chart.add_series({'categories':'=Sheet1!$A$2:$A$'+str(row+1),'values':'=Sheet1!$B$2:$B$'+str(row+1)})
+            chart.add_series(
+                {'categories': '=Sheet1!$A$2:$A$' + str(row + 1), 'values': '=Sheet1!$B$2:$B$' + str(row + 1)})
             worksheet.insert_chart('G2', chart)
+
+
 root = Tk()
 root.title("Measurement System GUI Alpha")
 root.geometry("600x500")
