@@ -422,6 +422,8 @@ class Application(Frame):
         self.pack()
         Label(self, text='Amount forced (Amps)').pack()
         Entry(self, textvariable=forced).pack()
+        Label(self, text='Range (Amps):').pack()
+        Entry(self, textvariable=range).pack()
         Label(self, text='Input Card Slot Cumner (1-10)').pack()
         Entry(self, textvariable=slot).pack()
         Label(self, text='Select switch inputs').pack()
@@ -578,6 +580,8 @@ class Application(Frame):
                 time.sleep(float(tm))
                 self.Keithley7002('write', 'open all')
         if str(measure.rstrip()) == '2 Wire Forced Current vs Voltage':
+            self.Keithley7002('write','CONF:SLOT'+str(slot).rstrip()+':POLE 2')
+            time.sleep(.5)
             worksheet.write(row, col, 'Current', format)
             worksheet.write(row, col + 1, 'Voltage', format)
             worksheet.write(row, col + 2, 'Ressistance', format)
@@ -602,6 +606,8 @@ class Application(Frame):
             chart.add_series({'values': '=Sheet1!$C$2:$C$'+str(row+1)})
             worksheet.insert_chart('G2', chart)
         if str(measure.rstrip()) == '4 Wire Forced Current vs Voltage':
+            self.Keithley7002('write','CONF:SLOT'+str(slot).rstrip()+':POLE 2')
+            time.sleep(.5)
             worksheet.write(row, col, 'Current', format)
             worksheet.write(row, col + 1, 'Voltage', format)
             worksheet.write(row, col + 2, 'Ressistance', format)
