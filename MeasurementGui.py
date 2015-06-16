@@ -512,7 +512,7 @@ class Application(Frame):
         self.Keithley7002('write', 'open all')
         if str(measure.rstrip()) == '2 Wire Forced Current vs Voltage':
             self.Keithley7002('write', 'CONF:SLOT' + str(slot).rstrip() + ':POLE 2')
-            time.sleep(.5)
+            time.sleep(1)
             worksheet.write(row, col, 'Current', format)
             worksheet.write(row, col + 1, 'Voltage', format)
             worksheet.write(row, col + 2, 'Ressistance', format)
@@ -538,7 +538,7 @@ class Application(Frame):
             worksheet.insert_chart('G2', chart)
         if str(measure.rstrip()) == '4 Wire Forced Current vs Voltage':
             self.Keithley7002('write', 'CONF:SLOT' + str(slot).rstrip() + ':POLE 2')
-            time.sleep(.5)
+            time.sleep(1)
             worksheet.write(row, col, 'Current', format)
             worksheet.write(row, col + 1, 'Voltage', format)
             worksheet.write(row, col + 2, 'Ressistance', format)
