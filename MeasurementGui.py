@@ -10,6 +10,9 @@ try:
 except:
     print 'Please install all libraries'
 import serial
+import matplotlib.pyplot
+import numpy
+
 
 kelv = 0
 ans = '0'
@@ -24,6 +27,34 @@ class Application(Frame):
     def DeviceMen(self):
         global count
         global var
+        global forced
+        global range
+        global input
+        global output
+        global name
+        global measure
+        global to
+        global fr
+        global tm
+        global rate
+        global wanted_temp
+        global graph
+        global slot
+        global outp
+        global inp
+        inp = StringVar()
+        outp = StringVar()
+        graph = StringVar()
+        range = StringVar()
+        measure = StringVar()
+        forced = StringVar()
+        fr = StringVar()
+        to = StringVar()
+        name = StringVar()
+        tm = StringVar()
+        rate = StringVar()
+        wanted_temp = StringVar()
+        slot = StringVar()
         var = '0'
         count = 0
         process = open('process_que.txt', 'w')  # Overrides the old process Que document with a blank one on startup
@@ -38,6 +69,7 @@ class Application(Frame):
         Button(self, text='LakeShore 336 Temperature Controller', command=lambda: self.LakeShore336MainMenu()).pack()
         Label(self, text='Automation Menu').pack()
         Button(self, text='Automation Menu', command=lambda: self.AutomationMenu()).pack()
+        Button(self, text='Live Data Graphing', command = lambda: self.LiveData()).pack()
 
     def Agilent34410AMainMenu(self):
         self.destroy()
@@ -270,34 +302,6 @@ class Application(Frame):
         inst.close()
 
     def AutomationMenu(self):
-        global forced
-        global range
-        global input
-        global output
-        global name
-        global measure
-        global to
-        global fr
-        global tm
-        global rate
-        global wanted_temp
-        global graph
-        global slot
-        global outp
-        global inp
-        inp = StringVar()
-        outp = StringVar()
-        graph = StringVar()
-        range = StringVar()
-        measure = StringVar()
-        forced = StringVar()
-        fr = StringVar()
-        to = StringVar()
-        name = StringVar()
-        tm = StringVar()
-        rate = StringVar()
-        wanted_temp = StringVar()
-        slot = StringVar()
         self.destroy()
         Frame.__init__(self)
         self.pack()
@@ -307,11 +311,41 @@ class Application(Frame):
         Button(self, text='2 Wire Current vs Voltage Resistance Test',
                command=lambda: self.TwoWireCurrentvsVoltageMenu()).pack()
         Button(self, text='Heat Vs Time', command=lambda: self.HeatVsTime()).pack()
+        Button(self, text = 'Voltage Vs Current', command=lambda: self.VoltageVsCurrent()).pack()
         Button(self, text='Execute Process Que', command=lambda: self.UserProgramableTest1Process()).pack()
         Label(self, text='Processes in Que:').pack()
         Label(self, text=count).pack()
         Button(self, text='Back', command=lambda: self.DeviceMen()).pack()
 
+    def LiveData(self):
+        global forced
+        global count
+        global range
+        global name
+        global measure
+        global to
+        global fr
+        global graph
+        global slot
+        global outp
+        global inp
+        global tm
+        self.destroy()
+        Frame.__init__(self)
+        self.pack()
+        Label(self, text='Amount forced (Amps)').pack()
+        Entry(self, textvariable=forced).pack()
+        Label(self, text='Range (Amps):').pack()
+        Entry(self, textvariable=range).pack()
+        Label(self, text='Input Card Slot Cumner (1-10)').pack()
+        Entry(self, textvariable=slot).pack()
+        Label(self, text='Select switch input').pack()
+        Entry(self, textvariable=fr).pack()
+        Label(self, text='Choose Sensor Input').pack()
+        OptionMenu(self, inp, 'A', 'B', 'C', 'D').pack()
+        Button(self, text='Execute', command=lambda: self.AutoMeasure()).pack()
+        Button(self, text='Back', command=lambda: self.DeviceMen()).pack()
+        measure = 'Live Data'
     def FourWireCurrentvsVoltaqgeMenu(self):
         global forced
         global count
@@ -331,7 +365,7 @@ class Application(Frame):
         Entry(self, textvariable=forced).pack()
         Label(self, text='Range (Amps):').pack()
         Entry(self, textvariable=range).pack()
-        Label(self, text='Input Card Slot Cumner (1-10)').pack()
+        Label(self, text='Input Card Slot Number (1-10)').pack()
         Entry(self, textvariable=slot).pack()
         Label(self, text='Select switch inputs').pack()
         Label(self, text='From:').pack()
@@ -383,6 +417,43 @@ class Application(Frame):
         Button(self, text='Back', command=lambda: self.AutomationMenu()).pack()
         measure = '2 Wire Forced Current vs Voltage'
 
+    def VoltageVsCurrent(self):
+        self.destroy()
+        Frame.__init__(self)
+        self.pack()
+        global forced
+        global count
+        global range
+        global name
+        global measure
+        global to
+        global fr
+        global graph
+        global slot
+        global outp
+        global inp
+        global tm
+        Label(self, text='Starting Current (Amps)').pack()
+        Entry(self, textvariable=forced).pack()
+        Label(self, text='Range (Amps):').pack()
+        Entry(self, textvariable=range).pack()
+        Label(self, text='Current Limit').pack()
+        Entry(self, textvariable=to).pack()
+        Label(self, text='Voltage Limit (Volts)').pack()
+        Entry(self, textvariable=name).pack()
+        Label(self, text='Current Steps').pack()
+        Entry(self, textvariable=tm).pack()
+        Label(self, text='Input Card Slot Number (1-10)').pack()
+        Entry(self, textvariable=slot).pack()
+        Label(self, text='Select switch input').pack()
+        Entry(self, textvariable=fr).pack()
+        Button(self, text='Add this Process to Que', command=lambda: self.AddProcessToQue()).pack()
+        Button(self, text='Execute Process Que', command=lambda: self.UserProgramableTest1Process()).pack()
+        Label(self, text='Processes in Que:').pack()
+        Label(self, text=count).pack()
+        Button(self, text='Back', command=lambda: self.AutomationMenu()).pack()
+        measure = 'VoltageVsCurrent'
+
     def HeatVsTime(self):
         self.destroy()
         Frame.__init__(self)
@@ -409,7 +480,7 @@ class Application(Frame):
         Label(self, text='Name Excel file that will be created').pack()
         Entry(self, textvariable=name).pack()
         Button(self, text='Add this Process to Que', command=lambda: self.AddProcessToQue()).pack()
-        Button(self, text='Execute Process Que', command=lambda: self.UserProgramableTest1Process()).pack()
+        Button(self, text='Execute Process Que', command=lambda: self.AutoMeasure()).pack()
         Label(self, text='Processes in Que:').pack()
         Label(self, text=count).pack()
         Button(self, text='Back', command=lambda: self.AutomationMenu()).pack()
@@ -423,7 +494,7 @@ class Application(Frame):
         global name
         global count
         global forced
-        global ranges
+        global range
         global graph
         global rate
         global wanted_temp
@@ -468,6 +539,9 @@ class Application(Frame):
         processNumber = 0
         process = open('process_que.txt', 'r')
         while processNumber < count:
+            self.destroy()
+            Frame.__init__(self)
+            self.pack()
             measure = process.readline()
             forced = process.readline()
             range = process.readline()
@@ -486,6 +560,8 @@ class Application(Frame):
             format = workbook.add_format()
             format.set_text_wrap()
             worksheet = workbook.add_worksheet()
+            Label(self,text='Currently Running: '+measure).pack()
+            Label(self,text=str((count-processNumber))+' More process(s) to go').pack()
             self.AutoMeasure()
         workbook.close()
         self.AutomationMenu()
@@ -506,11 +582,15 @@ class Application(Frame):
         global inp
         global outp
         global slot
+        global range
         col = 0
         row = 0
         tme = 0
-        self.Keithley7002('write', 'open all')
+        x = []
+        y = []
+        i = 0
         if str(measure.rstrip()) == '2 Wire Forced Current vs Voltage':
+            self.Keithley7002('write', 'open all')
             self.Keithley7002('write', 'CONF:SLOT' + str(slot).rstrip() + ':POLE 2')
             time.sleep(1)
             worksheet.write(row, col, 'Current', format)
@@ -536,12 +616,61 @@ class Application(Frame):
             chart = workbook.add_chart({'type': graph.rstrip()})
             chart.add_series({'values': '=Sheet1!$C$2:$C$' + str(row + 1)})
             worksheet.insert_chart('G2', chart)
+        # if str(measure.rstrip() == "Live Data"):
+        #     range = range.get()
+        #     tm = tm.get()
+        #     fr = fr.get()
+        #     inp = inp.get()
+        #     slot = slot.get()
+        #     forced = forced.get()
+        #     matplotlib.pyplot.ion()
+        #     data = 200.00
+        #     self.Keithley7002('write', 'close (@' + str(slot).rstrip() + '!' + (str(fr)).rstrip() + ')')
+        #     self.YokogawaGS200('write', 'SENS:REM ON')
+        #     self.YokogawaGS200('write', 'SOUR:FUNC CURR')
+        #     self.YokogawaGS200('write', 'SOUR:RANG ' + str(range.rstrip()))
+        #     self.YokogawaGS200('write', 'SOUR:LEV ' + str(forced.rstrip()))
+        #     self.YokogawaGS200('write', 'OUTP ON')
+        #     while(data/float(forced.rstrip()) >= 100):
+        #         data = 0.00
+        #         x.append(float(self.LakeShore336('ask', 'KRDG? ' + inp.rstrip())))
+        #         while(i <= 10):
+        #             data += float(self.Agilent34410A('ask', 'MEAS:VOLT:DC?').rstrip())
+        #             i += 1
+        #         y.append((data/i)/float(forced.rstrip()))
+        #         i = 0
+        #         matplotlib.pyplot.plot(x, y)
+        #         matplotlib.pyplot.draw()
+        if str(measure.rstrip() == 'VoltageVsCurrent'):
+            voltage = '0'
+            x = []
+            y = []
+            matplotlib.pyplot.ion()
+            self.Keithley7002('write', 'close (@' + str(slot).rstrip() + '!' + (str(fr)).rstrip() + ')')
+            self.Keithley7002('write', 'CONF:SLOT' + str(slot).rstrip() + ':POLE 2')
+            while(name >= float(voltage.rstrip()) and float(to.rstrip()) >= float(forced.rstrip())*100):
+                self.YokogawaGS200('write', 'SENS:REM ON')
+                self.YokogawaGS200('write', 'SOUR:FUNC CURR')
+                self.YokogawaGS200('write', 'SOUR:RANG ' + str(range.rstrip()))
+                self.YokogawaGS200('write', 'SOUR:LEV ' + str(forced).rstrip())
+                self.YokogawaGS200('write', 'OUTP ON')
+                voltage = self.Agilent34410A('ask', 'MEAS:VOLT:DC?').rstrip()
+                x.append(float(forced.rstrip()))
+                y.append(float(voltage.rstrip()))
+                matplotlib.pyplot.plot(x, y)
+                matplotlib.pyplot.draw()
+                forced = str(float(forced)+float(tm))
+                print float(forced.rstrip()) * 100
+                print to
+                time.sleep(.25)
+            self.YokogawaGS200('write', 'OUTP OFF')
         if str(measure.rstrip()) == '4 Wire Forced Current vs Voltage':
+            self.Keithley7002('write', 'open all')
             self.Keithley7002('write', 'CONF:SLOT' + str(slot).rstrip() + ':POLE 2')
             time.sleep(1)
             worksheet.write(row, col, 'Current', format)
             worksheet.write(row, col + 1, 'Voltage', format)
-            worksheet.write(row, col + 2, 'Ressistance', format)
+            worksheet.write(row, col + 2, 'Resistance', format)
             while int(fr) < int(to) + 1:
                 row += 1
                 fr = str(fr).rstrip()
@@ -563,6 +692,7 @@ class Application(Frame):
             chart.add_series({'values': '=Sheet1!$B$2:$B$' + str(row + 1)})
             worksheet.insert_chart('A7', chart)
         if str(measure.rstrip()) == 'Temperature Vs Time':
+            self.Keithley7002('write', 'open all')
             tm = tm.rstrip()
             wait = tm
             tme = 0.00
@@ -580,7 +710,7 @@ class Application(Frame):
                 self.LakeShore336('write', 'RANGE ' + outp.rstrip() + ',' + rate.rstrip())
                 to = self.LakeShore336('ask', 'KRDG? ' + inp.rstrip())
                 time.sleep(float(wait))
-                tme = tme + float(tm)
+                tme += float(tm)
             self.LakeShore336('write', 'RANGE  ' + outp.rstrip() + ',0')
             worksheet.write(1, 2, tme, format)
             worksheet.write(1, 3, '=(B' + str(row) + '-B2)/' + str(tme), format)
