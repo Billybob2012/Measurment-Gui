@@ -1,16 +1,22 @@
 try:
     import visa
 except ImportError:
-    print 'Please install all libraries'
+    print "Please install PyVisa Library"
 from Tkinter import *
 import time
 
 try:
     import xlsxwriter
 except:
-    print 'Please install all libraries'
-import serial
-import matplotlib.pyplot
+    print 'Please install XlsxWriter'
+try:
+    import serial
+except:
+    print 'Please install PySerial'
+try:
+    import matplotlib.pyplot
+except:
+    print 'Please install MatPlotLib'
 import numpy
 
 
@@ -648,7 +654,6 @@ class Application(Frame):
             matplotlib.pyplot.ion()
             self.Keithley7002('write', 'close (@' + str(slot).rstrip() + '!' + (str(fr)).rstrip() + ')')
             self.Keithley7002('write', 'CONF:SLOT' + str(slot).rstrip() + ':POLE 2')
-            print 'lllll'
             while(name >= float(voltage.rstrip()) and float(to.rstrip())/1000 >= float(forced.rstrip()))/1000:
                 self.YokogawaGS200('write', 'SENS:REM ON')
                 self.YokogawaGS200('write', 'SOUR:FUNC CURR')
