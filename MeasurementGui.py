@@ -587,14 +587,14 @@ class Application(Frame):
         x = []
         y = []
         i = 0
-        forced = str(float(forced.rstrip())/1000)
         if str(measure.rstrip()) == '2 Wire Forced Current vs Voltage':
             self.Keithley7002('write', 'open all')
             self.Keithley7002('write', 'CONF:SLOT' + str(slot).rstrip() + ':POLE 2')
             time.sleep(1)
-            worksheet.write(row, col, 'Current', format)
-            worksheet.write(row, col + 1, 'Voltage', format)
-            worksheet.write(row, col + 2, 'Resistance', format)
+            worksheet.write(row, col, 'Current (ma)', format)
+            worksheet.write(row, col + 1, 'Voltage (v)', format)
+            worksheet.write(row, col + 2, 'Resistance (ohm)', format)
+            forced = str(float(forced.rstrip())/1000)
             while int(fr) < int(to) + 1:
                 row += 1
                 fr = str(fr).rstrip()
@@ -606,10 +606,10 @@ class Application(Frame):
                 self.YokogawaGS200('write', 'SOUR:LEV ' + forced)
                 self.YokogawaGS200('write', 'OUTP ON')
                 time.sleep(.25)
-                worksheet.write(row, col, '=' + forced)
+                worksheet.write(row, col, '=' + str((float(forced)*1000)))
                 worksheet.write(row, col + 1, '=' + str(self.YokogawaGS200('ask', 'MEAS?')))
                 worksheet.write(row, col + 2, '=' + str(
-                    float(self.YokogawaGS200('ask', 'MEAS?')) / float(str(forced.rstrip()))))
+                    float(self.YokogawaGS200('ask', 'MEAS?')) / (float(forced))))
                 self.YokogawaGS200('write', 'OUTP OFF')
                 self.Keithley7002('write', 'open all')
             chart = workbook.add_chart({'type': graph.rstrip()})
@@ -630,7 +630,7 @@ class Application(Frame):
             self.YokogawaGS200('write', 'SOUR:RANG ' + '.1')
             self.YokogawaGS200('write', 'SOUR:LEV ' + forced)
             self.YokogawaGS200('write', 'OUTP ON')
-            while data / (float(forced)) >= 10:
+            while data / (float(forced)) >= -10:
                 data = 0.00
                 x.append(float(self.LakeShore336('ask', 'KRDG? ' + inp.rstrip())))
                 data = float(self.Agilent34410A('ask', 'MEAS:VOLT:DC?').rstrip())
@@ -646,28 +646,26 @@ class Application(Frame):
             matplotlib.pyplot.ion()
             self.Keithley7002('write', 'close (@' + str(slot).rstrip() + '!' + (str(fr)).rstrip() + ')')
             self.Keithley7002('write', 'CONF:SLOT' + str(slot).rstrip() + ':POLE 2')
-            print (float(name.rstrip()) >= float(voltage.rstrip()))
-            print (float(to.rstrip()) / 1000 >= float(forced.rstrip()) / 1000)
-            forced = str((float(forced) / 1000))
+            forced = str(float(forced) / 1000)
             to = str(float(to.rstrip())/1000)
             tm = str(float(tm.rstrip())/1000)
             print forced
             print to
             print tm
-            while float(name.rstrip()) >= float(voltage.rstrip()) and float(to) >= float(forced):
-                print 'Entered While Loop'
+            while float(name.rstrip()) >= abs(float(voltage)) and float(to) >= float(forced):
                 self.YokogawaGS200('write', 'SENS:REM ON')
                 self.YokogawaGS200('write', 'SOUR:FUNC CURR')
                 self.YokogawaGS200('write', 'SOUR:RANG ' + forced)
                 self.YokogawaGS200('write', 'SOUR:LEV ' + forced)
                 self.YokogawaGS200('write', 'OUTP ON')
                 voltage = self.Agilent34410A('ask', 'MEAS:VOLT:DC?').rstrip()
-                x.append(float(forced.rstrip()))
-                y.append(float(voltage.rstrip()))
+                x.append(float(forced))
+                y.append(float(voltage))
                 matplotlib.pyplot.plot(x, y)
                 matplotlib.pyplot.draw()
-                forced = str((float(forced)) + (float(tm)))
-                print float(forced.rstrip())
+                forced = str(float((float(forced)) + (float(tm))))
+                print forced
+                time.sleep(.1)
             self.YokogawaGS200('write', 'OUTP OFF')
             self.Keithley7002('write', 'open all')
         if str(measure.rstrip()) == '4 Wire Forced Current vs Voltage':
