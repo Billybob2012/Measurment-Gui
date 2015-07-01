@@ -57,7 +57,7 @@ class Application(Frame):
         slot = StringVar()
         var = '0'
         count = 0
-        process = open('process_que.txt', 'w')  # Overrides the old process Que document with a blank one on startup
+        process = open('process_que.txt', 'w')
         process.close()  # closes the file
         self.destroy()
         Frame.__init__(self)
@@ -433,7 +433,7 @@ class Application(Frame):
         global outp
         global inp
         global tm
-        Label(self, text='Starting Current (Amps)').pack()
+        Label(self, text='Starting Current wooo (Amps)').pack()
         Entry(self, textvariable=forced).pack()
         Label(self, text='Range (Amps):').pack()
         Entry(self, textvariable=range).pack()
@@ -616,52 +616,52 @@ class Application(Frame):
             chart = workbook.add_chart({'type': graph.rstrip()})
             chart.add_series({'values': '=Sheet1!$C$2:$C$' + str(row + 1)})
             worksheet.insert_chart('G2', chart)
-        # if str(measure.rstrip() == "Live Data"):
-        #     range = range.get()
-        #     tm = tm.get()
-        #     fr = fr.get()
-        #     inp = inp.get()
-        #     slot = slot.get()
-        #     forced = forced.get()
-        #     matplotlib.pyplot.ion()
-        #     data = 200.00
-        #     self.Keithley7002('write', 'close (@' + str(slot).rstrip() + '!' + (str(fr)).rstrip() + ')')
-        #     self.YokogawaGS200('write', 'SENS:REM ON')
-        #     self.YokogawaGS200('write', 'SOUR:FUNC CURR')
-        #     self.YokogawaGS200('write', 'SOUR:RANG ' + str(range.rstrip()))
-        #     self.YokogawaGS200('write', 'SOUR:LEV ' + str(forced.rstrip()))
-        #     self.YokogawaGS200('write', 'OUTP ON')
-        #     while(data/float(forced.rstrip()) >= 100):
-        #         data = 0.00
-        #         x.append(float(self.LakeShore336('ask', 'KRDG? ' + inp.rstrip())))
-        #         while(i <= 10):
-        #             data += float(self.Agilent34410A('ask', 'MEAS:VOLT:DC?').rstrip())
-        #             i += 1
-        #         y.append((data/i)/float(forced.rstrip()))
-        #         i = 0
-        #         matplotlib.pyplot.plot(x, y)
-        #         matplotlib.pyplot.draw()
-        if str(measure.rstrip() == 'VoltageVsCurrent'):
+        if str(measure.rstrip()) == "Live Data":
+            range = range.get()
+            tm = tm.get()
+            fr = fr.get()
+            inp = inp.get()
+            slot = slot.get()
+            forced = forced.get()
+            matplotlib.pyplot.ion()
+            data = 200.00
+            self.Keithley7002('write', 'close (@' + str(slot).rstrip() + '!' + (str(fr)).rstrip() + ')')
+            self.YokogawaGS200('write', 'SENS:REM ON')
+            self.YokogawaGS200('write', 'SOUR:FUNC CURR')
+            self.YokogawaGS200('write', 'SOUR:RANG ' + '.1')
+            self.YokogawaGS200('write', 'SOUR:LEV ' + str(float(forced.rstrip()))/1000)
+            self.YokogawaGS200('write', 'OUTP ON')
+            while(data/(float(forced.rstrip())/1000) >= 100):
+                data = 0.00
+                x.append(float(self.LakeShore336('ask', 'KRDG? ' + inp.rstrip())))
+                while(i <= 10):
+                    data += float(self.Agilent34410A('ask', 'MEAS:VOLT:DC?').rstrip())
+                    i += 1
+                y.append((data/i)/float(forced.rstrip()))
+                i = 0
+                matplotlib.pyplot.plot(x, y)
+                matplotlib.pyplot.draw()
+        if str(measure.rstrip()) == 'VoltageVsCurrent':
             voltage = '0'
             x = []
             y = []
             matplotlib.pyplot.ion()
             self.Keithley7002('write', 'close (@' + str(slot).rstrip() + '!' + (str(fr)).rstrip() + ')')
             self.Keithley7002('write', 'CONF:SLOT' + str(slot).rstrip() + ':POLE 2')
-            while(name >= float(voltage.rstrip()) and float(to.rstrip()) >= float(forced.rstrip())*100):
+            print 'lllll'
+            while(name >= float(voltage.rstrip()) and float(to.rstrip())/1000 >= float(forced.rstrip()))/1000:
                 self.YokogawaGS200('write', 'SENS:REM ON')
                 self.YokogawaGS200('write', 'SOUR:FUNC CURR')
-                self.YokogawaGS200('write', 'SOUR:RANG ' + str(range.rstrip()))
-                self.YokogawaGS200('write', 'SOUR:LEV ' + str(forced).rstrip())
+                self.YokogawaGS200('write', 'SOUR:RANG ' + str(float(forced.rstrip)/1000()))
+                self.YokogawaGS200('write', 'SOUR:LEV ' + str(float(forced)/1000).rstrip())
                 self.YokogawaGS200('write', 'OUTP ON')
                 voltage = self.Agilent34410A('ask', 'MEAS:VOLT:DC?').rstrip()
                 x.append(float(forced.rstrip()))
                 y.append(float(voltage.rstrip()))
                 matplotlib.pyplot.plot(x, y)
                 matplotlib.pyplot.draw()
-                forced = str(float(forced)+float(tm))
-                print float(forced.rstrip()) * 100
-                print to
+                forced = str((float(forced)/1000)+((float(tm))/1000))
+                print float(forced.rstrip())/1000
                 time.sleep(.25)
             self.YokogawaGS200('write', 'OUTP OFF')
         if str(measure.rstrip()) == '4 Wire Forced Current vs Voltage':
