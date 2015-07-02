@@ -17,7 +17,6 @@ try:
     import matplotlib.pyplot
 except:
     print 'Please install MatPlotLib'
-import numpy
 
 kelv = 0
 ans = '0'
@@ -74,7 +73,6 @@ class Application(Frame):
         Button(self, text='LakeShore 336 Temperature Controller', command=lambda: self.LakeShore336MainMenu()).pack()
         Label(self, text='Automation Menu').pack()
         Button(self, text='Automation Menu', command=lambda: self.AutomationMenu()).pack()
-        Button(self, text='Temperature Vs Resistance Graph', command=lambda: self.LiveData()).pack()
 
     def Agilent34410AMainMenu(self):
         self.destroy()
@@ -317,6 +315,7 @@ class Application(Frame):
                command=lambda: self.TwoWireCurrentvsVoltageMenu()).pack()
         Button(self, text='Heat Vs Time', command=lambda: self.HeatVsTime()).pack()
         Button(self, text='Voltage Vs Current Graph', command=lambda: self.VoltageVsCurrent()).pack()
+        Button(self, text='Temperature Vs Resistance', command=lambda: self.LiveData()).pack()
         Button(self, text='Execute Process Que', command=lambda: self.UserProgramableTest1Process()).pack()
         Label(self, text='Processes in Que:').pack()
         Label(self, text=count).pack()
@@ -346,8 +345,10 @@ class Application(Frame):
         Entry(self, textvariable=fr).pack()
         Label(self, text='Choose Sensor Input').pack()
         OptionMenu(self, inp, 'A', 'B', 'C', 'D').pack()
-        Button(self, text='Execute', command=lambda: self.AutoMeasure()).pack()
-        Button(self, text='Back', command=lambda: self.DeviceMen()).pack()
+        Label(self, text='Name the Excel File that will be created').pack()
+        Entry(self, textvariable=name).pack()
+        Button(self, text='Add Process to Que', command=lambda: self.AddProcessToQue()).pack()
+        Button(self, text='Back', command=lambda: self.AutomationMenu()).pack()
         measure = 'Live Data'
 
     def FourWireCurrentvsVoltaqgeMenu(self):
@@ -438,13 +439,15 @@ class Application(Frame):
         Label(self, text='Current Limit (ma)').pack()
         Entry(self, textvariable=to).pack()
         Label(self, text='Voltage Limit (Volts)').pack()
-        Entry(self, textvariable=name).pack()
+        Entry(self, textvariable=inp).pack()
         Label(self, text='Current Steps (ma)').pack()
         Entry(self, textvariable=tm).pack()
         Label(self, text='Input Card Slot Number (1-10)').pack()
         Entry(self, textvariable=slot).pack()
         Label(self, text='Select switch input').pack()
         Entry(self, textvariable=fr).pack()
+        Label(self, text='Name the Excel file that will be created').pack()
+        Entry(self, textvariable=name).pack()
         Button(self, text='Add this Process to Que', command=lambda: self.AddProcessToQue()).pack()
         Button(self, text='Execute Process Que', command=lambda: self.UserProgramableTest1Process()).pack()
         Label(self, text='Processes in Que:').pack()
@@ -553,15 +556,18 @@ class Application(Frame):
             outp = process.readline()
             inp = process.readline()
             slot = process.readline()
-            processNumber = processNumber + 1
-            workbook = xlsxwriter.Workbook(str(name).rstrip() + '.xlsx')
-            format = workbook.add_format()
-            format.set_text_wrap()
-            worksheet = workbook.add_worksheet()
+            processNumber += 1
+            print (name.rstrip() != '')
+            if name.rstrip() != '':
+                workbook = xlsxwriter.Workbook(str(name).rstrip() + '.xlsx')
+                format = workbook.add_format()
+                format.set_text_wrap()
+                worksheet = workbook.add_worksheet()
             Label(self, text='Currently Running: ' + measure).pack()
             Label(self, text=str((count - processNumber)) + ' More process(s) to go').pack()
             self.AutoMeasure()
-        workbook.close()
+        if name.rstrip() != '':
+            workbook.close()
         self.AutomationMenu()
 
     def AutoMeasure(self):
@@ -591,9 +597,10 @@ class Application(Frame):
             self.Keithley7002('write', 'open all')
             self.Keithley7002('write', 'CONF:SLOT' + str(slot).rstrip() + ':POLE 2')
             time.sleep(1)
-            worksheet.write(row, col, 'Current (ma)', format)
-            worksheet.write(row, col + 1, 'Voltage (v)', format)
-            worksheet.write(row, col + 2, 'Resistance (ohm)', format)
+            if name.rstrip() != '':
+                worksheet.write(row, col, 'Current (ma)', format)
+                worksheet.write(row, col + 1, 'Voltage (v)', format)
+                worksheet.write(row, col + 2, 'Resistance (ohm)', format)
             forced = str(float(forced.rstrip())/1000)
             while int(fr) < int(to) + 1:
                 row += 1
@@ -606,21 +613,18 @@ class Application(Frame):
                 self.YokogawaGS200('write', 'SOUR:LEV ' + forced)
                 self.YokogawaGS200('write', 'OUTP ON')
                 time.sleep(.25)
-                worksheet.write(row, col, '=' + str((float(forced)*1000)))
-                worksheet.write(row, col + 1, '=' + str(self.YokogawaGS200('ask', 'MEAS?')))
-                worksheet.write(row, col + 2, '=' + str(
-                    float(self.YokogawaGS200('ask', 'MEAS?')) / (float(forced))))
+                if name.rstrip() != '':
+                    worksheet.write(row, col, '=' + str((float(forced) * 1000)))
+                    worksheet.write(row, col + 1, '=' + str(self.YokogawaGS200('ask', 'MEAS?')))
+                    worksheet.write(row, col + 2, '=' + str(
+                        float(self.YokogawaGS200('ask', 'MEAS?')) / (float(forced))))
                 self.YokogawaGS200('write', 'OUTP OFF')
                 self.Keithley7002('write', 'open all')
-            chart = workbook.add_chart({'type': graph.rstrip()})
-            chart.add_series({'values': '=Sheet1!$C$2:$C$' + str(row + 1)})
-            worksheet.insert_chart('G2', chart)
+            if name.rstrip() != '':
+                chart = workbook.add_chart({'type': graph.rstrip()})
+                chart.add_series({'values': '=Sheet1!$C$2:$C$' + str(row + 1)})
+                worksheet.insert_chart('G2', chart)
         if str(measure.rstrip()) == "Live Data":
-            tm = tm.get()
-            fr = fr.get()
-            inp = inp.get()
-            slot = slot.get()
-            forced = forced.get()
             matplotlib.pyplot.ion()
             data = 200.00
             forced = str(float(forced.rstrip())/1000)
@@ -630,13 +634,20 @@ class Application(Frame):
             self.YokogawaGS200('write', 'SOUR:RANG ' + '.1')
             self.YokogawaGS200('write', 'SOUR:LEV ' + forced)
             self.YokogawaGS200('write', 'OUTP ON')
+            if name.rstrip() != '':
+                worksheet.write(row, col, 'Temperature (K)', format)
+                worksheet.write(row, col + 1, 'Resistance (ohms)', format)
             while data / (float(forced)) >= -10:
                 data = 0.00
+                row += 1
                 x.append(float(self.LakeShore336('ask', 'KRDG? ' + inp.rstrip())))
                 data = float(self.Agilent34410A('ask', 'MEAS:VOLT:DC?').rstrip())
                 y.append(data / float(forced.rstrip()))
                 matplotlib.pyplot.plot(x, y)
                 matplotlib.pyplot.draw()
+                if name.rstrip() != '':
+                    worksheet.write(row, col, '=' + self.LakeShore336('ask', 'KRDG? ' + inp.rstrip()))
+                    worksheet.write(row, col + 1, '=' + str(data / float(forced)))
             self.YokogawaGS200('write', 'OUTP OFF')
             self.Keithley7002('write', 'open all')
         if str(measure.rstrip()) == 'VoltageVsCurrent':
@@ -652,17 +663,24 @@ class Application(Frame):
             print forced
             print to
             print tm
-            while float(name.rstrip()) >= abs(float(voltage)) and float(to) >= float(forced):
+            if name.rstrip() != '':
+                worksheet.write(row, col, 'Current (ma)', format)
+                worksheet.write(row, col + 1, 'Voltage (v)', format)
+            while float(inp.rstrip()) >= abs(float(voltage)) and float(to) >= float(forced):
+                row += 1
                 self.YokogawaGS200('write', 'SENS:REM ON')
                 self.YokogawaGS200('write', 'SOUR:FUNC CURR')
                 self.YokogawaGS200('write', 'SOUR:RANG ' + forced)
                 self.YokogawaGS200('write', 'SOUR:LEV ' + forced)
                 self.YokogawaGS200('write', 'OUTP ON')
                 voltage = self.Agilent34410A('ask', 'MEAS:VOLT:DC?').rstrip()
-                x.append(float(forced))
+                x.append(float(forced * 1000))
                 y.append(float(voltage))
                 matplotlib.pyplot.plot(x, y)
                 matplotlib.pyplot.draw()
+                if name.rstrip() != '':
+                    worksheet.write(row, col, '=' + str((float(forced) * 1000)))
+                    worksheet.write(row, col + 1, '=' + str(self.YokogawaGS200('ask', 'MEAS?')))
                 forced = str(float((float(forced)) + (float(tm))))
                 print forced
                 time.sleep(.1)
