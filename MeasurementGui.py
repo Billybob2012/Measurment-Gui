@@ -690,9 +690,10 @@ class Application(Frame):
             self.Keithley7002('write', 'open all')
             self.Keithley7002('write', 'CONF:SLOT' + str(slot).rstrip() + ':POLE 2')
             time.sleep(1)
-            worksheet.write(row, col, 'Current', format)
-            worksheet.write(row, col + 1, 'Voltage', format)
-            worksheet.write(row, col + 2, 'Resistance', format)
+            if name.rstrip() != '':
+                worksheet.write(row, col, 'Current', format)
+                worksheet.write(row, col + 1, 'Voltage', format)
+                worksheet.write(row, col + 2, 'Resistance', format)
             forced = str(float(forced.rstrip())/1000)
             while int(fr) < int(to) + 1:
                 row += 1
@@ -705,15 +706,16 @@ class Application(Frame):
                 self.YokogawaGS200('write', 'SOUR:LEV ' + forced)
                 self.YokogawaGS200('write', 'OUTP ON')
                 time.sleep(.25)
-                worksheet.write(row, col, '=' + forced)
-                worksheet.write(row, col + 1, '=' + str(self.Agilent34410A('ask', 'MEAS:VOLT:DC?')))
-                worksheet.write(row, col + 2, '=' + str(
-                    float(self.Agilent34410A('ask', 'MEAS:VOLT:DC?')) / float(str(forced.rstrip()))))
+                if name.rstrip() != '':
+                    worksheet.write(row, col, '=' + str(float(forced)*1000))
+                    worksheet.write(row, col + 1, '=' + str(self.Agilent34410A('ask', 'MEAS:VOLT:DC?')))
+                    worksheet.write(row, col + 2, '=' + str(float(self.Agilent34410A('ask', 'MEAS:VOLT:DC?')) / float(forced)))
                 self.YokogawaGS200('write', 'OUTP OFF')
                 self.Keithley7002('write', 'open all')
-            chart = workbook.add_chart({'type': graph.rstrip()})
-            chart.add_series({'values': '=Sheet1!$B$2:$B$' + str(row + 1)})
-            worksheet.insert_chart('A7', chart)
+            if name.rstrip() != '':
+                chart = workbook.add_chart({'type': graph.rstrip()})
+                chart.add_series({'values': '=Sheet1!$B$2:$B$' + str(row + 1)})
+                worksheet.insert_chart('A7', chart)
         if str(measure.rstrip()) == 'Temperature Vs Time':
             self.Keithley7002('write', 'open all')
             tm = tm.rstrip()
