@@ -674,7 +674,7 @@ class Application(Frame):
                 self.YokogawaGS200('write', 'SOUR:LEV ' + forced)
                 self.YokogawaGS200('write', 'OUTP ON')
                 voltage = self.Agilent34410A('ask', 'MEAS:VOLT:DC?').rstrip()
-                x.append(float(forced * 1000))
+                x.append(float(forced)*1000)
                 y.append(float(voltage))
                 matplotlib.pyplot.plot(x, y)
                 matplotlib.pyplot.draw()
