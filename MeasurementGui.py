@@ -308,6 +308,7 @@ class Application(Frame):
         self.destroy()
         Frame.__init__(self)
         self.pack()
+        Button(self, text='Recipes', command=lambda:self.RecipesMenu()).pack()
         Label(self, text='Select Automation Process').pack()
         Button(self, text='4 Wire Current vs Voltage Resistance Test',
                command=lambda: self.FourWireCurrentvsVoltaqgeMenu()).pack()
@@ -316,7 +317,7 @@ class Application(Frame):
         Button(self, text='Heat Vs Time', command=lambda: self.HeatVsTime()).pack()
         Button(self, text='Voltage Vs Current Graph', command=lambda: self.VoltageVsCurrent()).pack()
         Button(self, text='Temperature Vs Resistance', command=lambda: self.LiveData()).pack()
-        Button(self, text='Execute Process Que', command=lambda: self.UserProgramableTest1Process()).pack()
+        Button(self, text='Execute Process Que', command=lambda: self.UserProgramableTest1Process("UserRecipe")).pack()
         Label(self, text='Processes in Que:').pack()
         Label(self, text=count).pack()
         Button(self, text='Back', command=lambda: self.DeviceMen()).pack()
@@ -380,12 +381,18 @@ class Application(Frame):
         Label(self, text='Pick graph type').pack()
         OptionMenu(self, graph, 'column', 'scatter', 'bar').pack()
         Button(self, text='Add this Process to Que', command=lambda: self.AddProcessToQue()).pack()
-        Button(self, text='Execute Process Que', command=lambda: self.UserProgramableTest1Process()).pack()
+        Button(self, text='Execute Process Que', command=lambda: self.UserProgramableTest1Process("UserRecipe")).pack()
         Label(self, text='Processes in Que:').pack()
         Label(self, text=count).pack()
         Button(self, text='Back', command=lambda: self.AutomationMenu()).pack()
         measure = '4 Wire Forced Current vs Voltage'
 
+    def RecipesMenu(self):
+        self.destroy()
+        Frame.__init__(self)
+        self.pack()
+        Button(self, text='Current Vs Voltage Cycling 8 ma', command=lambda:self.UserProgramableTest1Process("Recipe1.txt")).pack()
+        Button(self, text='Back', command=lambda: self.AutomationMenu()).pack()
     def TwoWireCurrentvsVoltageMenu(self):
         global forced
         global count
@@ -412,7 +419,7 @@ class Application(Frame):
         Label(self, text='Pick graph type').pack()
         OptionMenu(self, graph, 'column', 'scatter', 'bar').pack()
         Button(self, text='Add this Process to Que', command=lambda: self.AddProcessToQue()).pack()
-        Button(self, text='Execute Process Que', command=lambda: self.UserProgramableTest1Process()).pack()
+        Button(self, text='Execute Process Que', command=lambda: self.UserProgramableTest1Process("UserRecipe")).pack()
         Label(self, text='Processes in Que:').pack()
         Label(self, text=count).pack()
         Button(self, text='Back', command=lambda: self.AutomationMenu()).pack()
@@ -449,7 +456,7 @@ class Application(Frame):
         Label(self, text='Name the Excel file that will be created').pack()
         Entry(self, textvariable=name).pack()
         Button(self, text='Add this Process to Que', command=lambda: self.AddProcessToQue()).pack()
-        Button(self, text='Execute Process Que', command=lambda: self.UserProgramableTest1Process()).pack()
+        Button(self, text='Execute Process Que', command=lambda: self.UserProgramableTest1Process('UserRecipe')).pack()
         Label(self, text='Processes in Que:').pack()
         Label(self, text=count).pack()
         Button(self, text='Back', command=lambda: self.AutomationMenu()).pack()
@@ -520,7 +527,7 @@ class Application(Frame):
         process.close()
         self.AutomationMenu()
 
-    def UserProgramableTest1Process(self):
+    def UserProgramableTest1Process(self, rec):
         global measure
         global tm
         global fr
@@ -538,7 +545,12 @@ class Application(Frame):
         global outp
         global slot
         processNumber = 0
-        process = open('process_que.txt', 'r')
+        if rec == 'UserRecipe':
+            process = open('process_que.txt', 'r')
+        if rec != 'UserRecipe':
+            process = open(rec, 'r')
+            count = 4
+            print 'Test'
         while processNumber < count:
             self.destroy()
             Frame.__init__(self)
@@ -637,7 +649,7 @@ class Application(Frame):
             if name.rstrip() != '':
                 worksheet.write(row, col, 'Temperature (K)', format)
                 worksheet.write(row, col + 1, 'Resistance (ohms)', format)
-            while data / (float(forced)) >= -10:
+            while 1==1:
                 data = 0.00
                 row += 1
                 x.append(float(self.LakeShore336('ask', 'KRDG? ' + inp.rstrip())))
@@ -655,8 +667,8 @@ class Application(Frame):
             x = []
             y = []
             matplotlib.pyplot.ion()
-            self.Keithley7002('write', 'close (@' + str(slot).rstrip() + '!' + (str(fr)).rstrip() + ')')
-            self.Keithley7002('write', 'CONF:SLOT' + str(slot).rstrip() + ':POLE 2')
+            #self.Keithley7002('write', 'close (@' + str(slot).rstrip() + '!' + (str(fr)).rstrip() + ')')
+            #self.Keithley7002('write', 'CONF:SLOT' + str(slot).rstrip() + ':POLE 2')
             forced = str(float(forced) / 1000)
             to = str(float(to.rstrip())/1000)
             tm = str(float(tm.rstrip())/1000)
@@ -665,30 +677,31 @@ class Application(Frame):
             print tm
             if name.rstrip() != '':
                 worksheet.write(row, col, 'Current (ma)', format)
-                worksheet.write(row, col + 1, 'Voltage (v)', format)
-            while float(inp.rstrip()) >= abs(float(voltage)) and float(to) >= float(forced):
+                worksheet.write(row, col + 1, 'Voltage (mv)', format)
+            while float(inp.rstrip()) >= abs(float(voltage)) and float(to) != float(forced):
                 row += 1
                 self.YokogawaGS200('write', 'SENS:REM ON')
                 self.YokogawaGS200('write', 'SOUR:FUNC CURR')
                 self.YokogawaGS200('write', 'SOUR:RANG ' + forced)
                 self.YokogawaGS200('write', 'SOUR:LEV ' + forced)
                 self.YokogawaGS200('write', 'OUTP ON')
+                time.sleep(.75)
                 voltage = self.Agilent34410A('ask', 'MEAS:VOLT:DC?').rstrip()
-                x.append(float(forced)*1000)
-                y.append(float(voltage))
+                y.append(float(forced)*1000)
+                x.append(float(voltage))
                 matplotlib.pyplot.plot(x, y)
                 matplotlib.pyplot.draw()
                 if name.rstrip() != '':
                     worksheet.write(row, col, '=' + str((float(forced) * 1000)))
-                    worksheet.write(row, col + 1, '=' + str(self.YokogawaGS200('ask', 'MEAS?')))
+                    worksheet.write(row, col + 1, '=' + str(float(voltage)*1000))
                 forced = str(float((float(forced)) + (float(tm))))
                 print forced
-                time.sleep(.1)
-            self.YokogawaGS200('write', 'OUTP OFF')
-            self.Keithley7002('write', 'open all')
+                #time.sleep(.1)
+            #self.YokogawaGS200('write', 'OUTP OFF')
+            #self.Keithley7002('write', 'open all')
         if str(measure.rstrip()) == '4 Wire Forced Current vs Voltage':
-            self.Keithley7002('write', 'open all')
-            self.Keithley7002('write', 'CONF:SLOT' + str(slot).rstrip() + ':POLE 2')
+            #self.Keithley7002('write', 'open all')
+            #self.Keithley7002('write', 'CONF:SLOT' + str(slot).rstrip() + ':POLE 2')
             time.sleep(1)
             if name.rstrip() != '':
                 worksheet.write(row, col, 'Current', format)
@@ -711,7 +724,7 @@ class Application(Frame):
                     worksheet.write(row, col + 1, '=' + str(self.Agilent34410A('ask', 'MEAS:VOLT:DC?')))
                     worksheet.write(row, col + 2, '=' + str(float(self.Agilent34410A('ask', 'MEAS:VOLT:DC?')) / float(forced)))
                 self.YokogawaGS200('write', 'OUTP OFF')
-                self.Keithley7002('write', 'open all')
+                #self.Keithley7002('write', 'open all')
             if name.rstrip() != '':
                 chart = workbook.add_chart({'type': graph.rstrip()})
                 chart.add_series({'values': '=Sheet1!$B$2:$B$' + str(row + 1)})
