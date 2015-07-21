@@ -319,6 +319,7 @@ class Application(Frame):
         Button(self, text='Execute Process Que', command=lambda: self.UserProgramableTest1Process()).pack()
         Label(self, text='Processes in Que:').pack()
         Label(self, text=count).pack()
+        Button (self, text = "Recipes", command = lambda: self. RecipeMenu()).pack()
         Button(self, text='Back', command=lambda: self.DeviceMen()).pack()
 
     def LiveData(self):
@@ -383,6 +384,8 @@ class Application(Frame):
         Button(self, text='Execute Process Que', command=lambda: self.UserProgramableTest1Process()).pack()
         Label(self, text='Processes in Que:').pack()
         Label(self, text=count).pack()
+        Button (self, text = "Choose From Existing Recipe").pack()
+        Button (self, text = "Save This Recipe").pack()
         Button(self, text='Back', command=lambda: self.AutomationMenu()).pack()
         measure = '4 Wire Forced Current vs Voltage'
 
@@ -415,6 +418,8 @@ class Application(Frame):
         Button(self, text='Execute Process Que', command=lambda: self.UserProgramableTest1Process()).pack()
         Label(self, text='Processes in Que:').pack()
         Label(self, text=count).pack()
+        Button (self, text = "Choose From Existing Recipe").pack()
+        Button (self, text = "Save This Recipe").pack()
         Button(self, text='Back', command=lambda: self.AutomationMenu()).pack()
         measure = '2 Wire Forced Current vs Voltage'
 
@@ -743,6 +748,98 @@ class Application(Frame):
             chart.add_series(
                 {'categories': '=Sheet1!$A$2:$A$' + str(row + 1), 'values': '=Sheet1!$B$2:$B$' + str(row + 1)})
             worksheet.insert_chart('G2', chart)
+
+    def RecipeMenu (self):
+        self.destroy()
+        Frame.__init__(self)
+        self.pack()
+        Button (self, text = "Make a New Recipe", command = lambda: self. MakeRecipe()).pack()
+        Button (self , text = "Existing Recipes", command = lambda:self.ExistingRecipes()).pack()
+        Button (self, text = "Back", command = lambda: self.AutomationMenu()).pack()
+
+    def MakeRecipe (self):
+        self.destroy()
+        Frame.__init__(self)
+        self.pack()
+        Button (self, text = "Four Wire Measurement", command = lambda: self.RecipeFourWire()).pack()
+        Button (self, text = "Two Wire Measurement", command = lambda: self. RecipeTwoWire()).pack()
+        Button (self, text = "Current Vs. Voltage").pack()
+        Button (self, text = "Temperature Vs. Resistance").pack()
+        Button (self, text = "Back", command = lambda: self.RecipeMenu()).pack()
+
+    def RecipeFourWire (self):
+        global forced
+        global count
+        global range
+        global name
+        global measure
+        global to
+        global fr
+        global graph
+        global slot
+        global wire
+        graph = StringVar()
+        graph.set('column')
+        self.destroy()
+        Frame.__init__(self)
+        self.pack()
+        Label(self, text='Amount forced (Amps)').pack()
+        Entry(self, textvariable=forced).pack()
+        Label(self, text='Range (Amps):').pack()
+        Entry(self, textvariable=range).pack()
+        Label(self, text='Input Card Slot Cumner (1-10)').pack()
+        Entry(self, textvariable=slot).pack()
+        Label(self, text='Select switch inputs').pack()
+        Label(self, text='From:').pack()
+        Entry(self, textvariable=fr).pack()
+        Label(self, text='To:').pack()
+        Entry(self, textvariable=to).pack()
+        Label(self, text='Name of Excel file that will be created:').pack()
+        Entry(self, textvariable=name).pack()
+        Label(self, text='Pick graph type').pack()
+        OptionMenu(self, graph, 'column', 'scatter', 'bar').pack()
+        Label (self, text = "Save This Recipe As:").pack()
+        Entry (self, textvarible = wire).pack()
+        Button (self, text = "Save Recipe").pack()
+        Button (self, text = "Back", command=lambda: self.MakeRecipe()).pack()
+    def RecipeTwoWire (self):
+        global forced
+        global count
+        global range
+        global name
+        global measure
+        global to
+        global fr
+        global slot
+        global name
+        self.destroy()
+        Frame.__init__(self)
+        self.pack()
+        Label(self, text='Amount forced (Amps)').pack()
+        Entry(self, textvariable=forced).pack()
+        Label(self, text='Range (Amps):').pack()
+        Entry(self, textvariable=range).pack()
+        Label(self, text='Input Card Slot Cumner (1-10)').pack()
+        Entry(self, textvariable=slot).pack()
+        Label(self, text='Select switch inputs').pack()
+        Label(self, text='From:').pack()
+        Entry(self, textvariable=fr).pack()
+        Label(self, text='To:').pack()
+        Entry(self, textvariable=to).pack()
+        Label(self, text='Name of Excel file that will be created:').pack()
+        Entry(self, textvariable=name).pack()
+        Label(self, text='Pick graph type').pack()
+        OptionMenu(self, graph, 'column', 'scatter', 'bar').pack()
+        Label (self, text = "Save Recipe Name As:").pack()
+        Entry (self, textvariable = name).pack()
+        Button (self, text = "Save Recipe").pack()
+        Button (self, text = "Back", command = lambda: self.MakeRecipe()).pack()
+
+    def ExistingRecipes (self):
+        self.destroy()
+        Frame.__init__(self)
+        self.pack()
+        Button (self, text = "Back",command = lambda: self.RecipeMenu()).pack()
 
 
 root = Tk()
