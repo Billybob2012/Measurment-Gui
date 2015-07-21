@@ -314,7 +314,6 @@ class Application(Frame):
                command=lambda: self.FourWireCurrentvsVoltaqgeMenu()).pack()
         Button(self, text='2 Wire Current vs Voltage Resistance Test',
                command=lambda: self.TwoWireCurrentvsVoltageMenu()).pack()
-        Button(self, text='Heat Vs Time', command=lambda: self.HeatVsTime()).pack()
         Button(self, text='Voltage Vs Current Graph', command=lambda: self.VoltageVsCurrent()).pack()
         Button(self, text='Temperature Vs Resistance', command=lambda: self.LiveData()).pack()
         Button(self, text='Execute Process Que', command=lambda: self.UserProgramableTest1Process("UserRecipe")).pack()
