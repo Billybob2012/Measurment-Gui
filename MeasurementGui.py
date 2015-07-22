@@ -308,7 +308,7 @@ class Application(Frame):
         self.destroy()
         Frame.__init__(self)
         self.pack()
-        Button(self, text='Recipes', command=lambda:self.RecipesMenu()).pack()
+        Button(self, text='Recipes', command=lambda:self.RecipeMenu('Open','2 Wire V vs C')).pack()
         Label(self, text='Select Automation Process').pack()
         Button(self, text='4 Wire Current vs Voltage Resistance Test',
                command=lambda: self.FourWireCurrentvsVoltaqgeMenu()).pack()
@@ -384,7 +384,7 @@ class Application(Frame):
         Button(self, text='Execute Process Que', command=lambda: self.UserProgramableTest1Process("UserRecipe")).pack()
         Label(self, text='Processes in Que:').pack()
         Label(self, text=count).pack()
-        Button (self, text = "Choose From Existing Recipe").pack()
+        Button (self, text = "Choose From Existing Recipe", command=lambda: self.RecipeMenu('Open','2 Wire V vs C')).pack()
         Button (self, text = "Save This Recipe").pack()
         Button(self, text='Back', command=lambda: self.AutomationMenu()).pack()
         measure = '4 Wire Forced Current vs Voltage'
@@ -761,12 +761,17 @@ class Application(Frame):
                 {'categories': '=Sheet1!$A$2:$A$' + str(row + 1), 'values': '=Sheet1!$B$2:$B$' + str(row + 1)})
             worksheet.insert_chart('G2', chart)
 
-    def RecipeMenu (self):
+    def RecipeMenu (self, option, type):
         self.destroy()
         Frame.__init__(self)
         self.pack()
-        Button (self, text = "Make a New Recipe", command = lambda: self. MakeRecipe()).pack()
-        Button (self , text = "Existing Recipes", command = lambda:self.ExistingRecipes()).pack()
+        if option == 'Open':
+            if type == '2 Wire V vs C':
+                recipe_names = open('2_Wire_Recipes.txt','r')
+                name = recipe_names.readline().rstrip()
+                while name != '':
+                    Button(self, text=name).pack()
+                    name= recipe_names.readline().rstrip()
         Button (self, text = "Back", command = lambda: self.AutomationMenu()).pack()
 
     def MakeRecipe (self):
@@ -856,6 +861,6 @@ class Application(Frame):
 
 root = Tk()
 root.title("Measurement System GUI Alpha")
-root.geometry("600x500")
+root.geometry("600x600")
 app = Application(root)
 root.mainloop()
