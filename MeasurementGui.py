@@ -690,9 +690,9 @@ class Application(Frame):
                 time.sleep(.25)
                 if name.rstrip() != '':
                     worksheet.write(row, col, '=' + str((float(forced) * 1000)))
-                    worksheet.write(row, col + 1, '=' + str(self.YokogawaGS200('ask', 'MEAS?')))
+                    worksheet.write(row, col + 1, '=' + str(self.Agilent34410A('ask', 'MEAS:VOLT:DC?')))
                     worksheet.write(row, col + 2, '=' + str(
-                        float(self.YokogawaGS200('ask', 'MEAS?')) / (float(forced))))
+                        (float(self.Agilent34410A('ask', 'MEAS:VOLT:DC?'))) / (float(forced))))
                 self.YokogawaGS200('write', 'OUTP OFF')
                 self.Keithley7002('write', 'open all')
             if name.rstrip() != '':
