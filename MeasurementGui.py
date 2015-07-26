@@ -26,6 +26,14 @@ except:
     x = open('None.txt', 'w')
     x.close()
     print 'Made 4_Wire_Recipes.txt File'
+try:
+    open('V_Vs_C_Recipes.txt', 'r')
+except:
+    x = open('V_Vs_C_Recipes.txt', 'w')
+    x.write('None' + '\n')
+    x.close()
+    x = open('None.txt', 'w')
+    x.close()
 
 kelv = 0
 ans = '0'
@@ -38,7 +46,7 @@ class Application(Frame):
         self.DeviceMen()
 
     def DeviceMen(self):
-        root.geometry("300x600")
+        root.geometry("300x250")
         global count
         global var
         global forced
@@ -58,6 +66,10 @@ class Application(Frame):
         global inp
         global recipe
         global recipe_name
+        global back_img
+        global add_process_img
+        back_img = PhotoImage(file="back.gif")
+        add_process_img = PhotoImage(file="add_to_que.gif")
         recipe_name = StringVar()
         recipe = StringVar()
         inp = StringVar()
@@ -96,7 +108,7 @@ class Application(Frame):
         Label(self, text=self.Agilent34410A('ask', '*IDN?')).grid()
         Button(self, text='Configure Device', command=lambda: self.Agilent34410AConfigMenu()).grid()
         Button(self, text='Take a Measurement', command=lambda: self.Agilent34410AMeasurementMenu()).grid()
-        Button(self, text='Back', command=lambda: self.DeviceMen()).grid()
+        Button(self, image=back_img, command=lambda: self.DeviceMen()).grid()
 
     def Agilent34410AConfigMenu(self):
         self.destroy()
@@ -105,7 +117,7 @@ class Application(Frame):
         Button(self, text='Display ON', command=lambda: self.Agilent34410A('write', 'DISPlay ON')).grid()
         Button(self, text='Display OFF', command=lambda: self.Agilent34410A('write', 'DISPlay OFF')).grid()
         Button(self, text='Factory Reset Device', command=lambda: self.Agilent34410A('write', '*RST')).grid()
-        Button(self, text='Back', command=lambda: self.Agilent34410AMainMenu()).grid()
+        Button(self, image=back_img, command=lambda: self.Agilent34410AMainMenu()).grid()
 
     def Agilent34410AMeasurementMenu(self):
         global var
@@ -116,7 +128,7 @@ class Application(Frame):
         Button(self, text='Measure Resistance', command=(lambda: self.Agilent34410A('test', 'MEAS?'))).grid()
         Label(self, text=(str((var / .2))) + ' Ohms').grid()
         print (var / .2)
-        Button(self, text='Back', command=lambda: self.Agilent34410AMainMenu()).grid()
+        Button(self, image=back_img, command=lambda: self.Agilent34410AMainMenu()).grid()
 
     def Agilent34410A(self, option, command):
         settings = open('settings.txt', 'r')
@@ -143,7 +155,7 @@ class Application(Frame):
         self.grid()
         Button(self, text='Configure Device', command=lambda: self.Keithley7002ConfigMenu()).grid()
         Button(self, text='Switch Menu', command=lambda: self.Keithley7002SwitchMenu()).grid()
-        Button(self, text='Back', command=lambda: self.DeviceMen()).grid()
+        Button(self, image=back_img, command=lambda: self.DeviceMen()).grid()
 
     def Keithley7002ConfigMenu(self):
         self.destroy()
@@ -152,7 +164,7 @@ class Application(Frame):
         Button(self, text='Display ON', command=lambda: self.Keithley7002('write', 'DISPlay:ENABle 1')).grid()
         Button(self, text='Display OFF', command=lambda: self.Keithley7002('write', 'DISPlay:ENABle 0')).grid()
         Button(self, text='Factory Reset Device', command=lambda: self.Keithley7002('write', 'STATus:PRESet')).grid()
-        Button(self, text='Back', command=lambda: self.Keithley7002MainMenu()).grid()
+        Button(self, image=back_img, command=lambda: self.Keithley7002MainMenu()).grid()
 
     def Keithley7002SwitchMenu(self):
         card = StringVar()
@@ -167,7 +179,7 @@ class Application(Frame):
         Button(self, text='Close', command=lambda: self.Keithley7002('write', 'close (@' + str(card.get()) + '!' + str(
             inputs.get()) + ')')).grid()
         Button(self, text='Open All', command=lambda: self.Keithley7002('write', 'open all')).grid()
-        Button(self, text='Back', command=lambda: self.Keithley7002MainMenu()).grid()
+        Button(self, image=back_img, command=lambda: self.Keithley7002MainMenu()).grid()
 
     def Keithley7002(self, option, command):
         settings = open('settings.txt', 'r')
@@ -202,7 +214,7 @@ class Application(Frame):
         # Button(self, text="Send", command=lambda: self.YokogawaGS200("write", SlopeTIme.get()))
         Button(self, text="Repeat Execution").grid()
         Button(self, text="Pause Execution").grid()
-        Button(self, text='Back', command=lambda: self.DeviceMen()).grid()
+        Button(self, image=back_img, command=lambda: self.DeviceMen()).grid()
 
     def YokogawaGS200(self, option, command):
         settings = open('settings.txt', 'r')
@@ -231,7 +243,7 @@ class Application(Frame):
         Button(self, text="Configuration Menu", command=lambda: self.LakeShore336ConfigMenu()).grid()
         Button(self, text="Temperature Readings", command=lambda: self.LakeShore336TempReadMenu()).grid()
         Button(self, text="Heater Settings", command=lambda: self.LakeShore336HeatMenu()).grid()
-        Button(self, text='Back', command=lambda: self.DeviceMen()).grid()
+        Button(self, image=back_img, command=lambda: self.DeviceMen()).grid()
 
     def LakeShore336ConfigMenu(self):
         var = 0
@@ -244,7 +256,7 @@ class Application(Frame):
         Button(self, text="Brightness Down", command=lambda: self.LakeShore336('write', 'BRIGT 0')).grid()
         Button(self, text="Alarm Settings", command=lambda: self.LakeShore336AlarmMenu()).grid()
         Button(self, text="PID Autotune", command=lambda: self.LakeShore336("write", "ATUNE 1,2")).grid()
-        Button(self, text="Back", command=lambda: self.LakeShore336MainMenu()).grid()
+        Button(self, image=back_img, command=lambda: self.LakeShore336MainMenu()).grid()
 
     def LakeShore336AlarmMenu(self):
         High = StringVar()
@@ -260,7 +272,7 @@ class Application(Frame):
         Button(self, text="Send", command=lambda: self.LakeShore336("write",
                                                                     "ALARM A,1," + High.get() + "," + Low.get() + ",0,1,1,1")).grid()
         Button(self, text="Alarm Off", command=lambda: self.LakeShore336("write", "ALARM A,0")).grid()
-        Button(self, text="Back", command=lambda: self.LakeShore336MainMenu()).grid()
+        Button(self, image=back_img, command=lambda: self.LakeShore336MainMenu()).grid()
 
     def LakeShore336TempReadMenu(self):
         var = 0
@@ -273,7 +285,7 @@ class Application(Frame):
         Button(self, text="Celsius Reading", command=lambda: self.LakeShore336("celsius", "CRDG? A")).grid()
         Label(self, text=kelv).grid()
         Button(self, text="Kelvin Reading", command=lambda: self.LakeShore336("kelvin", "KRDG? A")).grid()
-        Button(self, text="Back", command=lambda: self.LakeShore336MainMenu()).grid()
+        Button(self, image=back_img, command=lambda: self.LakeShore336MainMenu()).grid()
 
     def LakeShore336HeatMenu(self):
         var = 0
@@ -293,7 +305,7 @@ class Application(Frame):
         Button(self, text="Medium", command=lambda: self.LakeShore336("write", "RANGE 1,2")).grid()
         Button(self, text="Low", command=lambda: self.LakeShore336("write", "RANGE 1,1")).grid()
         Button(self, text="OFF", command=lambda: self.LakeShore336("write", "RANGE 1,0")).grid()
-        Button(self, text="Back", command=lambda: self.LakeShore336MainMenu()).grid()
+        Button(self, image=back_img, command=lambda: self.LakeShore336MainMenu()).grid()
 
     def LakeShore336(self, option, command):
         global ans
@@ -319,7 +331,8 @@ class Application(Frame):
         inst.close()
 
     def AutomationMenu(self):
-        root.geometry("300x600")
+        global add_process_img
+        root.geometry("300x300")
         self.destroy()
         Frame.__init__(self)
         self.grid()
@@ -333,8 +346,7 @@ class Application(Frame):
         Button(self, text='Execute Process Que', command=lambda: self.UserProgramableTest1Process("UserRecipe")).grid()
         Label(self, text='Processes in Que:').grid()
         Label(self, text=count).grid()
-        Button(self, text="Recipes", command=lambda: self.RecipeMenu()).grid()
-        Button(self, text='Back', command=lambda: self.DeviceMen()).grid()
+        Button(self, image=back_img, command=lambda: self.DeviceMen()).grid()
 
     def LiveData(self):
         global forced
@@ -349,6 +361,7 @@ class Application(Frame):
         global outp
         global inp
         global tm
+        global add_process_img
         self.destroy()
         Frame.__init__(self)
         self.grid()
@@ -362,8 +375,8 @@ class Application(Frame):
         OptionMenu(self, inp, 'A', 'B', 'C', 'D').grid()
         Label(self, text='Name the Excel File that will be created').grid()
         Entry(self, textvariable=name).grid()
-        Button(self, text='Add Process to Que', command=lambda: self.AddProcessToQue()).grid()
-        Button(self, text='Back', command=lambda: self.AutomationMenu()).grid()
+        Button(self, image=add_process_img, command=lambda: self.AddProcessToQue()).grid()
+        Button(self, image=back_img, command=lambda: self.AutomationMenu()).grid()
         measure = 'Live Data'
 
     def FourWireCurrentvsVoltaqgeMenu(self):
@@ -379,10 +392,12 @@ class Application(Frame):
         global recipe
         global recipe_name
         global file_name
+        global back_img
+        global add_process_img
         recipe_name.set('')
         graph = StringVar()
         graph.set('column')
-        root.geometry("650x400")
+        root.geometry("650x500")
         self.destroy()
         Frame.__init__(self)
         self.grid()
@@ -405,7 +420,8 @@ class Application(Frame):
         Entry(self, textvariable=name).grid(column=0, row=10)
         Label(self, text='Pick graph type').grid(column=0, row=11)
         OptionMenu(self, graph, 'column').grid(column=0, row=12)
-        Button(self, text='Add this Process to Que', command=lambda: self.AddProcessToQue()).grid(column=2, row=0)
+        Button(self, image=add_process_img, text='Add Process to Que', compound=TOP,
+               command=lambda: self.AddProcessToQue()).grid(column=2, row=0)
         Button(self, text='Execute Process Que', command=lambda: self.UserProgramableTest1Process("UserRecipe")).grid(
             column=2, row=1)
         Label(self, text='Processes in Que:').grid(column=2, row=2)
@@ -415,10 +431,10 @@ class Application(Frame):
         Button(self, text='Apply Recipe', command=lambda: self.RecipesMenu('Open', '4 Wire C vs V')).grid(column=1,
                                                                                                           row=2)
         Label(self, text='New Recipe Name').grid(column=1, row=3)
-        Entry(self, textvariable=recipe_name).grid(column=1, row=3)
+        Entry(self, textvariable=recipe_name).grid(column=1, row=4)
         Button(self, text="Save This Recipe", command=lambda: self.RecipesMenu('Save', '4 Wire C vs V')).grid(column=1,
-                                                                                                              row=4)
-        Button(self, text='Back', command=lambda: self.AutomationMenu()).grid(column=1, row=15)
+                                                                                                              row=5)
+        Button(self, image=back_img, command=lambda: self.AutomationMenu()).grid(column=1, row=6)
         measure = '4 Wire Forced Current vs Voltage'
         file_name = '4_Wire_Recipes.txt'
 
@@ -433,7 +449,9 @@ class Application(Frame):
         global to
         global fr
         global graph
+        global inp
         global slot
+        global tm
         if option == 'Save':
             if menu == '4 Wire C vs V':
                 recipe_names_file = open(file_name, 'a')
@@ -448,6 +466,21 @@ class Application(Frame):
                 new_recipe_file.write(name.get() + '\n')
                 new_recipe_file.close()
                 self.FourWireCurrentvsVoltaqgeMenu()
+            if menu == 'V Vs C':
+                recipe_names_file = open(file_name, 'a')
+                recipe_names_file.write(str(recipe_name.get()) + '\n')
+                recipe_names_file.close()
+                new_recipe_file = open(recipe_name.get() + '.txt', 'w')
+                new_recipe_file.write(forced.get() + '\n')
+                new_recipe_file.write(to.get() + '\n')
+                new_recipe_file.write(fr.get() + '\n')
+                new_recipe_file.write(graph.get() + '\n')
+                new_recipe_file.write(slot.get() + '\n')
+                new_recipe_file.write(name.get() + '\n')
+                new_recipe_file.write(inp.get() + '\n')
+                new_recipe_file.write(tm.get() + '\n')
+                new_recipe_file.close()
+                self.VoltageVsCurrent()
         if option == 'Open':
             if menu == '4 Wire C vs V':
                 recipe_file = open(recipe.get() + '.txt', 'r')
@@ -459,7 +492,21 @@ class Application(Frame):
                 name.set(recipe_file.readline().rstrip())
                 recipe_file.close()
                 self.FourWireCurrentvsVoltaqgeMenu()
+            if menu == 'V Vs C':
+                recipe_file = open(recipe.get() + '.txt', 'r')
+                forced.set(recipe_file.readline().rstrip())
+                to.set(recipe_file.readline().rstrip())
+                fr.set(recipe_file.readline().rstrip())
+                graph.set(recipe_file.readline().rstrip())
+                slot.set(recipe_file.readline().rstrip())
+                name.set(recipe_file.readline().rstrip())
+                inp.set(recipe_file.readline().rstrip())
+                tm.set(recipe_file.readline().rstrip())
+                recipe_file.close()
+                self.VoltageVsCurrent()
+
     def TwoWireCurrentvsVoltageMenu(self):
+        global add_process_img
         global forced
         global count
         global range
@@ -484,16 +531,17 @@ class Application(Frame):
         Entry(self, textvariable=name).grid()
         Label(self, text='Pick graph type').grid()
         OptionMenu(self, graph, 'column', 'scatter', 'bar').grid()
-        Button(self, text='Add this Process to Que', command=lambda: self.AddProcessToQue()).grid()
+        Button(self, image=add_process_img, command=lambda: self.AddProcessToQue()).grid()
         Button(self, text='Execute Process Que', command=lambda: self.UserProgramableTest1Process("UserRecipe")).grid()
         Label(self, text='Processes in Que:').grid()
         Label(self, text=count).grid()
         Button(self, text="Choose From Existing Recipe").grid()
         Button(self, text="Save This Recipe").grid()
-        Button(self, text='Back', command=lambda: self.AutomationMenu()).grid()
+        Button(self, image=back_img, command=lambda: self.AutomationMenu()).grid()
         measure = '2 Wire Forced Current vs Voltage'
 
     def VoltageVsCurrent(self):
+        global add_process_img
         self.destroy()
         Frame.__init__(self)
         self.grid()
@@ -509,6 +557,17 @@ class Application(Frame):
         global outp
         global inp
         global tm
+        global recipe
+        global recipe_name
+        global file_name
+        recipe_name.set('')
+        recipe_list = []
+        root.geometry("650x400")
+        recipe_names_file = open('V_Vs_C_Recipes.txt', 'r')
+        recipe_names = recipe_names_file.readline().rstrip()
+        while recipe_names != '':
+            recipe_list.append(recipe_names)
+            recipe_names = recipe_names_file.readline().rstrip()
         Label(self, text='Starting Current (ma)').grid()
         Entry(self, textvariable=forced).grid()
         Label(self, text='Current Limit (ma)').grid()
@@ -523,14 +582,26 @@ class Application(Frame):
         Entry(self, textvariable=fr).grid()
         Label(self, text='Name the Excel file that will be created').grid()
         Entry(self, textvariable=name).grid()
-        Button(self, text='Add this Process to Que', command=lambda: self.AddProcessToQue()).grid()
-        Button(self, text='Execute Process Que', command=lambda: self.UserProgramableTest1Process('UserRecipe')).grid()
-        Label(self, text='Processes in Que:').grid()
-        Label(self, text=count).grid()
-        Button(self, text='Back', command=lambda: self.AutomationMenu()).grid()
+        Button(self, image=add_process_img, text='Add Process to Que', compound=TOP,
+               command=lambda: self.AddProcessToQue()).grid(column=2, row=0)
+        Button(self, text='Execute Process Que', command=lambda: self.UserProgramableTest1Process('UserRecipe')).grid(
+            column=2, row=1)
+        Label(self, text='Processes in Que:').grid(column=2, row=2)
+        Label(self, text=count).grid(column=2, row=3)
+        Label(self, text='New Recipe Name').grid(column=1, row=3)
+        Entry(self, textvariable=recipe_name).grid(column=1, row=4)
+        Button(self, text="Save This Recipe", command=lambda: self.RecipesMenu('Save', 'V Vs C')).grid(column=1,
+                                                                                                       row=5)
+        Label(self, text="Choose From Existing Recipe").grid(column=1, row=0)
+        apply(OptionMenu, (self, recipe) + tuple(recipe_list)).grid(column=1, row=1)
+        Button(self, text='Apply Recipe', command=lambda: self.RecipesMenu('Open', 'V Vs C')).grid(column=1,
+                                                                                                   row=2)
+        Button(self, image=back_img, command=lambda: self.AutomationMenu()).grid(column=1, row=6)
         measure = 'VoltageVsCurrent'
+        file_name = 'V_Vs_C_Recipes.txt'
 
     def HeatVsTime(self):
+        global add_process_img
         self.destroy()
         Frame.__init__(self)
         self.grid()
@@ -555,11 +626,11 @@ class Application(Frame):
         Entry(self, textvariable=tm).grid()
         Label(self, text='Name Excel file that will be created').grid()
         Entry(self, textvariable=name).grid()
-        Button(self, text='Add this Process to Que', command=lambda: self.AddProcessToQue()).grid()
+        Button(self, image=add_process_img, command=lambda: self.AddProcessToQue()).grid()
         Button(self, text='Execute Process Que', command=lambda: self.AutoMeasure()).grid()
         Label(self, text='Processes in Que:').grid()
         Label(self, text=count).grid()
-        Button(self, text='Back', command=lambda: self.AutomationMenu()).grid()
+        Button(self, image=back_img, command=lambda: self.AutomationMenu()).grid()
         measure = 'Temperature Vs Time'
 
     def AddProcessToQue(self):
@@ -819,104 +890,6 @@ class Application(Frame):
             chart.add_series(
                 {'categories': '=Sheet1!$A$2:$A$' + str(row + 1), 'values': '=Sheet1!$B$2:$B$' + str(row + 1)})
             worksheet.insert_chart('G2', chart)
-
-    def RecipeMenu (self, option, type):
-        self.destroy()
-        Frame.__init__(self)
-        self.grid()
-        if option == 'Open':
-            if type == '2 Wire V vs C':
-                recipe_names = open('2_Wire_Recipes.txt','r')
-                name = recipe_names.readline().rstrip()
-                while name != '':
-                    Button(self, text=name).grid()
-                    name= recipe_names.readline().rstrip()
-        Button(self, text="Back", command=lambda: self.AutomationMenu()).grid()
-
-    def MakeRecipe (self):
-        self.destroy()
-        Frame.__init__(self)
-        self.grid()
-        Button(self, text="Four Wire Measurement", command=lambda: self.RecipeFourWire()).grid()
-        Button(self, text="Two Wire Measurement", command=lambda: self.RecipeTwoWire()).grid()
-        Button(self, text="Current Vs. Voltage").grid()
-        Button(self, text="Temperature Vs. Resistance").grid()
-        Button(self, text="Back", command=lambda: self.RecipeMenu()).grid()
-
-    def RecipeFourWire (self):
-        global forced
-        global count
-        global range
-        global name
-        global measure
-        global to
-        global fr
-        global graph
-        global slot
-        global wire
-        graph = StringVar()
-        graph.set('column')
-        self.destroy()
-        Frame.__init__(self)
-        self.grid()
-        Label(self, text='Amount forced (Amps)').grid()
-        Entry(self, textvariable=forced).grid()
-        Label(self, text='Range (Amps):').grid()
-        Entry(self, textvariable=range).grid()
-        Label(self, text='Input Card Slot Cumner (1-10)').grid()
-        Entry(self, textvariable=slot).grid()
-        Label(self, text='Select switch inputs').grid()
-        Label(self, text='From:').grid()
-        Entry(self, textvariable=fr).grid()
-        Label(self, text='To:').grid()
-        Entry(self, textvariable=to).grid()
-        Label(self, text='Name of Excel file that will be created:').grid()
-        Entry(self, textvariable=name).grid()
-        Label(self, text='Pick graph type').grid()
-        OptionMenu(self, graph, 'column', 'scatter', 'bar').grid()
-        Label(self, text="Save This Recipe As:").grid()
-        Entry(self, textvarible=wire).grid()
-        Button(self, text="Save Recipe").grid()
-        Button(self, text="Back", command=lambda: self.MakeRecipe()).grid()
-    def RecipeTwoWire (self):
-        global forced
-        global count
-        global range
-        global name
-        global measure
-        global to
-        global fr
-        global slot
-        global name
-        self.destroy()
-        Frame.__init__(self)
-        self.grid()
-        Label(self, text='Amount forced (Amps)').grid()
-        Entry(self, textvariable=forced).grid()
-        Label(self, text='Range (Amps):').grid()
-        Entry(self, textvariable=range).grid()
-        Label(self, text='Input Card Slot Cumner (1-10)').grid()
-        Entry(self, textvariable=slot).grid()
-        Label(self, text='Select switch inputs').grid()
-        Label(self, text='From:').grid()
-        Entry(self, textvariable=fr).grid()
-        Label(self, text='To:').grid()
-        Entry(self, textvariable=to).grid()
-        Label(self, text='Name of Excel file that will be created:').grid()
-        Entry(self, textvariable=name).grid()
-        Label(self, text='Pick graph type').grid()
-        OptionMenu(self, graph, 'column', 'scatter', 'bar').grid()
-        Label(self, text="Save Recipe Name As:").grid()
-        Entry(self, textvariable=name).grid()
-        Button(self, text="Save Recipe").grid()
-        Button(self, text="Back", command=lambda: self.MakeRecipe()).grid()
-
-    def ExistingRecipes (self):
-        self.destroy()
-        Frame.__init__(self)
-        self.grid()
-        Button(self, text="Back", command=lambda: self.RecipeMenu()).grid()
-
 
 root = Tk()
 root.title("Measurement System GUI Alpha")
