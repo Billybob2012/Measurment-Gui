@@ -46,7 +46,7 @@ class Application(Frame):
         self.DeviceMen()
 
     def DeviceMen(self):
-        root.geometry("300x250")
+        root.geometry("300x500")
         global count
         global var
         global forced
@@ -93,12 +93,12 @@ class Application(Frame):
         Frame.__init__(self)
         self.grid()
         Label(self, text='Select a device to connect to').grid()
-        Button(self, text='Agilent 34410A DMM', command=lambda: self.Agilent34410AMainMenu()).grid()
-        Button(self, text='Keithley 7002 Switching Machine', command=lambda: self.Keithley7002MainMenu()).grid()
-        Button(self, text='Yokogawa GS200', command=lambda: self.YokogawaGS200MainMenu()).grid()
-        Button(self, text='LakeShore 336 Temperature Controller', command=lambda: self.LakeShore336MainMenu()).grid()
+        Button(self, padx=25,pady=25, text='Agilent 34410A DMM', command=lambda: self.Agilent34410AMainMenu()).grid()
+        Button(self, padx=25,pady=25, text='Keithley 7002 Switching Machine', command=lambda: self.Keithley7002MainMenu()).grid()
+        Button(self, padx=25,pady=25, text='Yokogawa GS200', command=lambda: self.YokogawaGS200MainMenu()).grid()
+        Button(self, padx=25,pady=25, text='LakeShore 336 Temperature Controller', command=lambda: self.LakeShore336MainMenu()).grid()
         Label(self, text='Automation Menu').grid()
-        Button(self, text='Automation Menu', command=lambda: self.AutomationMenu()).grid()
+        Button(self, padx=25,pady=25, text='Automation Menu', command=lambda: self.AutomationMenu()).grid()
 
     def Agilent34410AMainMenu(self):
         self.destroy()
@@ -332,18 +332,18 @@ class Application(Frame):
 
     def AutomationMenu(self):
         global add_process_img
-        root.geometry("300x300")
+        root.geometry("300x500")
         self.destroy()
         Frame.__init__(self)
         self.grid()
         Label(self, text='Select Automation Process').grid()
-        Button(self, text='4 Wire Current vs Voltage Resistance Test',
+        Button(self, padx=25,pady=25, text='4 Wire Current vs Voltage Resistance Test',
                command=lambda: self.FourWireCurrentvsVoltaqgeMenu()).grid()
-        Button(self, text='2 Wire Current vs Voltage Resistance Test',
-               command=lambda: self.TwoWireCurrentvsVoltageMenu()).grid()
-        Button(self, text='Voltage Vs Current Graph', command=lambda: self.VoltageVsCurrent()).grid()
-        Button(self, text='Temperature Vs Resistance', command=lambda: self.LiveData()).grid()
-        Button(self, text='Execute Process Que', command=lambda: self.UserProgramableTest1Process("UserRecipe")).grid()
+        #Button(self, text='2 Wire Current vs Voltage Resistance Test',
+               #command=lambda: self.TwoWireCurrentvsVoltageMenu()).grid()
+        Button(self, padx=25,pady=25, text='Voltage Vs Current Graph', command=lambda: self.VoltageVsCurrent()).grid()
+        Button(self, padx=25,pady=25, text='Temperature Vs Resistance', command=lambda: self.LiveData()).grid()
+        Button(self, padx=25,pady=25, text='Execute Process Que', command=lambda: self.UserProgramableTest1Process("UserRecipe")).grid()
         Label(self, text='Processes in Que:').grid()
         Label(self, text=count).grid()
         Button(self, image=back_img, command=lambda: self.DeviceMen()).grid()
@@ -562,7 +562,7 @@ class Application(Frame):
         global file_name
         recipe_name.set('')
         recipe_list = []
-        root.geometry("650x400")
+        root.geometry("650x500")
         recipe_names_file = open('V_Vs_C_Recipes.txt', 'r')
         recipe_names = recipe_names_file.readline().rstrip()
         while recipe_names != '':
@@ -584,7 +584,7 @@ class Application(Frame):
         Entry(self, textvariable=name).grid()
         Button(self, image=add_process_img, text='Add Process to Que', compound=TOP,
                command=lambda: self.AddProcessToQue()).grid(column=2, row=0)
-        Button(self, text='Execute Process Que', command=lambda: self.UserProgramableTest1Process('UserRecipe')).grid(
+        Button(self, padx=25,pady=15, text='Execute Process Que', command=lambda: self.UserProgramableTest1Process('UserRecipe')).grid(
             column=2, row=1)
         Label(self, text='Processes in Que:').grid(column=2, row=2)
         Label(self, text=count).grid(column=2, row=3)
@@ -594,7 +594,7 @@ class Application(Frame):
                                                                                                        row=5)
         Label(self, text="Choose From Existing Recipe").grid(column=1, row=0)
         apply(OptionMenu, (self, recipe) + tuple(recipe_list)).grid(column=1, row=1)
-        Button(self, text='Apply Recipe', command=lambda: self.RecipesMenu('Open', 'V Vs C')).grid(column=1,
+        Button(self, padx=25,pady=15, text='Apply Recipe', command=lambda: self.RecipesMenu('Open', 'V Vs C')).grid(column=1,
                                                                                                    row=2)
         Button(self, image=back_img, command=lambda: self.AutomationMenu()).grid(column=1, row=6)
         measure = 'VoltageVsCurrent'
@@ -831,8 +831,8 @@ class Application(Frame):
                 forced = str(float((float(forced)) + (float(tm))))
                 print forced
                 #time.sleep(.1)
-            #self.YokogawaGS200('write', 'OUTP OFF')
-            #self.Keithley7002('write', 'open all')
+            self.YokogawaGS200('write', 'OUTP OFF')
+            self.Keithley7002('write', 'open all')
         if str(measure.rstrip()) == '4 Wire Forced Current vs Voltage':
             self.Keithley7002('write', 'open all')
             self.Keithley7002('write', 'CONF:SLOT' + str(slot).rstrip() + ':POLE 2')
