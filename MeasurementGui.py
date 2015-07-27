@@ -83,6 +83,8 @@ class Application(Frame):
         global keithley_img
         global yokogawa_img
         global lakeshore_img
+        global apply_img
+        apply_img = PhotoImage(file="apply.gif")
         lakeshore_img = PhotoImage(file="lakeshore.gif")
         yokogawa_img = PhotoImage(file="yokogawa.gif")
         keithley_img = PhotoImage(file="keithley.gif")
@@ -361,6 +363,7 @@ class Application(Frame):
         global recipe
         global recipe_name
         global file_name
+        global apply_img
         root.geometry("700x475")
         self.destroy()
         Frame.__init__(self)
@@ -378,11 +381,11 @@ class Application(Frame):
         Button(self, padx=25,pady=25, text='Temperature Vs Resistance', command=lambda: self.LiveData()).grid()
         Label(self, text='Choose a process recipe').grid(row=0, column=1)
         apply(OptionMenu, (self, recipe) + tuple(recipe_list)).grid(row=1, column=1)
-        Button(self, padx=25, pady=25, text='Apply Process Recipe',
-               command=lambda: self.RecipesMenu('Open', 'Process')).grid(row=2, column=1)
+        Button(self, text='', image=apply_img, compound=TOP, command=lambda: self.RecipesMenu('Open', 'Process')).grid(
+            row=2, column=1)
         Label(self, text="Save Process As").grid(row=0, column=2)
         Entry(self, textvariable=recipe_name).grid(row=1, column=2)
-        Button(self, text="Save Process As", image=save_img, compound=TOP,
+        Button(self, text="Save", image=save_img, compound=TOP,
                command=lambda: self.RecipesMenu('Save', 'Process')).grid(row=2, column=2)
         Button(self, padx=25,pady=25, text='Execute Process Que', command=lambda: self.UserProgramableTest1Process("UserRecipe")).grid()
         Label(self, text='Processes in Que:').grid()
@@ -437,6 +440,7 @@ class Application(Frame):
         global back_img
         global add_process_img
         global save_img
+        global apply_img
         recipe_name.set('')
         graph = StringVar()
         graph.set('column')
@@ -471,7 +475,8 @@ class Application(Frame):
         Label(self, text=count).grid(column=2, row=3)
         Label(self, text="Choose From Existing Recipe").grid(column=1, row=0, rowspan=2)
         apply(OptionMenu, (self, recipe) + tuple(recipe_list)).grid(column=1, row=1, ipadx=10,ipady=10)
-        Button(self, text='Apply Recipe', command=lambda: self.RecipesMenu('Open', '4 Wire C vs V')).grid(column=1,
+        Button(self, text='', image=apply_img, compound=TOP,
+               command=lambda: self.RecipesMenu('Open', '4 Wire C vs V')).grid(column=1,
                                                                                                           row=2)
         Label(self, text='New Recipe Name').grid(column=1, row=3)
         Entry(self, textvariable=recipe_name).grid(column=1, row=4, ipadx=10,ipady=10)
@@ -677,6 +682,7 @@ class Application(Frame):
         global recipe
         global recipe_name
         global file_name
+        global apply_img
         recipe_name.set('')
         recipe_list = []
         root.geometry("650x600")
@@ -711,7 +717,8 @@ class Application(Frame):
                                                                                                        row=5)
         Label(self, text="Choose From Existing Recipe").grid(column=1, row=0)
         apply(OptionMenu, (self, recipe) + tuple(recipe_list)).grid(column=1, row=1)
-        Button(self, padx=25,pady=15, text='Apply Recipe', command=lambda: self.RecipesMenu('Open', 'V Vs C')).grid(column=1,
+        Button(self, text='', image=apply_img, compound=TOP, command=lambda: self.RecipesMenu('Open', 'V Vs C')).grid(
+            column=1,
                                                                                                    row=2)
         Button(self, image=back_img, command=lambda: self.AutomationMenu()).grid(column=1, row=6)
         measure = 'VoltageVsCurrent'
