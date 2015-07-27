@@ -68,6 +68,8 @@ class Application(Frame):
         global recipe_name
         global back_img
         global add_process_img
+        global save_img
+        save_img = PhotoImage(file="save.gif")
         back_img = PhotoImage(file="back.gif")
         add_process_img = PhotoImage(file="add_to_que.gif")
         recipe_name = StringVar()
@@ -394,10 +396,11 @@ class Application(Frame):
         global file_name
         global back_img
         global add_process_img
+        global save_img
         recipe_name.set('')
         graph = StringVar()
         graph.set('column')
-        root.geometry("650x500")
+        root.geometry("650x575")
         self.destroy()
         Frame.__init__(self)
         self.grid()
@@ -432,7 +435,8 @@ class Application(Frame):
                                                                                                           row=2)
         Label(self, text='New Recipe Name').grid(column=1, row=3)
         Entry(self, textvariable=recipe_name).grid(column=1, row=4)
-        Button(self, text="Save This Recipe", command=lambda: self.RecipesMenu('Save', '4 Wire C vs V')).grid(column=1,
+        Button(self, text="Save Recipe", image=save_img, compound=TOP,
+               command=lambda: self.RecipesMenu('Save', '4 Wire C vs V')).grid(column=1,
                                                                                                               row=5)
         Button(self, image=back_img, command=lambda: self.AutomationMenu()).grid(column=1, row=6)
         measure = '4 Wire Forced Current vs Voltage'
@@ -562,7 +566,7 @@ class Application(Frame):
         global file_name
         recipe_name.set('')
         recipe_list = []
-        root.geometry("650x500")
+        root.geometry("650x600")
         recipe_names_file = open('V_Vs_C_Recipes.txt', 'r')
         recipe_names = recipe_names_file.readline().rstrip()
         while recipe_names != '':
