@@ -54,7 +54,7 @@ class Application(Frame):
         self.DeviceMen()
 
     def DeviceMen(self):
-        root.geometry("300x500")
+        root.geometry("400x500")
         global count
         global var
         global forced
@@ -79,6 +79,14 @@ class Application(Frame):
         global save_img
         global process_recipe
         global process_recipe_names
+        global agilent_img
+        global keithley_img
+        global yokogawa_img
+        global lakeshore_img
+        lakeshore_img = PhotoImage(file="lakeshore.gif")
+        yokogawa_img = PhotoImage(file="yokogawa.gif")
+        keithley_img = PhotoImage(file="keithley.gif")
+        agilent_img = PhotoImage(file="agilent.gif")
         process_recipe = StringVar()
         process_recipe_names = StringVar()
         save_img = PhotoImage(file="save.gif")
@@ -107,10 +115,14 @@ class Application(Frame):
         Frame.__init__(self)
         self.grid()
         Label(self, text='Select a device to connect to').grid()
-        Button(self, padx=25,pady=25, text='Agilent 34410A DMM', command=lambda: self.Agilent34410AMainMenu()).grid()
-        Button(self, padx=25,pady=25, text='Keithley 7002 Switching Machine', command=lambda: self.Keithley7002MainMenu()).grid()
-        Button(self, padx=25,pady=25, text='Yokogawa GS200', command=lambda: self.YokogawaGS200MainMenu()).grid()
-        Button(self, padx=25,pady=25, text='LakeShore 336 Temperature Controller', command=lambda: self.LakeShore336MainMenu()).grid()
+        Button(self, padx=25, pady=25, text='Agilent 34410A DMM', image=agilent_img, compound=LEFT,
+               command=lambda: self.Agilent34410AMainMenu()).grid()
+        Button(self, padx=25, pady=25, text='Keithley 7002 Switching Machine', image=keithley_img, compound=LEFT,
+               command=lambda: self.Keithley7002MainMenu()).grid()
+        Button(self, padx=25, pady=25, text='Yokogawa GS200', image=yokogawa_img, compound=LEFT,
+               command=lambda: self.YokogawaGS200MainMenu()).grid()
+        Button(self, padx=25, pady=25, text='LakeShore 336 Temperature Controller', image=lakeshore_img, compound=LEFT,
+               command=lambda: self.LakeShore336MainMenu()).grid()
         Label(self, text='Automation Menu').grid()
         Button(self, padx=25,pady=25, text='Automation Menu', command=lambda: self.AutomationMenu()).grid()
 
