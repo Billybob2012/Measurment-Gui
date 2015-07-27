@@ -34,6 +34,14 @@ except:
     x.close()
     x = open('None.txt', 'w')
     x.close()
+try:
+    open('Process_Recipes.txt', 'r')
+except:
+    x = open('Process_Recipes.txt', 'w')
+    x.write('None' + '\n')
+    x.close()
+    x = open('None.txt', 'w')
+    x.close()
 
 kelv = 0
 ans = '0'
@@ -69,6 +77,10 @@ class Application(Frame):
         global back_img
         global add_process_img
         global save_img
+        global process_recipe
+        global process_recipe_names
+        process_recipe = StringVar()
+        process_recipe_names = StringVar()
         save_img = PhotoImage(file="save.gif")
         back_img = PhotoImage(file="back.gif")
         add_process_img = PhotoImage(file="add_to_que.gif")
@@ -334,17 +346,26 @@ class Application(Frame):
 
     def AutomationMenu(self):
         global add_process_img
+        global recipe
+        global recipe_name
         root.geometry("300x500")
         self.destroy()
         Frame.__init__(self)
         self.grid()
+        recipe_list = []
+        recipe_names_file = open('Process_Recipes.txt', 'r')
+        recipe_names = recipe_names_file.readline().rstrip()
+        while recipe_names != '':
+            recipe_list.append(recipe_names)
+            recipe_names = recipe_names_file.readline().rstrip()
         Label(self, text='Select Automation Process').grid()
         Button(self, padx=25,pady=25, text='4 Wire Current vs Voltage Resistance Test',
                command=lambda: self.FourWireCurrentvsVoltaqgeMenu()).grid()
-        #Button(self, text='2 Wire Current vs Voltage Resistance Test',
-               #command=lambda: self.TwoWireCurrentvsVoltageMenu()).grid()
         Button(self, padx=25,pady=25, text='Voltage Vs Current Graph', command=lambda: self.VoltageVsCurrent()).grid()
         Button(self, padx=25,pady=25, text='Temperature Vs Resistance', command=lambda: self.LiveData()).grid()
+        Label(self, text='Choose a process recipe').grid()
+        apply(OptionMenu, (self, recipe) + tuple(recipe_list)).grid()
+        Button(self, padx=25, pady=25, text='Apply Process Recipe').grid()
         Button(self, padx=25,pady=25, text='Execute Process Que', command=lambda: self.UserProgramableTest1Process("UserRecipe")).grid()
         Label(self, text='Processes in Que:').grid()
         Label(self, text=count).grid()
