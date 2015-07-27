@@ -84,6 +84,8 @@ class Application(Frame):
         global yokogawa_img
         global lakeshore_img
         global apply_img
+        global exicute_img
+        exicute_img = PhotoImage(file="exicute.gif")
         apply_img = PhotoImage(file="apply.gif")
         lakeshore_img = PhotoImage(file="lakeshore.gif")
         yokogawa_img = PhotoImage(file="yokogawa.gif")
@@ -364,6 +366,7 @@ class Application(Frame):
         global recipe_name
         global file_name
         global apply_img
+        global exicute_img
         root.geometry("700x475")
         self.destroy()
         Frame.__init__(self)
@@ -387,7 +390,8 @@ class Application(Frame):
         Entry(self, textvariable=recipe_name).grid(row=1, column=2)
         Button(self, text="Save", image=save_img, compound=TOP,
                command=lambda: self.RecipesMenu('Save', 'Process')).grid(row=2, column=2)
-        Button(self, padx=25,pady=25, text='Execute Process Que', command=lambda: self.UserProgramableTest1Process("UserRecipe")).grid()
+        Button(self, text='', image=exicute_img, compound=TOP,
+               command=lambda: self.UserProgramableTest1Process("UserRecipe")).grid(column=1, row=3)
         Label(self, text='Processes in Que:').grid()
         Label(self, text=count).grid()
         Button(self, image=back_img, command=lambda: self.DeviceMen()).grid()
@@ -441,10 +445,11 @@ class Application(Frame):
         global add_process_img
         global save_img
         global apply_img
+        global exicute_img
         recipe_name.set('')
         graph = StringVar()
         graph.set('column')
-        root.geometry("650x600")
+        root.geometry("650x650")
         self.destroy()
         Frame.__init__(self)
         self.grid()
@@ -464,15 +469,13 @@ class Application(Frame):
         Label(self, text='To:').grid(column=0, row=7)
         Entry(self, textvariable=to).grid(column=0, row=8, ipadx=10,ipady=10)
         Label(self, text='Name of Excel file that will be created:').grid(column=0, row=9)
-        Entry(self, textvariable=name).grid(column=0, row=10, ipadx=10,ipady=10)
+        Entry(self, textvariable=name).grid(column=0, row=10, ipadx=30, ipady=10)
         Label(self, text='Pick graph type').grid(column=0, row=11)
         OptionMenu(self, graph, 'column').grid(column=0, row=12, ipadx=10,ipady=10)
         Button(self, image=add_process_img, text='Add Process to Que', compound=TOP,
                command=lambda: self.AddProcessToQue()).grid(column=2, row=0)
-        Button(self, text='Execute Process Que', command=lambda: self.UserProgramableTest1Process("UserRecipe")).grid(
-            column=2, row=1)
-        Label(self, text='Processes in Que:').grid(column=2, row=2)
-        Label(self, text=count).grid(column=2, row=3)
+        Label(self, text='Processes in Que:').grid(column=2, row=1)
+        Label(self, text=count).grid(column=2, row=2)
         Label(self, text="Choose From Existing Recipe").grid(column=1, row=0, rowspan=2)
         apply(OptionMenu, (self, recipe) + tuple(recipe_list)).grid(column=1, row=1, ipadx=10,ipady=10)
         Button(self, text='', image=apply_img, compound=TOP,
@@ -627,41 +630,6 @@ class Application(Frame):
                     processNumber += 1
                 self.AutomationMenu()
 
-    def TwoWireCurrentvsVoltageMenu(self):
-        global add_process_img
-        global forced
-        global count
-        global range
-        global name
-        global measure
-        global to
-        global fr
-        global slot
-        self.destroy()
-        Frame.__init__(self)
-        self.grid()
-        Label(self, text='Amount forced (ma)').grid()
-        Entry(self, textvariable=forced).grid()
-        Label(self, text='Input Card Slot Number (1-10)').grid()
-        Entry(self, textvariable=slot).grid()
-        Label(self, text='Select switch inputs').grid()
-        Label(self, text='From:').grid()
-        Entry(self, textvariable=fr).grid()
-        Label(self, text='To:').grid()
-        Entry(self, textvariable=to).grid()
-        Label(self, text='Name of Excel file that will be created:').grid()
-        Entry(self, textvariable=name).grid()
-        Label(self, text='Pick graph type').grid()
-        OptionMenu(self, graph, 'column', 'scatter', 'bar').grid()
-        Button(self, image=add_process_img, command=lambda: self.AddProcessToQue()).grid()
-        Button(self, text='Execute Process Que', command=lambda: self.UserProgramableTest1Process("UserRecipe")).grid()
-        Label(self, text='Processes in Que:').grid()
-        Label(self, text=count).grid()
-        Button(self, text="Choose From Existing Recipe").grid()
-        Button(self, text="Save This Recipe").grid()
-        Button(self, image=back_img, command=lambda: self.AutomationMenu()).grid()
-        measure = '2 Wire Forced Current vs Voltage'
-
     def VoltageVsCurrent(self):
         global add_process_img
         self.destroy()
@@ -683,6 +651,7 @@ class Application(Frame):
         global recipe_name
         global file_name
         global apply_img
+        global exicute_img
         recipe_name.set('')
         recipe_list = []
         root.geometry("650x600")
@@ -707,10 +676,8 @@ class Application(Frame):
         Entry(self, textvariable=name).grid()
         Button(self, image=add_process_img, text='Add Process to Que', compound=TOP,
                command=lambda: self.AddProcessToQue()).grid(column=2, row=0)
-        Button(self, padx=25,pady=15, text='Execute Process Que', command=lambda: self.UserProgramableTest1Process('UserRecipe')).grid(
-            column=2, row=1)
-        Label(self, text='Processes in Que:').grid(column=2, row=2)
-        Label(self, text=count).grid(column=2, row=3)
+        Label(self, text='Processes in Que:').grid(column=2, row=1)
+        Label(self, text=count).grid(column=2, row=2)
         Label(self, text='New Recipe Name').grid(column=1, row=3)
         Entry(self, textvariable=recipe_name).grid(column=1, row=4)
         Button(self, text="Save Recipe", image=save_img, compound=TOP, command=lambda: self.RecipesMenu('Save', 'V Vs C')).grid(column=1,
