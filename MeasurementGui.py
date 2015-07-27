@@ -54,7 +54,7 @@ class Application(Frame):
         self.DeviceMen()
 
     def DeviceMen(self):
-        root.geometry("400x500")
+        root.geometry("400x550")
         global count
         global var
         global forced
