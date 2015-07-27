@@ -348,7 +348,8 @@ class Application(Frame):
         global add_process_img
         global recipe
         global recipe_name
-        root.geometry("300x500")
+        global file_name
+        root.geometry("700x475")
         self.destroy()
         Frame.__init__(self)
         self.grid()
@@ -363,13 +364,19 @@ class Application(Frame):
                command=lambda: self.FourWireCurrentvsVoltaqgeMenu()).grid()
         Button(self, padx=25,pady=25, text='Voltage Vs Current Graph', command=lambda: self.VoltageVsCurrent()).grid()
         Button(self, padx=25,pady=25, text='Temperature Vs Resistance', command=lambda: self.LiveData()).grid()
-        Label(self, text='Choose a process recipe').grid()
-        apply(OptionMenu, (self, recipe) + tuple(recipe_list)).grid()
-        Button(self, padx=25, pady=25, text='Apply Process Recipe').grid()
+        Label(self, text='Choose a process recipe').grid(row=0, column=1)
+        apply(OptionMenu, (self, recipe) + tuple(recipe_list)).grid(row=1, column=1)
+        Button(self, padx=25, pady=25, text='Apply Process Recipe',
+               command=lambda: self.RecipesMenu('Open', 'Process')).grid(row=2, column=1)
+        Label(self, text="Save Process As").grid(row=0, column=2)
+        Entry(self, textvariable=recipe_name).grid(row=1, column=2)
+        Button(self, text="Save Process As", image=save_img, compound=TOP,
+               command=lambda: self.RecipesMenu('Save', 'Process')).grid(row=2, column=2)
         Button(self, padx=25,pady=25, text='Execute Process Que', command=lambda: self.UserProgramableTest1Process("UserRecipe")).grid()
         Label(self, text='Processes in Que:').grid()
         Label(self, text=count).grid()
         Button(self, image=back_img, command=lambda: self.DeviceMen()).grid()
+        file_name = 'Process_Recipes.txt'
 
     def LiveData(self):
         global forced
@@ -477,6 +484,7 @@ class Application(Frame):
         global inp
         global slot
         global tm
+        global count
         if option == 'Save':
             if menu == '4 Wire C vs V':
                 recipe_names_file = open(file_name, 'a')
@@ -506,6 +514,43 @@ class Application(Frame):
                 new_recipe_file.write(tm.get() + '\n')
                 new_recipe_file.close()
                 self.VoltageVsCurrent()
+            if menu == 'Process':
+                recipe_names_file = open(file_name, 'a')
+                recipe_names_file.write(str(recipe_name.get()) + '\n')
+                recipe_names_file.close()
+                new_recipe_file = open(recipe_name.get() + '.txt', 'w')
+                process = open('process_que.txt', 'r')
+                new_recipe_file.write(str(count).rstrip() + '\n')
+                processNumber = 0
+                while processNumber < count:
+                    measure = process.readline()
+                    new_recipe_file.write(str(measure).rstrip() + '\n')
+                    forced = process.readline()
+                    new_recipe_file.write(str(forced).rstrip() + '\n')
+                    range = process.readline()
+                    new_recipe_file.write(str(range).rstrip() + '\n')
+                    tm = process.readline()
+                    new_recipe_file.write(str(tm).rstrip() + '\n')
+                    fr = process.readline()
+                    new_recipe_file.write(str(fr).rstrip() + '\n')
+                    to = process.readline()
+                    new_recipe_file.write(str(to).rstrip() + '\n')
+                    name = process.readline()
+                    new_recipe_file.write(str(name).rstrip() + '\n')
+                    graph = process.readline()
+                    new_recipe_file.write(str(graph).rstrip() + '\n')
+                    rate = process.readline()
+                    new_recipe_file.write(str(rate).rstrip() + '\n')
+                    wanted_temp = process.readline()
+                    new_recipe_file.write(str(wanted_temp).rstrip() + '\n')
+                    outp = process.readline()
+                    new_recipe_file.write(str(outp).rstrip() + '\n')
+                    inp = process.readline()
+                    new_recipe_file.write(str(inp).rstrip() + '\n')
+                    slot = process.readline()
+                    new_recipe_file.write(str(slot).rstrip() + '\n')
+                    processNumber += 1
+                self.AutomationMenu()
         if option == 'Open':
             if menu == '4 Wire C vs V':
                 recipe_file = open(recipe.get() + '.txt', 'r')
@@ -529,6 +574,41 @@ class Application(Frame):
                 tm.set(recipe_file.readline().rstrip())
                 recipe_file.close()
                 self.VoltageVsCurrent()
+            if menu == 'Process':
+                recipe_file = open(recipe.get() + '.txt', 'r')
+                process = open('process_que.txt', 'w')
+                count = int(recipe_file.readline().rstrip())
+                processNumber = 0
+                print count
+                while processNumber < count:
+                    measure = recipe_file.readline()
+                    process.write(str(measure).rstrip() + '\n')
+                    forced = recipe_file.readline()
+                    process.write(str(forced).rstrip() + '\n')
+                    range = recipe_file.readline()
+                    process.write(str(range).rstrip() + '\n')
+                    tm = recipe_file.readline()
+                    process.write(str(tm).rstrip() + '\n')
+                    fr = recipe_file.readline()
+                    process.write(str(fr).rstrip() + '\n')
+                    to = recipe_file.readline()
+                    process.write(str(to).rstrip() + '\n')
+                    name = recipe_file.readline()
+                    process.write(str(name).rstrip() + '\n')
+                    graph = recipe_file.readline()
+                    process.write(str(graph).rstrip() + '\n')
+                    rate = recipe_file.readline()
+                    process.write(str(rate).rstrip() + '\n')
+                    wanted_temp = recipe_file.readline()
+                    process.write(str(wanted_temp).rstrip() + '\n')
+                    outp = recipe_file.readline()
+                    process.write(str(outp).rstrip() + '\n')
+                    inp = recipe_file.readline()
+                    process.write(str(inp).rstrip() + '\n')
+                    slot = recipe_file.readline()
+                    process.write(str(slot).rstrip() + '\n')
+                    processNumber += 1
+                self.AutomationMenu()
 
     def TwoWireCurrentvsVoltageMenu(self):
         global add_process_img
