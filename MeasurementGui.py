@@ -1,3 +1,5 @@
+import winsound
+
 try:
     import visa
 except ImportError:
@@ -54,7 +56,7 @@ class Application(Frame):
         self.DeviceMen()
 
     def DeviceMen(self):
-        root.geometry("400x550")
+        root.wm_state('zoomed')
         global count
         global var
         global forced
@@ -85,6 +87,8 @@ class Application(Frame):
         global lakeshore_img
         global apply_img
         global exicute_img
+        global font_size
+        font_size = 15
         exicute_img = PhotoImage(file="exicute.gif")
         apply_img = PhotoImage(file="apply.gif")
         lakeshore_img = PhotoImage(file="lakeshore.gif")
@@ -118,17 +122,20 @@ class Application(Frame):
         self.destroy()
         Frame.__init__(self)
         self.grid()
-        Label(self, text='Select a device to connect to').grid()
-        Button(self, padx=25, pady=25, text='Agilent 34410A DMM', image=agilent_img, compound=LEFT,
-               command=lambda: self.Agilent34410AMainMenu()).grid()
-        Button(self, padx=25, pady=25, text='Keithley 7002 Switching Machine', image=keithley_img, compound=LEFT,
-               command=lambda: self.Keithley7002MainMenu()).grid()
-        Button(self, padx=25, pady=25, text='Yokogawa GS200', image=yokogawa_img, compound=LEFT,
+        Label(self, text='Select a device to connect to', font=(font_size)).grid(columnspan=2)
+        Button(self, padx=25, pady=25, text='Agilent 34410A DMM', font=(font_size), image=agilent_img, compound=LEFT,
+               command=lambda: self.Agilent34410AMainMenu()).grid(column=1, row=1)
+        Button(self, padx=25, pady=25, text='Keithley 7002 Switching Machine', font=(font_size), image=keithley_img,
+               compound=LEFT,
+               command=lambda: self.Keithley7002MainMenu()).grid(column=0, row=1)
+        Button(self, padx=25, pady=25, text='Yokogawa GS200', font=(font_size), image=yokogawa_img, compound=LEFT,
                command=lambda: self.YokogawaGS200MainMenu()).grid()
-        Button(self, padx=25, pady=25, text='LakeShore 336 Temperature Controller', image=lakeshore_img, compound=LEFT,
-               command=lambda: self.LakeShore336MainMenu()).grid()
-        Label(self, text='Automation Menu').grid()
-        Button(self, padx=25,pady=25, text='Automation Menu', command=lambda: self.AutomationMenu()).grid()
+        Button(self, padx=25, pady=25, text='LakeShore 336 Temperature Controller', font=(font_size),
+               image=lakeshore_img, compound=LEFT,
+               command=lambda: self.LakeShore336MainMenu()).grid(column=1, row=2)
+        Label(self, text='Automation Menu', font=(font_size)).grid(columnspan=2, column=0)
+        Button(self, padx=25, pady=25, text='Automation Menu', font=(font_size),
+               command=lambda: self.AutomationMenu()).grid(columnspan=2, column=0)
 
     def Agilent34410AMainMenu(self):
         self.destroy()
@@ -367,7 +374,6 @@ class Application(Frame):
         global file_name
         global apply_img
         global exicute_img
-        root.geometry("700x475")
         self.destroy()
         Frame.__init__(self)
         self.grid()
@@ -377,23 +383,25 @@ class Application(Frame):
         while recipe_names != '':
             recipe_list.append(recipe_names)
             recipe_names = recipe_names_file.readline().rstrip()
-        Label(self, text='Select Automation Process').grid()
-        Button(self, padx=25,pady=25, text='4 Wire Current vs Voltage Resistance Test',
+        Label(self, text='Select Automation Process', font=(font_size)).grid()
+        Button(self, padx=25, pady=25, text='4 Wire Current vs Voltage Resistance Test', font=(font_size),
                command=lambda: self.FourWireCurrentvsVoltaqgeMenu()).grid()
-        Button(self, padx=25,pady=25, text='Voltage Vs Current Graph', command=lambda: self.VoltageVsCurrent()).grid()
-        Button(self, padx=25,pady=25, text='Temperature Vs Resistance', command=lambda: self.LiveData()).grid()
-        Label(self, text='Choose a process recipe').grid(row=0, column=1)
-        apply(OptionMenu, (self, recipe) + tuple(recipe_list)).grid(row=1, column=1)
+        Button(self, padx=25, pady=25, text='Voltage Vs Current Graph', font=(font_size),
+               command=lambda: self.VoltageVsCurrent()).grid()
+        Button(self, padx=25, pady=25, text='Temperature Vs Resistance', font=(font_size),
+               command=lambda: self.LiveData()).grid()
+        Label(self, text='Choose a process recipe', font=(font_size)).grid(row=0, column=1)
+        apply(OptionMenu, (self, recipe) + tuple(recipe_list)).grid(row=1, column=1, ipadx=10, ipady=10)
         Button(self, text='', image=apply_img, compound=TOP, command=lambda: self.RecipesMenu('Open', 'Process')).grid(
             row=2, column=1)
-        Label(self, text="Save Process As").grid(row=0, column=2)
-        Entry(self, textvariable=recipe_name).grid(row=1, column=2)
-        Button(self, text="Save", image=save_img, compound=TOP,
+        Label(self, text="Save Process As", font=(font_size)).grid(row=0, column=2)
+        Entry(self, textvariable=recipe_name, font=(font_size)).grid(row=1, column=2, ipadx=10, ipady=10)
+        Button(self, text="Save", image=save_img, font=(font_size), compound=TOP,
                command=lambda: self.RecipesMenu('Save', 'Process')).grid(row=2, column=2)
         Button(self, text='', image=exicute_img, compound=TOP,
                command=lambda: self.UserProgramableTest1Process("UserRecipe")).grid(column=1, row=3)
-        Label(self, text='Processes in Que:').grid()
-        Label(self, text=count).grid()
+        Label(self, text='Processes in Que:', font=(font_size)).grid()
+        Label(self, text=count, font=(font_size)).grid()
         Button(self, image=back_img, command=lambda: self.DeviceMen()).grid()
         file_name = 'Process_Recipes.txt'
 
@@ -446,6 +454,7 @@ class Application(Frame):
         global save_img
         global apply_img
         global exicute_img
+        global font_size
         recipe_name.set('')
         graph = StringVar()
         graph.set('column')
@@ -459,30 +468,30 @@ class Application(Frame):
         while recipe_names != '':
             recipe_list.append(recipe_names)
             recipe_names = recipe_names_file.readline().rstrip()
-        Label(self, text='Amount forced (ma)').grid(column=0, row=0, rowspan=2)
-        Entry(self, textvariable=forced).grid(column=0, row=1, ipadx=10,ipady=10)
-        Label(self, text='Input Card Slot Number (1-10)').grid(column=0, row=2)
-        Entry(self, textvariable=slot).grid(column=0, row=3, ipadx=10,ipady=10)
-        Label(self, text='Select switch inputs').grid(column=0, row=2, rowspan=4)
-        Label(self, text='From:').grid(column=0, row=2, rowspan=5)
-        Entry(self, textvariable=fr).grid(column=0, row=6, ipadx=10,ipady=10)
-        Label(self, text='To:').grid(column=0, row=7)
-        Entry(self, textvariable=to).grid(column=0, row=8, ipadx=10,ipady=10)
-        Label(self, text='Name of Excel file that will be created:').grid(column=0, row=9)
-        Entry(self, textvariable=name).grid(column=0, row=10, ipadx=30, ipady=10)
-        Label(self, text='Pick graph type').grid(column=0, row=11)
+        Label(self, text='Amount forced (ma)', font=(font_size)).grid(column=0, row=0, rowspan=2)
+        Entry(self, textvariable=forced, font=(font_size)).grid(column=0, row=1, ipadx=10, ipady=10)
+        Label(self, text='Input Card Slot Number (1-10)', font=(15)).grid(column=0, row=2)
+        Entry(self, textvariable=slot, font=(font_size)).grid(column=0, row=3, ipadx=10, ipady=10)
+        Label(self, text='Select switch inputs', font=(15)).grid(column=0, row=2, rowspan=4)
+        Label(self, text='From:', font=(font_size)).grid(column=0, row=2, rowspan=5)
+        Entry(self, textvariable=fr, font=(font_size)).grid(column=0, row=6, ipadx=10, ipady=10)
+        Label(self, text='To:', font=(font_size)).grid(column=0, row=7)
+        Entry(self, textvariable=to, font=(font_size)).grid(column=0, row=8, ipadx=10, ipady=10)
+        Label(self, text='Name of Excel file that will be created:', font=(font_size)).grid(column=0, row=9)
+        Entry(self, textvariable=name, font=(font_size)).grid(column=0, row=10, ipadx=30, ipady=10)
+        Label(self, text='Pick graph type', font=(font_size)).grid(column=0, row=11)
         OptionMenu(self, graph, 'column').grid(column=0, row=12, ipadx=10,ipady=10)
         Button(self, image=add_process_img, text='Add Process to Que', compound=TOP,
                command=lambda: self.AddProcessToQue()).grid(column=2, row=0)
-        Label(self, text='Processes in Que:').grid(column=2, row=1)
+        Label(self, text='Processes in Que:', font=(font_size)).grid(column=2, row=1)
         Label(self, text=count).grid(column=2, row=2)
-        Label(self, text="Choose From Existing Recipe").grid(column=1, row=0, rowspan=2)
+        Label(self, text="Choose From Existing Recipe", font=(font_size)).grid(column=1, row=0, rowspan=2)
         apply(OptionMenu, (self, recipe) + tuple(recipe_list)).grid(column=1, row=1, ipadx=10,ipady=10)
         Button(self, text='', image=apply_img, compound=TOP,
                command=lambda: self.RecipesMenu('Open', '4 Wire C vs V')).grid(column=1,
                                                                                                           row=2)
-        Label(self, text='New Recipe Name').grid(column=1, row=3)
-        Entry(self, textvariable=recipe_name).grid(column=1, row=4, ipadx=10,ipady=10)
+        Label(self, text='New Recipe Name', font=(font_size)).grid(column=1, row=3)
+        Entry(self, textvariable=recipe_name, font=(font_size)).grid(column=1, row=4, ipadx=10, ipady=10)
         Button(self, text="Save Recipe", image=save_img, compound=TOP,
                command=lambda: self.RecipesMenu('Save', '4 Wire C vs V')).grid(column=1,
                                                                                                               row=5)
@@ -660,29 +669,30 @@ class Application(Frame):
         while recipe_names != '':
             recipe_list.append(recipe_names)
             recipe_names = recipe_names_file.readline().rstrip()
-        Label(self, text='Starting Current (ma)').grid()
-        Entry(self, textvariable=forced).grid()
-        Label(self, text='Current Limit (ma)').grid()
-        Entry(self, textvariable=to).grid()
-        Label(self, text='Voltage Limit (Volts)').grid()
-        Entry(self, textvariable=inp).grid()
-        Label(self, text='Current Steps (ma)').grid()
-        Entry(self, textvariable=tm).grid()
-        Label(self, text='Input Card Slot Number (1-10)').grid()
-        Entry(self, textvariable=slot).grid()
-        Label(self, text='Select switch input').grid()
-        Entry(self, textvariable=fr).grid()
-        Label(self, text='Name the Excel file that will be created').grid()
-        Entry(self, textvariable=name).grid()
-        Button(self, image=add_process_img, text='Add Process to Que', compound=TOP,
+        Label(self, text='Starting Current (ma)', font=(font_size)).grid()
+        Entry(self, textvariable=forced, font=(font_size)).grid(ipadx=10, ipady=10)
+        Label(self, text='Current Limit (ma)', font=(font_size)).grid()
+        Entry(self, textvariable=to, font=(font_size)).grid(ipadx=10, ipady=10)
+        Label(self, text='Voltage Limit (Volts)', font=(font_size)).grid()
+        Entry(self, textvariable=inp, font=(font_size)).grid(ipadx=10, ipady=10)
+        Label(self, text='Current Steps (ma)', font=(font_size)).grid()
+        Entry(self, textvariable=tm, font=(font_size)).grid(ipadx=10, ipady=10)
+        Label(self, text='Input Card Slot Number (1-10)', font=(font_size)).grid()
+        Entry(self, textvariable=slot, font=(font_size)).grid(ipadx=10, ipady=10)
+        Label(self, text='Select switch input', font=(font_size)).grid()
+        Entry(self, textvariable=fr, font=(font_size)).grid(ipadx=10, ipady=10)
+        Label(self, text='Name the Excel file that will be created', font=(font_size)).grid()
+        Entry(self, textvariable=name, font=(font_size)).grid(ipadx=10, ipady=10)
+        Button(self, image=add_process_img, text='Add Process to Que', font=(font_size), compound=TOP,
                command=lambda: self.AddProcessToQue()).grid(column=2, row=0)
-        Label(self, text='Processes in Que:').grid(column=2, row=1)
-        Label(self, text=count).grid(column=2, row=2)
-        Label(self, text='New Recipe Name').grid(column=1, row=3)
-        Entry(self, textvariable=recipe_name).grid(column=1, row=4)
-        Button(self, text="Save Recipe", image=save_img, compound=TOP, command=lambda: self.RecipesMenu('Save', 'V Vs C')).grid(column=1,
+        Label(self, text='Processes in Que:', font=(font_size)).grid(column=2, row=1)
+        Label(self, text=count, font=(font_size)).grid(column=2, row=2)
+        Label(self, text='New Recipe Name', font=(font_size)).grid(column=1, row=3)
+        Entry(self, textvariable=recipe_name, font=(font_size)).grid(column=1, row=4, ipadx=10, ipady=10)
+        Button(self, text="Save Recipe", font=(font_size), image=save_img, compound=TOP,
+               command=lambda: self.RecipesMenu('Save', 'V Vs C')).grid(column=1,
                                                                                                        row=5)
-        Label(self, text="Choose From Existing Recipe").grid(column=1, row=0)
+        Label(self, text="Choose From Existing Recipe", font=(font_size)).grid(column=1, row=0)
         apply(OptionMenu, (self, recipe) + tuple(recipe_list)).grid(column=1, row=1)
         Button(self, text='', image=apply_img, compound=TOP, command=lambda: self.RecipesMenu('Open', 'V Vs C')).grid(
             column=1,
@@ -805,6 +815,7 @@ class Application(Frame):
             self.AutoMeasure()
         if name.rstrip() != '':
             workbook.close()
+        winsound.PlaySound('beep-01.wav', winsound.SND_FILENAME)
         self.AutomationMenu()
 
     def AutoMeasure(self):
