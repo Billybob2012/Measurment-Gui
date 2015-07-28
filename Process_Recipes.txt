@@ -1,0 +1,9 @@
+None
+Chip 4 Lines Res 1-19 (0.5 ma) Run 1-10
+Chip 3 Lines Res 1-19 (0.5 ma) Run 1-10
+Chip 2 Lines Res 1-19 (0.5 ma) Run 1-10
+Chip 1 Lines Res 1-19 (0.5 ma) Run 1-10
+Chip 4 Line Critical Current 1-19 1 ma Steps
+Chip 3 Line Critical Current 1-19 1 ma Steps
+Chip 2 Line Critical Current 1-19 1 ma Steps
+Chip 1 Line Critical Current 1-19 1 ma Steps
