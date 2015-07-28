@@ -1,5 +1,6 @@
 import winsound
-
+import zipfile
+import os
 try:
     import visa
 except ImportError:
@@ -19,31 +20,32 @@ try:
     import matplotlib.pyplot
 except:
     print 'Please install MatPlotLib'
-try:
-    open('4_Wire_Recipes.txt', 'r')
-except:
-    x = open('4_Wire_Recipes.txt', 'w')
-    x.write('None' + '\n')
-    x.close()
-    x = open('None.txt', 'w')
-    x.close()
-    print 'Made 4_Wire_Recipes.txt File'
-try:
-    open('V_Vs_C_Recipes.txt', 'r')
-except:
-    x = open('V_Vs_C_Recipes.txt', 'w')
-    x.write('None' + '\n')
-    x.close()
-    x = open('None.txt', 'w')
-    x.close()
-try:
-    open('Process_Recipes.txt', 'r')
-except:
-    x = open('Process_Recipes.txt', 'w')
-    x.write('None' + '\n')
-    x.close()
-    x = open('None.txt', 'w')
-    x.close()
+
+# try:
+#     open('4_Wire_Recipes.txt', 'r')
+# except:
+#     x = open('4_Wire_Recipes.txt', 'w')
+#     x.write('None' + '\n')
+#     x.close()
+#     x = open('None.txt', 'w')
+#     x.close()
+#     print 'Made 4_Wire_Recipes.txt File'
+# try:
+#     open('V_Vs_C_Recipes.txt', 'r')
+# except:
+#     x = open('V_Vs_C_Recipes.txt', 'w')
+#     x.write('None' + '\n')
+#     x.close()
+#     x = open('None.txt', 'w')
+#     x.close()
+# try:
+#     open('Process_Recipes.txt', 'r')
+# except:
+#     x = open('Process_Recipes.txt', 'w')
+#     x.write('None' + '\n')
+#     x.close()
+#     x = open('None.txt', 'w')
+#     x.close()
 
 kelv = 0
 ans = '0'
@@ -88,18 +90,20 @@ class Application(Frame):
         global apply_img
         global exicute_img
         global font_size
+        global zip_name
+        zip_name = StringVar()
         font_size = 15
-        exicute_img = PhotoImage(file="exicute.gif")
-        apply_img = PhotoImage(file="apply.gif")
-        lakeshore_img = PhotoImage(file="lakeshore.gif")
-        yokogawa_img = PhotoImage(file="yokogawa.gif")
-        keithley_img = PhotoImage(file="keithley.gif")
-        agilent_img = PhotoImage(file="agilent.gif")
+        exicute_img = PhotoImage(file="Icons/exicute.gif")
+        apply_img = PhotoImage(file="Icons/apply.gif")
+        lakeshore_img = PhotoImage(file="Icons/lakeshore.gif")
+        yokogawa_img = PhotoImage(file="Icons/yokogawa.gif")
+        keithley_img = PhotoImage(file="Icons/keithley.gif")
+        agilent_img = PhotoImage(file="Icons/agilent.gif")
         process_recipe = StringVar()
         process_recipe_names = StringVar()
-        save_img = PhotoImage(file="save.gif")
-        back_img = PhotoImage(file="back.gif")
-        add_process_img = PhotoImage(file="add_to_que.gif")
+        save_img = PhotoImage(file="Icons/save.gif")
+        back_img = PhotoImage(file="Icons/back.gif")
+        add_process_img = PhotoImage(file="Icons/add_to_que.gif")
         recipe_name = StringVar()
         recipe = StringVar()
         inp = StringVar()
@@ -374,11 +378,12 @@ class Application(Frame):
         global file_name
         global apply_img
         global exicute_img
+        global zip_name
         self.destroy()
         Frame.__init__(self)
         self.grid()
         recipe_list = []
-        recipe_names_file = open('Process_Recipes.txt', 'r')
+        recipe_names_file = open('Recipes/Process_Recipes/Process_Recipes.txt', 'r')
         recipe_names = recipe_names_file.readline().rstrip()
         while recipe_names != '':
             recipe_list.append(recipe_names)
@@ -399,11 +404,13 @@ class Application(Frame):
         Button(self, text="Save", image=save_img, font=(font_size), compound=TOP,
                command=lambda: self.RecipesMenu('Save', 'Process')).grid(row=2, column=2)
         Button(self, text='', image=exicute_img, compound=TOP,
-               command=lambda: self.UserProgramableTest1Process("UserRecipe")).grid(column=1, row=3)
+               command=lambda: self.UserProgramableTest1Process("UserRecipe")).grid(column=1, row=5)
         Label(self, text='Processes in Que:', font=(font_size)).grid()
         Label(self, text=count, font=(font_size)).grid()
         Button(self, image=back_img, command=lambda: self.DeviceMen()).grid()
         file_name = 'Process_Recipes.txt'
+        Label(self, text='Name of .zip', font=(font_size)).grid(row=3, column=1)
+        Entry(self, textvariable=zip_name, font=(font_size)).grid(row=4, column=1, ipadx=10, ipady=10)
 
     def LiveData(self):
         global forced
@@ -463,7 +470,7 @@ class Application(Frame):
         Frame.__init__(self)
         self.grid()
         recipe_list = []
-        recipe_names_file = open('4_Wire_Recipes.txt', 'r')
+        recipe_names_file = open('Recipes/4_Wire_Recipes/4_Wire_Recipes.txt', 'r')
         recipe_names = recipe_names_file.readline().rstrip()
         while recipe_names != '':
             recipe_list.append(recipe_names)
@@ -497,7 +504,7 @@ class Application(Frame):
                                                                                                               row=5)
         Button(self, image=back_img, command=lambda: self.AutomationMenu()).grid(column=1, row=6)
         measure = '4 Wire Forced Current vs Voltage'
-        file_name = '4_Wire_Recipes.txt'
+        file_name = '4_Wire_Recipes'
 
     def RecipesMenu(self, option, menu):
         global recipe_name
@@ -516,10 +523,10 @@ class Application(Frame):
         global count
         if option == 'Save':
             if menu == '4 Wire C vs V':
-                recipe_names_file = open(file_name, 'a')
+                recipe_names_file = open("Recipes/" + file_name + '/' + file_name + '.txt', 'a')
                 recipe_names_file.write(str(recipe_name.get()) + '\n')
                 recipe_names_file.close()
-                new_recipe_file = open(recipe_name.get() + '.txt', 'w')
+                new_recipe_file = open("Recipes/" + file_name + '/' + recipe_name.get() + '.txt', 'w')
                 new_recipe_file.write(forced.get() + '\n')
                 new_recipe_file.write(to.get() + '\n')
                 new_recipe_file.write(fr.get() + '\n')
@@ -529,10 +536,10 @@ class Application(Frame):
                 new_recipe_file.close()
                 self.FourWireCurrentvsVoltaqgeMenu()
             if menu == 'V Vs C':
-                recipe_names_file = open(file_name, 'a')
+                recipe_names_file = open("Recipes/" + file_name + '/' + file_name + '.txt', 'a')
                 recipe_names_file.write(str(recipe_name.get()) + '\n')
                 recipe_names_file.close()
-                new_recipe_file = open(recipe_name.get() + '.txt', 'w')
+                new_recipe_file = open("Recipes/" + file_name + '/' + recipe_name.get() + '.txt', 'w')
                 new_recipe_file.write(forced.get() + '\n')
                 new_recipe_file.write(to.get() + '\n')
                 new_recipe_file.write(fr.get() + '\n')
@@ -544,10 +551,10 @@ class Application(Frame):
                 new_recipe_file.close()
                 self.VoltageVsCurrent()
             if menu == 'Process':
-                recipe_names_file = open(file_name, 'a')
+                recipe_names_file = open("Recipes/" + file_name + '/' + file_name + '.txt', 'a')
                 recipe_names_file.write(str(recipe_name.get()) + '\n')
                 recipe_names_file.close()
-                new_recipe_file = open(recipe_name.get() + '.txt', 'w')
+                new_recipe_file = open("Recipes/" + file_name + '/' + recipe_name.get() + '.txt', 'w')
                 process = open('process_que.txt', 'r')
                 new_recipe_file.write(str(count).rstrip() + '\n')
                 processNumber = 0
@@ -582,7 +589,7 @@ class Application(Frame):
                 self.AutomationMenu()
         if option == 'Open':
             if menu == '4 Wire C vs V':
-                recipe_file = open(recipe.get() + '.txt', 'r')
+                recipe_file = open("Recipes/4_Wire_Recipes/" + recipe.get() + '.txt', 'r')
                 forced.set(recipe_file.readline().rstrip())
                 to.set(recipe_file.readline().rstrip())
                 fr.set(recipe_file.readline().rstrip())
@@ -592,7 +599,7 @@ class Application(Frame):
                 recipe_file.close()
                 self.FourWireCurrentvsVoltaqgeMenu()
             if menu == 'V Vs C':
-                recipe_file = open(recipe.get() + '.txt', 'r')
+                recipe_file = open("Recipes/V_Vs_C_Recipes/" + recipe.get() + '.txt', 'r')
                 forced.set(recipe_file.readline().rstrip())
                 to.set(recipe_file.readline().rstrip())
                 fr.set(recipe_file.readline().rstrip())
@@ -604,7 +611,7 @@ class Application(Frame):
                 recipe_file.close()
                 self.VoltageVsCurrent()
             if menu == 'Process':
-                recipe_file = open(recipe.get() + '.txt', 'r')
+                recipe_file = open("Recipes/Process_Recipes/" + recipe.get() + '.txt', 'r')
                 process = open('process_que.txt', 'w')
                 count = int(recipe_file.readline().rstrip())
                 processNumber = 0
@@ -664,7 +671,7 @@ class Application(Frame):
         recipe_name.set('')
         recipe_list = []
         root.geometry("650x600")
-        recipe_names_file = open('V_Vs_C_Recipes.txt', 'r')
+        recipe_names_file = open('Recipes/V_Vs_C_Recipes/V_Vs_C_Recipes.txt', 'r')
         recipe_names = recipe_names_file.readline().rstrip()
         while recipe_names != '':
             recipe_list.append(recipe_names)
@@ -699,7 +706,7 @@ class Application(Frame):
                                                                                                    row=2)
         Button(self, image=back_img, command=lambda: self.AutomationMenu()).grid(column=1, row=6)
         measure = 'VoltageVsCurrent'
-        file_name = 'V_Vs_C_Recipes.txt'
+        file_name = 'V_Vs_C_Recipes'
 
     def HeatVsTime(self):
         global add_process_img
@@ -784,8 +791,14 @@ class Application(Frame):
         global inp
         global outp
         global slot
+        global zip_name
+        z_name = zip_name.get().rstrip()
         process = open('process_que.txt', 'r')
         processNumber = 0
+        if z_name != '':
+            z = zipfile.ZipFile("Output_Files/" + z_name + '.zip', 'w')
+            z.close()
+            z = zipfile.ZipFile("Output_Files/" + z_name + '.zip', 'a')
         while processNumber < count:
             self.destroy()
             Frame.__init__(self)
@@ -813,9 +826,12 @@ class Application(Frame):
             Label(self, text='Currently Running: ' + measure).grid()
             Label(self, text=str((count - processNumber)) + ' More process(s) to go').grid()
             self.AutoMeasure()
-        if name.rstrip() != '':
             workbook.close()
-        winsound.PlaySound('beep-01.wav', winsound.SND_FILENAME)
+            if z_name != '':
+                z.write(str(name).rstrip() + '.xlsx')
+                os.remove(str(name).rstrip() + '.xlsx')
+        winsound.PlaySound('Sounds/beep-01.wav', winsound.SND_FILENAME)
+        z.close()
         self.AutomationMenu()
 
     def AutoMeasure(self):
