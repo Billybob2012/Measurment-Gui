@@ -1,2 +1,0 @@
-None
-Line Critical Current Measurment 1 ma Steps

@@ -91,6 +91,8 @@ class Application(Frame):
         global exicute_img
         global font_size
         global zip_name
+        global delete_img
+        delete_img = PhotoImage(file="Icons/delete.gif")
         zip_name = StringVar()
         font_size = 15
         exicute_img = PhotoImage(file="Icons/exicute.gif")
@@ -379,15 +381,14 @@ class Application(Frame):
         global apply_img
         global exicute_img
         global zip_name
+        global delete_img
         self.destroy()
         Frame.__init__(self)
         self.grid()
         recipe_list = []
-        recipe_names_file = open('Recipes/Process_Recipes/Process_Recipes.txt', 'r')
-        recipe_names = recipe_names_file.readline().rstrip()
-        while recipe_names != '':
-            recipe_list.append(recipe_names)
-            recipe_names = recipe_names_file.readline().rstrip()
+        for file in os.listdir("Recipes/Process_Recipes"):
+            if file.endswith(".txt"):
+                recipe_list.append(file[:-4])
         Label(self, text='Select Automation Process', font=(font_size)).grid()
         Button(self, padx=25, pady=25, text='4 Wire Current vs Voltage Resistance Test', font=(font_size),
                command=lambda: self.FourWireCurrentvsVoltaqgeMenu()).grid()
@@ -404,13 +405,15 @@ class Application(Frame):
         Button(self, text="Save", image=save_img, font=(font_size), compound=TOP,
                command=lambda: self.RecipesMenu('Save', 'Process')).grid(row=2, column=2)
         Button(self, text='', image=exicute_img, compound=TOP,
-               command=lambda: self.UserProgramableTest1Process("UserRecipe")).grid(column=1, row=5)
+               command=lambda: self.UserProgramableTest1Process("UserRecipe")).grid(column=1, row=6)
         Label(self, text='Processes in Que:', font=(font_size)).grid()
         Label(self, text=count, font=(font_size)).grid()
         Button(self, image=back_img, command=lambda: self.DeviceMen()).grid()
-        file_name = 'Process_Recipes.txt'
-        Label(self, text='Name of .zip', font=(font_size)).grid(row=3, column=1)
-        Entry(self, textvariable=zip_name, font=(font_size)).grid(row=4, column=1, ipadx=10, ipady=10)
+        file_name = 'Process_Recipes'
+        Label(self, text='Name of .zip', font=(font_size)).grid(row=4, column=1)
+        Entry(self, textvariable=zip_name, font=(font_size)).grid(row=5, column=1, ipadx=10, ipady=10)
+        Button(self, image=delete_img, compound=TOP, command=lambda: self.RecipesMenu("Delete", "Process")).grid(
+            column=1, row=3)
 
     def LiveData(self):
         global forced
@@ -462,7 +465,6 @@ class Application(Frame):
         global apply_img
         global exicute_img
         global font_size
-        recipe_name.set('')
         graph = StringVar()
         graph.set('column')
         root.geometry("650x650")
@@ -470,11 +472,9 @@ class Application(Frame):
         Frame.__init__(self)
         self.grid()
         recipe_list = []
-        recipe_names_file = open('Recipes/4_Wire_Recipes/4_Wire_Recipes.txt', 'r')
-        recipe_names = recipe_names_file.readline().rstrip()
-        while recipe_names != '':
-            recipe_list.append(recipe_names)
-            recipe_names = recipe_names_file.readline().rstrip()
+        for file in os.listdir("Recipes/4_Wire_Recipes"):
+            if file.endswith(".txt"):
+                recipe_list.append(file[:-4])
         Label(self, text='Amount forced (ma)', font=(font_size)).grid(column=0, row=0, rowspan=2)
         Entry(self, textvariable=forced, font=(font_size)).grid(column=0, row=1, ipadx=10, ipady=10)
         Label(self, text='Input Card Slot Number (1-10)', font=(15)).grid(column=0, row=2)
@@ -497,12 +497,14 @@ class Application(Frame):
         Button(self, text='', image=apply_img, compound=TOP,
                command=lambda: self.RecipesMenu('Open', '4 Wire C vs V')).grid(column=1,
                                                                                                           row=2)
-        Label(self, text='New Recipe Name', font=(font_size)).grid(column=1, row=3)
-        Entry(self, textvariable=recipe_name, font=(font_size)).grid(column=1, row=4, ipadx=10, ipady=10)
+        Label(self, text='New Recipe Name', font=(font_size)).grid(column=1, row=4)
+        Entry(self, textvariable=recipe_name, font=(font_size)).grid(column=1, row=5, ipadx=10, ipady=10)
         Button(self, text="Save Recipe", image=save_img, compound=TOP,
                command=lambda: self.RecipesMenu('Save', '4 Wire C vs V')).grid(column=1,
-                                                                                                              row=5)
-        Button(self, image=back_img, command=lambda: self.AutomationMenu()).grid(column=1, row=6)
+                                                                               row=6)
+        Button(self, image=back_img, command=lambda: self.AutomationMenu()).grid(column=1, row=7)
+        Button(self, image=delete_img, compound=TOP, command=lambda: self.RecipesMenu("Delete", "4 Wire C vs V")).grid(
+            column=1, row=3)
         measure = '4 Wire Forced Current vs Voltage'
         file_name = '4_Wire_Recipes'
 
@@ -521,11 +523,18 @@ class Application(Frame):
         global slot
         global tm
         global count
+        if option == 'Delete':
+            os.remove("Recipes/" + file_name + "/" + recipe.get() + ".txt")
+            recipe.set('')
+            recipe_name.set('')
+            if menu == '4 Wire C vs V':
+                self.FourWireCurrentvsVoltaqgeMenu()
+            if menu == 'V Vs C':
+                self.VoltageVsCurrent()
+            if menu == 'Process':
+                self.AutomationMenu()
         if option == 'Save':
             if menu == '4 Wire C vs V':
-                recipe_names_file = open("Recipes/" + file_name + '/' + file_name + '.txt', 'a')
-                recipe_names_file.write(str(recipe_name.get()) + '\n')
-                recipe_names_file.close()
                 new_recipe_file = open("Recipes/" + file_name + '/' + recipe_name.get() + '.txt', 'w')
                 new_recipe_file.write(forced.get() + '\n')
                 new_recipe_file.write(to.get() + '\n')
@@ -534,11 +543,10 @@ class Application(Frame):
                 new_recipe_file.write(slot.get() + '\n')
                 new_recipe_file.write(name.get() + '\n')
                 new_recipe_file.close()
+                recipe.set(recipe_name.get())
+                recipe_name.set('')
                 self.FourWireCurrentvsVoltaqgeMenu()
             if menu == 'V Vs C':
-                recipe_names_file = open("Recipes/" + file_name + '/' + file_name + '.txt', 'a')
-                recipe_names_file.write(str(recipe_name.get()) + '\n')
-                recipe_names_file.close()
                 new_recipe_file = open("Recipes/" + file_name + '/' + recipe_name.get() + '.txt', 'w')
                 new_recipe_file.write(forced.get() + '\n')
                 new_recipe_file.write(to.get() + '\n')
@@ -549,14 +557,13 @@ class Application(Frame):
                 new_recipe_file.write(inp.get() + '\n')
                 new_recipe_file.write(tm.get() + '\n')
                 new_recipe_file.close()
+                recipe.set(recipe_name.get())
+                recipe_name.set('')
                 self.VoltageVsCurrent()
             if menu == 'Process':
-                recipe_names_file = open("Recipes/" + file_name + '/' + file_name + '.txt', 'a')
-                recipe_names_file.write(str(recipe_name.get()) + '\n')
-                recipe_names_file.close()
                 new_recipe_file = open("Recipes/" + file_name + '/' + recipe_name.get() + '.txt', 'w')
-                process = open('process_que.txt', 'r')
                 new_recipe_file.write(str(count).rstrip() + '\n')
+                process = open('process_que.txt', 'r')
                 processNumber = 0
                 while processNumber < count:
                     measure = process.readline()
@@ -586,8 +593,11 @@ class Application(Frame):
                     slot = process.readline()
                     new_recipe_file.write(str(slot).rstrip() + '\n')
                     processNumber += 1
+                recipe.set(recipe_name.get())
+                recipe_name.set('')
                 self.AutomationMenu()
         if option == 'Open':
+            recipe_name.set(recipe.get())
             if menu == '4 Wire C vs V':
                 recipe_file = open("Recipes/4_Wire_Recipes/" + recipe.get() + '.txt', 'r')
                 forced.set(recipe_file.readline().rstrip())
@@ -668,14 +678,10 @@ class Application(Frame):
         global file_name
         global apply_img
         global exicute_img
-        recipe_name.set('')
         recipe_list = []
-        root.geometry("650x600")
-        recipe_names_file = open('Recipes/V_Vs_C_Recipes/V_Vs_C_Recipes.txt', 'r')
-        recipe_names = recipe_names_file.readline().rstrip()
-        while recipe_names != '':
-            recipe_list.append(recipe_names)
-            recipe_names = recipe_names_file.readline().rstrip()
+        for file in os.listdir("Recipes/V_Vs_C_Recipes"):
+            if file.endswith(".txt"):
+                recipe_list.append(file[:-4])
         Label(self, text='Starting Current (ma)', font=(font_size)).grid()
         Entry(self, textvariable=forced, font=(font_size)).grid(ipadx=10, ipady=10)
         Label(self, text='Current Limit (ma)', font=(font_size)).grid()
@@ -694,17 +700,19 @@ class Application(Frame):
                command=lambda: self.AddProcessToQue()).grid(column=2, row=0)
         Label(self, text='Processes in Que:', font=(font_size)).grid(column=2, row=1)
         Label(self, text=count, font=(font_size)).grid(column=2, row=2)
-        Label(self, text='New Recipe Name', font=(font_size)).grid(column=1, row=3)
-        Entry(self, textvariable=recipe_name, font=(font_size)).grid(column=1, row=4, ipadx=10, ipady=10)
+        Label(self, text='New Recipe Name', font=(font_size)).grid(column=1, row=4)
+        Entry(self, textvariable=recipe_name, font=(font_size)).grid(column=1, row=5, ipadx=10, ipady=10)
         Button(self, text="Save Recipe", font=(font_size), image=save_img, compound=TOP,
                command=lambda: self.RecipesMenu('Save', 'V Vs C')).grid(column=1,
-                                                                                                       row=5)
+                                                                        row=6)
         Label(self, text="Choose From Existing Recipe", font=(font_size)).grid(column=1, row=0)
         apply(OptionMenu, (self, recipe) + tuple(recipe_list)).grid(column=1, row=1)
         Button(self, text='', image=apply_img, compound=TOP, command=lambda: self.RecipesMenu('Open', 'V Vs C')).grid(
             column=1,
                                                                                                    row=2)
-        Button(self, image=back_img, command=lambda: self.AutomationMenu()).grid(column=1, row=6)
+        Button(self, image=back_img, command=lambda: self.AutomationMenu()).grid(column=1, row=7)
+        Button(self, image=delete_img, compound=TOP, command=lambda: self.RecipesMenu("Delete", "V Vs C")).grid(
+            column=1, row=3)
         measure = 'VoltageVsCurrent'
         file_name = 'V_Vs_C_Recipes'
 
@@ -819,7 +827,10 @@ class Application(Frame):
             processNumber += 1
             print (name.rstrip() != '')
             if name.rstrip() != '':
-                workbook = xlsxwriter.Workbook(str(name).rstrip() + '.xlsx')
+                if z_name != "":
+                    workbook = xlsxwriter.Workbook(str(name).rstrip() + '.xlsx')
+                else:
+                    workbook = xlsxwriter.Workbook("Output_Files/" + str(name).rstrip() + '.xlsx')
                 format = workbook.add_format()
                 format.set_text_wrap()
                 worksheet = workbook.add_worksheet()
@@ -831,7 +842,8 @@ class Application(Frame):
                 z.write(str(name).rstrip() + '.xlsx')
                 os.remove(str(name).rstrip() + '.xlsx')
         winsound.PlaySound('Sounds/beep-01.wav', winsound.SND_FILENAME)
-        z.close()
+        if z_name != '':
+            z.close()
         self.AutomationMenu()
 
     def AutoMeasure(self):

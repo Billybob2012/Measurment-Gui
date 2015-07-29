@@ -1,5 +1,0 @@
-None
-Lines 1-19 (0.01 ma)
-Lines 1-19 (0.05 ma)
-Lines 1-19 (0.1 ma)
-
