@@ -1,7 +1,7 @@
-Insturments and adresses
+***INSTRUMENT ADRESSES***
 
 Agilent34410A
-USB0::0x0957::0x0607::MY47025561::0::INSTR
+GPIB0::22::INSTR
 
 Keithley7002
 GPIB0::7::INSTR
@@ -14,3 +14,19 @@ GPIB0::1::INSTR
 
 Arduino Board
 COM8
+
+***FONT TYPES***
+
+Label Font Type
+Corbel
+
+Button Font Type
+Times
+
+***Font SIZES***
+
+Label Font Size
+15
+
+Button Font Size
+10

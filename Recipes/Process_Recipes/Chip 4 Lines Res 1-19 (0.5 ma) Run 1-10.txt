@@ -1,0 +1,131 @@
+10
+4 Wire Forced Current vs Voltage
+.05
+
+
+1
+19
+Chip [ 3 ] Lines 1-19 (0.05 ma) Run 1
+column
+
+
+
+
+1
+4 Wire Forced Current vs Voltage
+.05
+
+
+1
+19
+Chip [ 3 ] Lines 1-19 (0.05 ma) Run 2
+column
+
+
+
+
+1
+4 Wire Forced Current vs Voltage
+.05
+
+
+1
+19
+Chip [ 3 ] Lines 1-19 (0.05 ma) Run 3
+column
+
+
+
+
+1
+4 Wire Forced Current vs Voltage
+.05
+
+
+1
+19
+Chip [ 3 ] Lines 1-19 (0.05 ma) Run 4
+column
+
+
+
+
+1
+4 Wire Forced Current vs Voltage
+.05
+
+
+1
+19
+Chip [ 3 ] Lines 1-19 (0.05 ma) Run 5
+column
+
+
+
+
+1
+4 Wire Forced Current vs Voltage
+.05
+
+
+1
+19
+Chip [ 3 ] Lines 1-19 (0.05 ma) Run 6
+column
+
+
+
+
+1
+4 Wire Forced Current vs Voltage
+.05
+
+
+1
+19
+Chip [ 3 ] Lines 1-19 (0.05 ma) Run 7
+column
+
+
+
+
+1
+4 Wire Forced Current vs Voltage
+.05
+
+
+1
+19
+Chip [ 3 ] Lines 1-19 (0.05 ma) Run 8
+column
+
+
+
+
+1
+4 Wire Forced Current vs Voltage
+.05
+
+
+1
+19
+Chip [ 3 ] Lines 1-19 (0.05 ma) Run 9
+column
+
+
+
+
+1
+4 Wire Forced Current vs Voltage
+.05
+
+
+1
+19
+Chip [ 3 ] Lines 1-19 (0.05 ma) Run 10
+column
+
+
+
+
+1
