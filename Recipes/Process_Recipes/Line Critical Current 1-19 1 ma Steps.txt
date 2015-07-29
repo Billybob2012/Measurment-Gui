@@ -5,7 +5,7 @@ VoltageVsCurrent
 1
 1
 60
-Chip [ 2 ] Line [ 1 ]
+Line 1
 
 
 
@@ -18,7 +18,7 @@ VoltageVsCurrent
 1
 2
 60
-Chip [ 2 ] Line [ 2 ]
+Line 2
 
 
 
@@ -31,7 +31,7 @@ VoltageVsCurrent
 1
 3
 60
-Chip [ 2 ] Line [ 3 ]
+Line 3
 
 
 
@@ -44,7 +44,7 @@ VoltageVsCurrent
 1
 4
 60
-Chip [ 2 ] Line [ 4 ]
+Line 4
 
 
 
@@ -57,7 +57,7 @@ VoltageVsCurrent
 1
 5
 60
-Chip [ 2 ] Line [ 5 ]
+Line 5
 
 
 
@@ -70,7 +70,7 @@ VoltageVsCurrent
 1
 6
 60
-Chip [ 2 ] Line [ 6 ]
+Line 6
 
 
 
@@ -83,7 +83,7 @@ VoltageVsCurrent
 1
 7
 60
-Chip [ 2 ] Line [ 7 ]
+Line 7
 
 
 
@@ -96,7 +96,7 @@ VoltageVsCurrent
 1
 8
 60
-Chip [ 2 ] Line [ 8 ]
+Line 8
 
 
 
@@ -109,7 +109,7 @@ VoltageVsCurrent
 1
 9
 60
-Chip [ 2 ] Line [ 9 ]
+Line 9
 
 
 
@@ -122,7 +122,7 @@ VoltageVsCurrent
 1
 10
 60
-Chip [ 2 ] Line [ 10 ]
+Line 10
 
 
 
@@ -135,7 +135,7 @@ VoltageVsCurrent
 1
 11
 60
-Chip [ 2 ] Line [ 11 ]
+Line 11
 
 
 
@@ -148,7 +148,7 @@ VoltageVsCurrent
 1
 12
 60
-Chip [ 2 ] Line [ 12 ]
+Line 12
 
 
 
@@ -161,7 +161,7 @@ VoltageVsCurrent
 1
 13
 60
-Chip [ 2 ] Line [ 13 ]
+Line 13
 column
 
 
@@ -174,7 +174,7 @@ VoltageVsCurrent
 1
 14
 60
-Chip [ 2 ] Line [ 14 ]
+Line 14
 column
 
 
@@ -187,7 +187,7 @@ VoltageVsCurrent
 1
 15
 60
-Chip [ 2 ] Line [ 15 ]
+Line 15
 column
 
 
@@ -200,7 +200,7 @@ VoltageVsCurrent
 1
 16
 60
-Chip [ 2 ] Line [ 16 ]
+Line 16
 column
 
 
@@ -213,7 +213,7 @@ VoltageVsCurrent
 1
 17
 60
-Chip [ 2 ] Line [ 17 ]
+Line 17
 column
 
 
@@ -226,7 +226,7 @@ VoltageVsCurrent
 1
 18
 60
-Chip [ 2 ] Line [ 18 ]
+Line 18
 column
 
 
@@ -239,7 +239,7 @@ VoltageVsCurrent
 1
 19
 60
-Chip [ 2 ] Line [ 19 ]
+Line 19
 column
 
 

@@ -5,7 +5,7 @@
 
 1
 19
-Chip [ 2 ] Lines 1-19 (0.05 ma) Run 1
+Lines 1-19 (0.05 ma) Run 1
 column
 
 
@@ -18,7 +18,7 @@ column
 
 1
 19
-Chip [ 2 ] Lines 1-19 (0.05 ma) Run 2
+Lines 1-19 (0.05 ma) Run 2
 column
 
 
@@ -31,7 +31,7 @@ column
 
 1
 19
-Chip [ 2 ] Lines 1-19 (0.05 ma) Run 3
+Lines 1-19 (0.05 ma) Run 3
 column
 
 
@@ -44,7 +44,7 @@ column
 
 1
 19
-Chip [ 2 ] Lines 1-19 (0.05 ma) Run 4
+Lines 1-19 (0.05 ma) Run 4
 column
 
 
@@ -57,7 +57,7 @@ column
 
 1
 19
-Chip [ 2 ] Lines 1-19 (0.05 ma) Run 5
+Lines 1-19 (0.05 ma) Run 5
 column
 
 
@@ -70,7 +70,7 @@ column
 
 1
 19
-Chip [ 2 ] Lines 1-19 (0.05 ma) Run 6
+Lines 1-19 (0.05 ma) Run 6
 column
 
 
@@ -83,7 +83,7 @@ column
 
 1
 19
-Chip [ 2 ] Lines 1-19 (0.05 ma) Run 7
+Lines 1-19 (0.05 ma) Run 7
 column
 
 
@@ -96,7 +96,7 @@ column
 
 1
 19
-Chip [ 2 ] Lines 1-19 (0.05 ma) Run 8
+Lines 1-19 (0.05 ma) Run 8
 column
 
 
@@ -109,7 +109,7 @@ column
 
 1
 19
-Chip [ 2 ] Lines 1-19 (0.05 ma) Run 9
+Lines 1-19 (0.05 ma) Run 9
 column
 
 
@@ -122,7 +122,7 @@ column
 
 1
 19
-Chip [ 2 ] Lines 1-19 (0.05 ma) Run 10
+Lines 1-19 (0.05 ma) Run 10
 column
 
 

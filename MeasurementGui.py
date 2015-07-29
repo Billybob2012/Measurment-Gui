@@ -494,10 +494,10 @@ class Application(Frame):
                 recipe_list.append(file[:-4])
         Label(self, text='Amount forced (ma)', font=(font, font_size)).grid(column=0, row=0, rowspan=2)
         Entry(self, textvariable=forced, font=(font, font_size)).grid(column=0, row=1, ipadx=10, ipady=10)
-        Label(self, text='Input Card Slot Number (1-10)', font=(15)).grid(column=0, row=2)
+        Label(self, text='Input Card Slot Number (1-10)', font=(font, font_size)).grid(column=0, row=2)
         Entry(self, textvariable=slot, font=(font, font_size)).grid(column=0, row=3, ipadx=10, ipady=10)
-        Label(self, text='Select switch inputs', font=(15)).grid(column=0, row=2, rowspan=4)
-        Label(self, text='From:', font=(font, font_size)).grid(column=0, row=2, rowspan=5)
+        Label(self, text='Select switch inputs', font=(font, font_size)).grid(column=0, row=2, rowspan=5)
+        Label(self, text='From:', font=(font, font_size)).grid(column=0, row=2, rowspan=6)
         Entry(self, textvariable=fr, font=(font, font_size)).grid(column=0, row=6, ipadx=10, ipady=10)
         Label(self, text='To:', font=(font, font_size)).grid(column=0, row=7)
         Entry(self, textvariable=to, font=(font, font_size)).grid(column=0, row=8, ipadx=10, ipady=10)
@@ -887,37 +887,6 @@ class Application(Frame):
         x = []
         y = []
         i = 0
-        if str(measure.rstrip()) == '2 Wire Forced Current vs Voltage':
-            self.Keithley7002('write', 'open all')
-            self.Keithley7002('write', 'CONF:SLOT' + str(slot).rstrip() + ':POLE 2')
-            time.sleep(1)
-            if name.rstrip() != '':
-                worksheet.write(row, col, 'Current (ma)', format)
-                worksheet.write(row, col + 1, 'Voltage (v)', format)
-                worksheet.write(row, col + 2, 'Resistance (ohm)', format)
-            forced = str(float(forced.rstrip())/1000)
-            while int(fr) < int(to) + 1:
-                row += 1
-                fr = str(fr).rstrip()
-                self.Keithley7002('write', 'close (@' + str(slot).rstrip() + '!' + (str(fr)).rstrip() + ')')
-                fr = int(fr) + 1
-                self.YokogawaGS200('write', 'SENS:REM ON')
-                self.YokogawaGS200('write', 'SOUR:FUNC CURR')
-                self.YokogawaGS200('write', 'SOUR:RANG ' + forced)
-                self.YokogawaGS200('write', 'SOUR:LEV ' + forced)
-                self.YokogawaGS200('write', 'OUTP ON')
-                time.sleep(.25)
-                if name.rstrip() != '':
-                    worksheet.write(row, col, '=' + str((float(forced) * 1000)))
-                    worksheet.write(row, col + 1, '=' + str(self.Agilent34410A('ask', 'MEAS:VOLT:DC?')))
-                    worksheet.write(row, col + 2, '=' + str(
-                        (float(self.Agilent34410A('ask', 'MEAS:VOLT:DC?'))) / (float(forced))))
-                self.YokogawaGS200('write', 'OUTP OFF')
-                self.Keithley7002('write', 'open all')
-            if name.rstrip() != '':
-                chart = workbook.add_chart({'type': graph.rstrip()})
-                chart.add_series({'values': '=Sheet1!$C$2:$C$' + str(row + 1)})
-                worksheet.insert_chart('G2', chart)
         if str(measure.rstrip()) == "Live Data":
             matplotlib.pyplot.ion()
             data = 200.00
@@ -967,7 +936,6 @@ class Application(Frame):
                 self.YokogawaGS200('write', 'SOUR:RANG ' + forced)
                 self.YokogawaGS200('write', 'SOUR:LEV ' + forced)
                 self.YokogawaGS200('write', 'OUTP ON')
-                time.sleep(.75)
                 voltage = self.Agilent34410A('ask', 'MEAS:VOLT:DC?').rstrip()
                 y.append(float(forced)*1000)
                 x.append(float(voltage))
@@ -978,9 +946,9 @@ class Application(Frame):
                     worksheet.write(row, col + 1, '=' + str(float(voltage)*1000))
                 forced = str(float((float(forced)) + (float(tm))))
                 print forced
-                #time.sleep(.1)
             self.YokogawaGS200('write', 'OUTP OFF')
             self.Keithley7002('write', 'open all')
+            time.sleep(1)
         if str(measure.rstrip()) == '4 Wire Forced Current vs Voltage':
             self.Keithley7002('write', 'open all')
             self.Keithley7002('write', 'CONF:SLOT' + str(slot).rstrip() + ':POLE 2')
@@ -1004,7 +972,8 @@ class Application(Frame):
                 if name.rstrip() != '':
                     worksheet.write(row, col, '=' + str(float(forced)*1000))
                     worksheet.write(row, col + 1, '=' + str(self.Agilent34410A('ask', 'MEAS:VOLT:DC?')))
-                    worksheet.write(row, col + 2, '=' + str(float(self.Agilent34410A('ask', 'MEAS:VOLT:DC?')) / float(forced)))
+                    worksheet.write(row, col + 2,
+                                    '=' + str(int((float(self.Agilent34410A('ask', 'MEAS:VOLT:DC?')) / float(forced)))))
                 self.YokogawaGS200('write', 'OUTP OFF')
                 self.Keithley7002('write', 'open all')
             if name.rstrip() != '':
