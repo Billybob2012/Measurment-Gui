@@ -6,7 +6,7 @@ try:
 except ImportError:
     print "Please install PyVisa Library"
 from Tkinter import *
-# from ttk import *
+#from ttk import *
 import time
 
 try:
@@ -50,6 +50,7 @@ except:
 
 kelv = 0
 ans = '0'
+
 
 
 class Application(Frame):
@@ -141,21 +142,21 @@ class Application(Frame):
         self.destroy()
         Frame.__init__(self)
         self.grid()
-        Label(self, text='Select a device to connect to', font=(font, font_size)).grid(columnspan=2)
-        Button(self, padx=25, pady=25, text='Agilent 34410A DMM', font=(font, font_size), image=agilent_img,
-               compound=LEFT,
+        Label(self, text='Select a device to connect to',font=(font, font_size)).grid(columnspan=2)
+        Button(self, padx=25, pady=25, text='Agilent 34410A DMM',bg= "dark orange", font=(font, font_size), image=agilent_img,
+               compound=RIGHT,
                command=lambda: self.Agilent34410AMainMenu()).grid(column=1, row=1)
-        Button(self, padx=25, pady=25, text='Keithley 7002 Switching Machine', font=(font, font_size),
+        Button(self, padx=25, pady=25, text='Keithley 7002 Switching Machine',bg= "dark orange", font=(font, font_size),
                image=keithley_img,
                compound=LEFT,
                command=lambda: self.Keithley7002MainMenu()).grid(column=0, row=1)
-        Button(self, padx=25, pady=25, text='Yokogawa GS200', font=(font, font_size), image=yokogawa_img, compound=LEFT,
+        Button(self, padx=25, pady=25, text='Yokogawa GS200',bg= "dark orange", font=(font, font_size), image=yokogawa_img, compound=LEFT,
                command=lambda: self.YokogawaGS200MainMenu()).grid()
-        Button(self, padx=25, pady=25, text='LakeShore 336 Temperature Controller', font=(font, font_size),
+        Button(self, padx=25, pady=25, text='LakeShore 336 Temperature Controller',bg= "dark orange", font=(font, font_size),
                image=lakeshore_img, compound=LEFT,
                command=lambda: self.LakeShore336MainMenu()).grid(column=1, row=2)
         Label(self, text='Automation Menu', font=(font, font_size)).grid(columnspan=2, column=0)
-        Button(self, padx=25, pady=25, text='Automation Menu', font=(font, font_size),
+        Button(self, padx=25, pady=25, text='Automation Menu', bg= "dark orange", font=(font, font_size),
                command=lambda: self.AutomationMenu()).grid(columnspan=2, column=0)
 
     def Agilent34410AMainMenu(self):
@@ -406,29 +407,29 @@ class Application(Frame):
             if file.endswith(".txt"):
                 recipe_list.append(file[:-4])
         Label(self, text='Select Automation Process', font=(font, font_size)).grid()
-        Button(self, padx=25, pady=25, text='4 Wire Current vs Voltage Resistance Test', font=(font, font_size),
+        Button(self, padx=25, pady=25, text='4 Wire Current vs Voltage Resistance Test',bg= "dark orange", font=(font, font_size),
                command=lambda: self.FourWireCurrentvsVoltaqgeMenu()).grid()
-        Button(self, padx=25, pady=25, text='Voltage Vs Current Graph', font=(font, font_size),
+        Button(self, padx=25, pady=25, text='Voltage Vs Current Graph', bg= "dark orange", font=(font, font_size),
                command=lambda: self.VoltageVsCurrent()).grid()
-        Button(self, padx=25, pady=25, text='Temperature Vs Resistance', font=(font, font_size),
+        Button(self, padx=25, pady=25, text='Temperature Vs Resistance',bg= "dark orange", font=(font, font_size),
                command=lambda: self.LiveData()).grid()
         Label(self, text='Choose a process recipe', font=(font, font_size)).grid(row=0, column=1)
-        apply(OptionMenu, (self, recipe) + tuple(recipe_list)).grid(row=1, column=1, ipadx=10, ipady=10)
-        Button(self, text='', image=apply_img, compound=TOP, command=lambda: self.RecipesMenu('Open', 'Process')).grid(
+        apply(OptionMenu, (self, recipe) + tuple(recipe_list),).grid(row=1, column=1, ipadx=10, ipady=10)
+        Button(self, text='', image=apply_img,bg= "dark orange", compound=TOP, command=lambda: self.RecipesMenu('Open', 'Process')).grid(
             row=2, column=1)
         Label(self, text="Save Process As", font=(font, font_size)).grid(row=0, column=2)
-        Entry(self, textvariable=recipe_name, font=(font, font_size)).grid(row=1, column=2, ipadx=10, ipady=10)
-        Button(self, text="Save", image=save_img, font=(font, font_size), compound=TOP,
+        Entry(self, textvariable=recipe_name, bg= "white", font=(font, font_size)).grid(row=1, column=2, ipadx=10, ipady=10)
+        Button(self, text="Save",bg= "dark orange", image=save_img, font=(font, font_size), compound=TOP,
                command=lambda: self.RecipesMenu('Save', 'Process')).grid(row=2, column=2)
-        Button(self, text='', image=exicute_img, compound=TOP,
+        Button(self, text='',bg= "dark orange", image=exicute_img, compound=TOP,
                command=lambda: self.UserProgramableTest1Process("UserRecipe")).grid(column=1, row=6)
-        Label(self, text='Processes in Que:', font=(font, font_size)).grid()
+        Label(self, text='Processes in Que:',font=(font, font_size)).grid()
         Label(self, text=count, font=(font, font_size)).grid()
-        Button(self, image=back_img, command=lambda: self.DeviceMen()).grid()
+        Button(self, image=back_img,bg= "dark orange", command=lambda: self.DeviceMen()).grid()
         file_name = 'Process_Recipes'
         Label(self, text='Name of .zip', font=(font, font_size)).grid(row=4, column=1)
-        Entry(self, textvariable=zip_name, font=(font, font_size)).grid(row=5, column=1, ipadx=10, ipady=10)
-        Button(self, image=delete_img, compound=TOP, command=lambda: self.RecipesMenu("Delete", "Process")).grid(
+        Entry(self, textvariable=zip_name, bg= "white", font=(font, font_size)).grid(row=5, column=1, ipadx=10, ipady=10)
+        Button(self, image=delete_img,bg= "dark orange", compound=TOP, command=lambda: self.RecipesMenu("Delete", "Process")).grid(
             column=1, row=3)
 
     def LiveData(self):
@@ -801,6 +802,8 @@ class Application(Frame):
         self.AutomationMenu()
 
     def UserProgramableTest1Process(self, rec):
+        root.option_add("*background", "orange")
+        root.configure(background = "orange")
         global measure
         global tm
         global fr
@@ -862,6 +865,7 @@ class Application(Frame):
         winsound.PlaySound('Sounds/beep-01.wav', winsound.SND_FILENAME)
         if z_name != '':
             z.close()
+
         self.AutomationMenu()
 
     def AutoMeasure(self):
@@ -1042,5 +1046,7 @@ class Application(Frame):
 root = Tk()
 root.title("Measurement System GUI Alpha")
 root.geometry("700x600")
+root.option_add("*background", "light sky blue")
+root.configure(background = "light sky blue")
 app = Application(root)
 root.mainloop()
