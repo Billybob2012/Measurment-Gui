@@ -1,6 +1,7 @@
 import winsound
 import zipfile
 import os
+import datetime
 
 import emails
 
@@ -846,6 +847,7 @@ class Application(Frame):
             Label(self, text=str((count - processNumber)) + ' More process(s) to go').grid()
             self.AutoMeasure()
             workbook.close()
+
             if z_name != '':
                 z.write(str(name).rstrip() + '.xlsx')
                 os.remove(str(name).rstrip() + '.xlsx')
@@ -853,13 +855,15 @@ class Application(Frame):
         if mail_to.get() != '':
             if z_name != '':
                 z.close()
+                time_completed = str(datetime.datetime.now())[11:-10]
+                date_completed = str(datetime.datetime.now())[:-16]
                 contact = open("Email_Settings/" + mail_to.get() + ".txt", 'r')
                 email_address = contact.readline().rstrip()
                 contact_name = contact.readline().rstrip()
                 contact.close()
-                print email_address
-                print contact_name
-                message = emails.html(html="Measurement Results", subject=z_name + " Results",
+                message = emails.html(
+                    html="<p> Greetings: " + contact_name + "<,/p>" + "<p>Here are your measurement results, they were completed on " + date_completed + " at " + time_completed + ".</p> <p> War Eagle! </p>",
+                    subject=z_name + " Results",
                                       mail_from=("Auburn Cryo Measurement System", "cryomeasurementsystem@gmail.com"))
                 message.attach(data=open("Output_Files/" + z_name + ".zip", 'rb'), filename=z_name + ".zip")
                 r = message.send(to=(mail_to.get().rstrip(), email_address), render={"name": "Auburn Cryo"},
