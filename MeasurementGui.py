@@ -862,7 +862,7 @@ class Application(Frame):
                 contact_name = contact.readline().rstrip()
                 contact.close()
                 message = emails.html(
-                    html="<p> Greetings: " + contact_name + "<,/p>" + "<p>Here are your measurement results, they were completed on " + date_completed + " at " + time_completed + ".</p> <p> War Eagle! </p>",
+                    html="<p> Greetings: " + contact_name + ",</p>" + "<p>Here are your measurement results, they were completed on " + date_completed + " at " + time_completed + ".</p> <p> War Eagle! </p>",
                     subject=z_name + " Results",
                                       mail_from=("Auburn Cryo Measurement System", "cryomeasurementsystem@gmail.com"))
                 message.attach(data=open("Output_Files/" + z_name + ".zip", 'rb'), filename=z_name + ".zip")
