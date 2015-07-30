@@ -1,6 +1,9 @@
 import winsound
 import zipfile
 import os
+
+import emails
+
 try:
     import visa
 except ImportError:
@@ -22,36 +25,13 @@ try:
 except:
     print 'Please install MatPlotLib'
 
-# try:
-#     open('4_Wire_Recipes.txt', 'r')
-# except:
-#     x = open('4_Wire_Recipes.txt', 'w')
-#     x.write('None' + '\n')
-#     x.close()
-#     x = open('None.txt', 'w')
-#     x.close()
-#     print 'Made 4_Wire_Recipes.txt File'
-# try:
-#     open('V_Vs_C_Recipes.txt', 'r')
-# except:
-#     x = open('V_Vs_C_Recipes.txt', 'w')
-#     x.write('None' + '\n')
-#     x.close()
-#     x = open('None.txt', 'w')
-#     x.close()
-# try:
-#     open('Process_Recipes.txt', 'r')
-# except:
-#     x = open('Process_Recipes.txt', 'w')
-#     x.write('None' + '\n')
-#     x.close()
-#     x = open('None.txt', 'w')
-#     x.close()
-
 kelv = 0
 ans = '0'
 
 
+# message = emails.html(html="Test",subject="Test Email",mail_from=("Steffen","steffen2012@gmail.com"))
+# r = message.send(to=("Steffen Sullivan","steffen2012@gmail.com"),render={"name": "John"},smtp={"host": "smtp.gmail.com","port": 465,"ssl": True, "user": "steffen2012", "password": "kosmo1223"})
+# assert r.status_code == 250
 class Application(Frame):
     def __init__(self, master):
         Frame.__init__(self, master)
@@ -94,6 +74,8 @@ class Application(Frame):
         global zip_name
         global delete_img
         global font
+        global mail_to
+        mail_to = StringVar()
         settings = open('settings.txt', 'r')
         font_size = settings.readline()
         while font_size.rstrip() != 'Label Font Size':
@@ -398,9 +380,14 @@ class Application(Frame):
         global zip_name
         global delete_img
         global font
+        global mail_to
         self.destroy()
         Frame.__init__(self)
         self.grid()
+        email_list = []
+        for file in os.listdir("Email_Settings"):
+            if file.endswith(".txt"):
+                email_list.append(file[:-4])
         recipe_list = []
         for file in os.listdir("Recipes/Process_Recipes"):
             if file.endswith(".txt"):
@@ -421,12 +408,14 @@ class Application(Frame):
         Button(self, text="Save", image=save_img, font=(font, font_size), compound=TOP,
                command=lambda: self.RecipesMenu('Save', 'Process')).grid(row=2, column=2)
         Button(self, text='', image=exicute_img, compound=TOP,
-               command=lambda: self.UserProgramableTest1Process("UserRecipe")).grid(column=1, row=6)
+               command=lambda: self.UserProgramableTest1Process("UserRecipe")).grid(column=1, row=8)
         Label(self, text='Processes in Que:', font=(font, font_size)).grid()
         Label(self, text=count, font=(font, font_size)).grid()
         Button(self, image=back_img, command=lambda: self.DeviceMen()).grid()
         file_name = 'Process_Recipes'
         Label(self, text='Name of .zip', font=(font, font_size)).grid(row=4, column=1)
+        apply(OptionMenu, (self, mail_to) + tuple(email_list)).grid(column=1, row=7, ipadx=10, ipady=10)
+        Label(self, text='Email Results To', font=(font, font_size)).grid(column=1, row=6)
         Entry(self, textvariable=zip_name, font=(font, font_size)).grid(row=5, column=1, ipadx=10, ipady=10)
         Button(self, image=delete_img, compound=TOP, command=lambda: self.RecipesMenu("Delete", "Process")).grid(
             column=1, row=3)
@@ -818,6 +807,7 @@ class Application(Frame):
         global outp
         global slot
         global zip_name
+        global mail_to
         z_name = zip_name.get().rstrip()
         process = open('process_que.txt', 'r')
         processNumber = 0
@@ -859,9 +849,24 @@ class Application(Frame):
             if z_name != '':
                 z.write(str(name).rstrip() + '.xlsx')
                 os.remove(str(name).rstrip() + '.xlsx')
+
+        if mail_to.get() != '':
+            if z_name != '':
+                z.close()
+                contact = open("Email_Settings/" + mail_to.get() + ".txt", 'r')
+                email_address = contact.readline().rstrip()
+                contact_name = contact.readline().rstrip()
+                contact.close()
+                print email_address
+                print contact_name
+                message = emails.html(html="Measurement Results", subject=z_name + " Results",
+                                      mail_from=("Auburn Cryo Measurement System", "cryomeasurementsystem@gmail.com"))
+                message.attach(data=open("Output_Files/" + z_name + ".zip", 'rb'), filename=z_name + ".zip")
+                r = message.send(to=(mail_to.get().rstrip(), email_address), render={"name": "Auburn Cryo"},
+                                 smtp={"host": "smtp.gmail.com", "port": 465, "ssl": True,
+                                       "user": "cryomeasurementsystem", "password": "cryoiscold", "timeout": 5})
+                assert r.status_code == 250
         winsound.PlaySound('Sounds/beep-01.wav', winsound.SND_FILENAME)
-        if z_name != '':
-            z.close()
         self.AutomationMenu()
 
     def AutoMeasure(self):
