@@ -1,0 +1,131 @@
+10
+4 Wire Forced Current vs Voltage
+.1
+
+
+1
+19
+Via 1_0.1 ma
+column
+
+
+
+
+1
+4 Wire Forced Current vs Voltage
+.1
+
+
+1
+19
+Via 2_0.1 ma
+column
+
+
+
+
+1
+4 Wire Forced Current vs Voltage
+.1
+
+
+1
+19
+Via 3_0.1 ma
+column
+
+
+
+
+1
+4 Wire Forced Current vs Voltage
+.1
+
+
+1
+19
+Via 4_0.1 ma
+column
+
+
+
+
+1
+4 Wire Forced Current vs Voltage
+.1
+
+
+1
+19
+Via 5_0.1 ma
+column
+
+
+
+
+1
+4 Wire Forced Current vs Voltage
+.1
+
+
+1
+19
+Via 6_0.1 ma
+column
+
+
+
+
+1
+4 Wire Forced Current vs Voltage
+.1
+
+
+1
+19
+Via 7_0.1 ma
+column
+
+
+
+
+1
+4 Wire Forced Current vs Voltage
+.1
+
+
+1
+19
+Via 8_0.1 ma
+column
+
+
+
+
+1
+4 Wire Forced Current vs Voltage
+.1
+
+
+1
+19
+Via 9_0.1 ma
+column
+
+
+
+
+1
+4 Wire Forced Current vs Voltage
+.1
+
+
+1
+19
+Via 10_0.1 ma
+column
+
+
+
+
+1
