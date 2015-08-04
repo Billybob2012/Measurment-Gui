@@ -10,7 +10,7 @@ try:
 except ImportError:
     print "Please install PyVisa Library"
 from Tkinter import *
-# from ttk import *
+import ttk
 import time
 
 try:
@@ -28,19 +28,85 @@ except:
 
 kelv = 0
 ans = '0'
+global style
+global screenResX
+global screenResY
+xs = open("Settings/Screen/X_Res.txt", 'r')
+screenResX = int(xs.readline().rstrip())
+xs.close()
+ys = open("Settings/Screen/Y_Res.txt", "r")
+screenResY = int(ys.readline().rstrip())
+print screenResY
+ys.close()
 
 
-# message = emails.html(html="Test",subject="Test Email",mail_from=("Steffen","steffen2012@gmail.com"))
-# r = message.send(to=("Steffen Sullivan","steffen2012@gmail.com"),render={"name": "John"},smtp={"host": "smtp.gmail.com","port": 465,"ssl": True, "user": "steffen2012", "password": "kosmo1223"})
-# assert r.status_code == 250
 class Application(Frame):
     def __init__(self, master):
         Frame.__init__(self, master)
-        self.grid()
-        self.DeviceMen()
+        self.WelcomeScreen()
+
+    def WelcomeScreen(self):
+        au_logo = PhotoImage(file="au_pic.gif")
+        root.geometry(str(screenResX / 2) + "x" + str(screenResY / 3) + "+" + str(
+            (screenResX / 2) - ((screenResX / 2) / 2)) + "+" + str((screenResY / 2) - ((screenResY / 2) / 2)))
+        ttk.Label(root, text='Auburn Cryo Measurement System', font=('Times', 25, 'bold'), foreground='black',
+                  background='grey').place(relx=0.5, rely=0.0, x=0, y=30, anchor='center')
+        ttk.Button(root, image=au_logo.subsample(5, 5))
+        ttk.Button(root, text='Control Devices', command=lambda: self.DeviceMen()).place(relx=0.0, rely=0.3, x=20, y=0,
+                                                                                         width=200, height=100)
+        ttk.Button(root, text='Make a Measurement', command=lambda: self.AutomationMenu()).place(relx=0.0, rely=0.6,
+                                                                                                 x=10, y=0, width=200,
+                                                                                                 height=100)
+        ttk.Button(root, text='View Database').place(relx=1.0, rely=0.3, x=10, y=0, width=200, height=100, anchor='ne')
+        ttk.Button(root, text='Settings', command=lambda: self.Settings()).place(relx=1.0, rely=0.6, x=10, y=0,
+                                                                                 width=200, height=100, anchor='ne')
+
+    def Settings(self):
+        def SettingsDec(event):
+            x_res = StringVar()
+            y_res = StringVar()
+            if str(settings.selection()) == "('xs',)":
+                XS = Toplevel()
+
+                def x_screen_save():
+                    sett = open('Settings/Screen/X_Res.txt', 'w')
+                    sett.write(x_res.get())
+                    sett.close()
+                    XS.destroy()
+
+                sett = open("Settings/Screen/X_Res.txt", 'r')
+                x_res.set(str(sett.readline().rstrip()))
+                sett.close()
+                ttk.Entry(XS, textvariable=x_res).pack()
+                ttk.Button(XS, text='Save', command=lambda: x_screen_save()).pack()
+            if str(settings.selection()) == "('ys',)":
+                YS = Toplevel()
+
+                def y_screen_save():
+                    sett = open('Settings/Screen/Y_Res.txt', 'w')
+                    sett.write(y_res.get())
+                    print y_res.get()
+                    sett.close()
+                    YS.destroy()
+
+                sett = open("Settings/Screen/Y_Res.txt", 'r')
+                y_res.set(str(sett.readline().rstrip()))
+                sett.close()
+                ttk.Entry(YS, textvariable=y_res).pack()
+                ttk.Button(YS, text='Save', command=lambda: y_screen_save()).pack()
+
+        self.SettingsWindow = Toplevel()
+        settings = ttk.Treeview(self.SettingsWindow)
+        settings.pack(side=LEFT)
+        settings.insert('', '0', 'res', text='Screen Resolution')
+        settings.insert('res', '0', 'xs', text='X Screen Resolution')
+        settings.insert('res', '1', 'ys', text='Y Screen Resolution')
+        settings.bind('<<TreeviewSelect>>', SettingsDec)
+
 
     def DeviceMen(self):
-        root.wm_state('zoomed')
+        DevMen = Toplevel()
+        DevMen.title("Device Control Menu")
         global count
         global var
         global forced
@@ -124,24 +190,25 @@ class Application(Frame):
         self.destroy()
         Frame.__init__(self)
         self.grid()
-        Label(self, text='Select a device to connect to', font=(font, font_size)).grid(columnspan=2)
-        Button(self, bg="dark orange", padx=25, pady=25, text='Agilent 34410A DMM', font=(font, font_size),
+        Label(DevMen, text='Select a device to connect to', font=(font, font_size)).grid(columnspan=2)
+        Button(DevMen, bg="dark orange", padx=25, pady=25, text='Agilent 34410A DMM', font=(font, font_size),
                image=agilent_img,
                compound=LEFT,
                command=lambda: self.Agilent34410AMainMenu()).grid(column=1, row=1)
-        Button(self, bg="dark orange", padx=25, pady=25, text='Keithley 7002 Switching Machine', font=(font, font_size),
+        Button(DevMen, bg="dark orange", padx=25, pady=25, text='Keithley 7002 Switching Machine',
+               font=(font, font_size),
                image=keithley_img,
                compound=LEFT,
                command=lambda: self.Keithley7002MainMenu()).grid(column=0, row=1)
-        Button(self, bg="dark orange", padx=25, pady=25, text='Yokogawa GS200', font=(font, font_size),
+        Button(DevMen, bg="dark orange", padx=25, pady=25, text='Yokogawa GS200', font=(font, font_size),
                image=yokogawa_img, compound=LEFT,
                command=lambda: self.YokogawaGS200MainMenu()).grid()
-        Button(self, bg="dark orange", padx=25, pady=25, text='LakeShore 336 Temperature Controller',
+        Button(DevMen, bg="dark orange", padx=25, pady=25, text='LakeShore 336 Temperature Controller',
                font=(font, font_size),
                image=lakeshore_img, compound=LEFT,
                command=lambda: self.LakeShore336MainMenu()).grid(column=1, row=2)
-        Label(self, text='Automation Menu', font=(font, font_size)).grid(columnspan=2, column=0)
-        Button(self, bg="dark orange", padx=25, pady=25, text='Automation Menu', font=(font, font_size),
+        Label(DevMen, text='Automation Menu', font=(font, font_size)).grid(columnspan=2, column=0)
+        Button(DevMen, bg="dark orange", padx=25, pady=25, text='Automation Menu', font=(font, font_size),
                command=lambda: self.AutomationMenu()).grid(columnspan=2, column=0)
 
     def Agilent34410AMainMenu(self):
@@ -375,6 +442,7 @@ class Application(Frame):
         inst.close()
 
     def AutomationMenu(self):
+        self.MeasureMen = Toplevel()
         global add_process_img
         global recipe
         global recipe_name
@@ -385,9 +453,6 @@ class Application(Frame):
         global delete_img
         global font
         global mail_to
-        self.destroy()
-        Frame.__init__(self)
-        self.grid()
         email_list = []
         for file in os.listdir("Email_Settings"):
             if file.endswith(".txt"):
@@ -396,35 +461,39 @@ class Application(Frame):
         for file in os.listdir("Recipes/Process_Recipes"):
             if file.endswith(".txt"):
                 recipe_list.append(file[:-4])
-        Label(self, text='Select Automation Process', font=(font, font_size)).grid()
-        Button(self, bg="dark orange", padx=25, pady=25, text='4 Wire Current vs Voltage Resistance Test',
+        Label(self.MeasureMen, text='Select Automation Process', font=(font, font_size)).grid()
+        Button(self.MeasureMen, bg="dark orange", padx=25, pady=25, text='4 Wire Current vs Voltage Resistance Test',
                font=(font, font_size),
                command=lambda: self.FourWireCurrentvsVoltaqgeMenu()).grid()
-        Button(self, bg="dark orange", padx=25, pady=25, text='Voltage Vs Current Graph', font=(font, font_size),
+        Button(self.MeasureMen, bg="dark orange", padx=25, pady=25, text='Voltage Vs Current Graph',
+               font=(font, font_size),
                command=lambda: self.VoltageVsCurrent()).grid()
-        Button(self, bg="dark orange", padx=25, pady=25, text='Temperature Vs Resistance', font=(font, font_size),
+        Button(self.MeasureMen, bg="dark orange", padx=25, pady=25, text='Temperature Vs Resistance',
+               font=(font, font_size),
                command=lambda: self.LiveData()).grid()
-        Label(self, text='Choose a process recipe', font=(font, font_size)).grid(row=0, column=1)
-        apply(OptionMenu, (self, recipe) + tuple(recipe_list)).grid(row=1, column=1, ipadx=10, ipady=10)
-        Button(self, bg="dark orange", text='', image=apply_img, compound=TOP,
+        Label(self.MeasureMen, text='Choose a process recipe', font=(font, font_size)).grid(row=0, column=1)
+        apply(OptionMenu, (self.MeasureMen, recipe) + tuple(recipe_list)).grid(row=1, column=1, ipadx=10, ipady=10)
+        Button(self.MeasureMen, bg="dark orange", text='', image=apply_img, compound=TOP,
                command=lambda: self.RecipesMenu('Open', 'Process')).grid(
             row=2, column=1)
-        Label(self, text="Save Process As", font=(font, font_size)).grid(row=0, column=2)
-        Entry(self, textvariable=recipe_name, bg="white", font=(font, font_size)).grid(row=1, column=2, ipadx=10,
+        Label(self.MeasureMen, text="Save Process As", font=(font, font_size)).grid(row=0, column=2)
+        Entry(self.MeasureMen, textvariable=recipe_name, bg="white", font=(font, font_size)).grid(row=1, column=2,
+                                                                                                  ipadx=10,
                                                                                        ipady=10)
-        Button(self, bg="dark orange", text="Save", image=save_img, font=(font, font_size), compound=TOP,
+        Button(self.MeasureMen, bg="dark orange", text="Save", image=save_img, font=(font, font_size), compound=TOP,
                command=lambda: self.RecipesMenu('Save', 'Process')).grid(row=2, column=2)
-        Button(self, text='', image=exicute_img, compound=TOP,
+        Button(self.MeasureMen, text='', image=exicute_img, compound=TOP,
                command=lambda: self.UserProgramableTest1Process("UserRecipe")).grid(column=1, row=8)
-        Label(self, text='Processes in Que:', font=(font, font_size)).grid()
-        Label(self, text=count, font=(font, font_size)).grid()
-        Button(self, bg="dark orange", image=back_img, command=lambda: self.DeviceMen()).grid()
+        Label(self.MeasureMen, text='Processes in Que:', font=(font, font_size)).grid()
+        Label(self.MeasureMen, text=count, font=(font, font_size)).grid()
+        Button(self.MeasureMen, bg="dark orange", image=back_img, command=lambda: self.DeviceMen()).grid()
         file_name = 'Process_Recipes'
-        Label(self, text='Name of .zip', font=(font, font_size)).grid(row=4, column=1)
-        apply(OptionMenu, (self, mail_to) + tuple(email_list)).grid(column=1, row=7, ipadx=10, ipady=10)
-        Label(self, text='Email Results To', font=(font, font_size)).grid(column=1, row=6)
-        Entry(self, textvariable=zip_name, bg="white", font=(font, font_size)).grid(row=5, column=1, ipadx=10, ipady=10)
-        Button(self, bg="dark orange", image=delete_img, compound=TOP,
+        Label(self.MeasureMen, text='Name of .zip', font=(font, font_size)).grid(row=4, column=1)
+        apply(OptionMenu, (self.MeasureMen, mail_to) + tuple(email_list)).grid(column=1, row=7, ipadx=10, ipady=10)
+        Label(self.MeasureMen, text='Email Results To', font=(font, font_size)).grid(column=1, row=6)
+        Entry(self.MeasureMen, textvariable=zip_name, bg="white", font=(font, font_size)).grid(row=5, column=1,
+                                                                                               ipadx=10, ipady=10)
+        Button(self.MeasureMen, bg="dark orange", image=delete_img, compound=TOP,
                command=lambda: self.RecipesMenu("Delete", "Process")).grid(
             column=1, row=3)
 
@@ -460,6 +529,7 @@ class Application(Frame):
         measure = 'Live Data'
 
     def FourWireCurrentvsVoltaqgeMenu(self):
+        self.MeasureMen.destroy()
         global forced
         global count
         global range
@@ -1034,9 +1104,6 @@ class Application(Frame):
             worksheet.insert_chart('G2', chart)
 
 root = Tk()
-root.title("Measurement System GUI Alpha")
-root.option_add("*background", "light sky blue")
-root.configure(background="light sky blue")
-root.geometry("700x600")
+root.title("ACMS Welcome")
 app = Application(root)
 root.mainloop()

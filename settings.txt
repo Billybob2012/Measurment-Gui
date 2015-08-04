@@ -31,3 +31,6 @@ Label Font Size
 Button Font Size
 10
 
+X Screen Resolution
+1080
+
