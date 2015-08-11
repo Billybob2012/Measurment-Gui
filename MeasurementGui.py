@@ -873,7 +873,7 @@ class Application(Frame):
                 z.close()
                 time_completed = str(datetime.datetime.now())[11:-10]
                 date_completed = str(datetime.datetime.now())[:-16]
-                contact = open("Email_Settings/" + mail_to.get() + ".txt", 'r')
+                contact = open("Email_Settings/" + mail_to.get() + ".txt", 'r')[18:]
                 email_address = contact.readline().rstrip()
                 contact_name = contact.readline().rstrip()
                 contact.close()
