@@ -459,6 +459,26 @@ class MainApplication(Frame):
         ttk.Button(ResMes, text='Add This Measurement To The Que', command=lambda: AddMeasToQue()).grid()
 
     def CriticalCur(self):
+        def AddMeasToQue():
+            global notebook
+            _file_ = open("Processes/process_que.txt", "a")
+            _file_.write("Measurement Type: CriticalCurrent" + "\n")
+            _file_.write("Operator: " + str(operator.get()) + "\n")
+            _file_.write("Type of Chip: " + str(chip_type.get()) + "\n")
+            _file_.write(("Chip Number: " + str(chip_number.get()) + "\n"))
+            _file_.write("Starting Current: " + str(starting_Current.get()) + '\n')
+            _file_.write("Current Steps: " + str(current_steps.get()) + '\n')
+            _file_.write("Current Limit: " + str(current_limit.get()) + '\n')
+            _file_.write("Voltage Limit: " + str(voltage_limit.get()) + '\n')
+            _file_.write("Slot Number: " + str(slot_number.get()) + '\n')
+            _file_.write("Input From: " + str(input_from.get()) + '\n')
+            _file_.write("Input To: " + str(input_to.get()) + '\n')
+            _file_.write("Name of Excel File: " + str(excel_name.get()) + '\n')
+            _file_.write("### End Of Measurement ###" + '\n')
+            _file_.close()
+            CritCur.destroy()
+            notebook.destroy()
+            self.Mainscreen('4')
         recipe_list = []
         for file in os.listdir("Recipes/CriticalCurrent/"):
             if file.endswith(".txt"):
@@ -470,6 +490,9 @@ class MainApplication(Frame):
         ttk.Label(CritCur, text="Type of Chip").pack()
         chip_type = ttk.Combobox(CritCur, values=("Lines", "Vias", "Resistors", "JJs"))
         chip_type.pack()
+        ttk.Label(CritCur, text="Chip Number").pack()
+        chip_number = ttk.Entry(CritCur)
+        chip_number.pack()
         ttk.Label(CritCur, text="Starting Current").pack()
         starting_Current = ttk.Entry(CritCur)
         starting_Current.pack()
@@ -492,7 +515,8 @@ class MainApplication(Frame):
         input_to = ttk.Entry(CritCur)
         input_to.pack()
         ttk.Label(CritCur, text="Name of Excel File").pack()
-        excel_name = ttk.Entry(CritCur).pack()
+        excel_name = ttk.Entry(CritCur)
+        excel_name.pack()
         ttk.Label(CritCur, text='Choose From a Pre-Prgrmaed Resistance Measurement').pack()
         recipe = ttk.Combobox(CritCur, values=(recipe_list))
         recipe.pack()
@@ -501,7 +525,7 @@ class MainApplication(Frame):
         save_as = ttk.Entry(CritCur)
         save_as.pack()
         ttk.Button(CritCur, text='Save').pack()
-        ttk.Button(CritCur, text="Add Process to Que").pack()
+        ttk.Button(CritCur, text="Add Process to Que", command=lambda: AddMeasToQue()).pack()
 
     def TemRes(self):
         TemR = Toplevel()
