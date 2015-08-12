@@ -6,9 +6,13 @@ import time
 import datetime
 import zipfile
 import shutil
+import Tix as tk
 
 import visa
 import xlsxwriter
+import matplotlib.pyplot
+import emails
+import emailsms
 
 file_ = open("Settings/Fonts/LabelFontSize.txt", "r")
 label_font_size = int(file_.readline().rstrip())
@@ -33,7 +37,7 @@ file_.close()
 for file in os.listdir("Processes/Send_To/"):
     if file.__contains__(".txt"):
         os.remove(str("Processes/Send_To/" + file))
-
+print str(datetime.datetime.now())
 class MainApplication(Frame):
     def Mainscreen(self, place):
         global notebook
@@ -158,16 +162,12 @@ class MainApplication(Frame):
     def ViewDatabase(self):
         ViewData = Toplevel()
 
-        def SearchDatabase(OP, CN, CT, CI, T, D):
+        def SearchDatabase(OP, TM, CN, CT, CI, T, D):
+            def GraphResistance():
+                matplotlib.pyplot.ion()
+                matplotlib.pyplot.plot(day, resistance)
+                matplotlib.pyplot.draw()
             i = 0
-            Results = Toplevel()
-            ttk.Label(Results, text="Operator", relief='ridge').grid(column=0, row=0, sticky="WENS")
-            ttk.Label(Results, text="Time", relief='ridge').grid(column=1, row=0, sticky="WENS")
-            ttk.Label(Results, text="Date", relief='ridge').grid(column=2, row=0, sticky="WENS")
-            ttk.Label(Results, text="Chip Number", relief='ridge').grid(column=3, row=0, sticky="WENS")
-            ttk.Label(Results, text="Forced", relief='ridge').grid(column=4, row=0, sticky="WENS")
-            ttk.Label(Results, text="Voltage Read", relief='ridge').grid(column=5, row=0, sticky="WENS")
-            ttk.Label(Results, text="Resistance", relief='ridge').grid(column=6, row=0, sticky="WENS")
             chip_type = []
             operator = []
             chip_number = []
@@ -177,8 +177,13 @@ class MainApplication(Frame):
             time_ = []
             resistance = []
             voltage = []
+            IC = []
+            current_steps = []
+            day = []
+            measurement_type = []
             for file in os.listdir("Database/"):
-                if file.__contains__(OP) and file.__contains__(CN) and file.__contains__(CT) and file.__contains__(
+                if file.__contains__(OP) and file.__contains__(TM) and file.__contains__(CN) and file.__contains__(
+                        CT) and file.__contains__(
                         CI) and file.__contains__(T) and file.__contains__(D):
                     _file_ = open("Database/" + file, "r")
                     operator.append(_file_.readline().rstrip())
@@ -186,22 +191,76 @@ class MainApplication(Frame):
                     chip_type.append(_file_.readline().rstrip())
                     chip_input.append(_file_.readline().rstrip())
                     time_.append(_file_.readline().rstrip())
-                    date.append(_file_.readline().rstrip())
-                    forced.append(_file_.readline().rstrip())
-                    voltage.append(_file_.readline().rstrip())
-                    resistance.append(_file_.readline().rstrip())
+                    date_ = _file_.readline().rstrip()
+                    day.append(date_[8:])
+                    date.append(date_)
+                    forced_ = _file_.readline().rstrip()
+                    if forced_ == "":
+                        forced.append("-")
+                    else:
+                        forced.append(forced_)
+                    voltage_ = _file_.readline().rstrip()
+                    if voltage_ == "":
+                        voltage.append("-")
+                    else:
+                        voltage.append(voltage_)
+                    resistance_ = _file_.readline().rstrip()
+                    if resistance_ == "":
+                        resistance.append("-")
+                    else:
+                        resistance.append(resistance_)
+                    measurement_type_ = _file_.readline().rstrip()
+                    if measurement_type_ == "":
+                        measurement_type.append("-")
+                    else:
+                        measurement_type.append(measurement_type_)
+                    IC_ = _file_.readline().rstrip()
+                    if IC_ == "":
+                        IC.append("-")
+                    else:
+                        IC.append(IC_)
+                    current_steps_ = _file_.readline().rstrip()
+                    if current_steps_ == "":
+                        current_steps.append("-")
+                    else:
+                        current_steps.append(current_steps_)
                     i += 1
+            r = tk.Tk()
+            Results = tk.ScrolledWindow(r, scrollbar=tk.Y)
+            Results.pack(fill=tk.BOTH, expand=1)
+            ButtonFrame = tk.Frame(r)
+            ButtonFrame.pack(fill="y")
+            ttk.Button(ButtonFrame, text="Graph Resistance Over Time", command=lambda: GraphResistance()).grid(column=0,
+                                                                                                               row=0)
+            ttk.Button(ButtonFrame, text="Percent Difference Of Resistance").grid(column=1, row=0)
+            tk.Label(Results.window, text="Operator", relief='ridge').grid(column=0, row=0, sticky="WENS")
+            tk.Label(Results.window, text="Time", relief='ridge').grid(column=1, row=0, sticky="WENS")
+            tk.Label(Results.window, text="Date", relief='ridge').grid(column=2, row=0, sticky="WENS")
+            tk.Label(Results.window, text="Chip Number", relief='ridge').grid(column=3, row=0, sticky="WENS")
+            tk.Label(Results.window, text="Chip Type", relief='ridge').grid(column=4, row=0, sticky="WENS")
+            tk.Label(Results.window, text="Chip Input", relief='ridge').grid(column=5, row=0, sticky="WENS")
+            tk.Label(Results.window, text="Forced", relief='ridge').grid(column=6, row=0, sticky="WENS")
+            tk.Label(Results.window, text="Voltage Read", relief='ridge').grid(column=7, row=0, sticky="WENS")
+            tk.Label(Results.window, text="Resistance", relief='ridge').grid(column=8, row=0, sticky="WENS")
+            tk.Label(Results.window, text="Critical Current", relief='ridge').grid(column=9, row=0, sticky="WENS")
+            tk.Label(Results.window, text="Current Steps", relief='ridge').grid(column=10, row=0, sticky="WENS")
+            tk.Label(Results.window, text="Type Of Measurement", relief='ridge').grid(column=11, row=0, sticky="WENS")
             while i > 0:
                 i -= 1
-                ttk.Label(Results, text=operator[i], relief='ridge').grid(column=4, row=i, sticky="WENS")
-                ttk.Label(Results, text=chip_number[i], relief='ridge').grid(column=4, row=i, sticky="WENS")
-                ttk.Label(Results, text=chip_type[i], relief='ridge').grid(column=4, row=i, sticky="WENS")
-                ttk.Label(Results, text=chip_input[i], relief='ridge').grid(column=4, row=i, sticky="WENS")
-                ttk.Label(Results, text=time_[i], relief='ridge').grid(column=4, row=i, sticky="WENS")
-                ttk.Label(Results, text=date[i], relief='ridge').grid(column=4, row=i, sticky="WENS")
-                ttk.Label(Results, text=forced[i], relief='ridge').grid(column=4, row=i, sticky="WENS")
-                ttk.Label(Results, text=voltage[i], relief='ridge').grid(column=5, row=i, sticky="WENS")
-                ttk.Label(Results, text=resistance[i], relief='ridge').grid(column=6, row=i, sticky="WENS")
+                tk.Label(Results.window, text=operator[i], relief='ridge').grid(column=0, row=i + 1, sticky="WENS")
+                tk.Label(Results.window, text=time_[i], relief='ridge').grid(column=1, row=i + 1, sticky="WENS")
+                tk.Label(Results.window, text=date[i], relief='ridge').grid(column=2, row=i + 1, sticky="WENS")
+                tk.Label(Results.window, text=chip_number[i], relief='ridge').grid(column=3, row=i + 1, sticky="WENS")
+                tk.Label(Results.window, text=chip_type[i], relief='ridge').grid(column=4, row=i + 1, sticky="WENS")
+                tk.Label(Results.window, text=chip_input[i], relief='ridge').grid(column=5, row=i + 1, sticky="WENS")
+                tk.Label(Results.window, text=forced[i], relief='ridge').grid(column=6, row=i + 1, sticky="WENS")
+                tk.Label(Results.window, text=voltage[i], relief='ridge').grid(column=7, row=i + 1, sticky="WENS")
+                tk.Label(Results.window, text=resistance[i], relief='ridge').grid(column=8, row=i + 1, sticky="WENS")
+                tk.Label(Results.window, text=IC[i], relief='ridge').grid(column=9, row=i + 1, sticky="WENS")
+                tk.Label(Results.window, text=current_steps[i], relief='ridge').grid(column=10, row=i + 1,
+                                                                                     sticky="WENS")
+                tk.Label(Results.window, text=measurement_type[i], relief='ridge').grid(column=11, row=i + 1,
+                                                                                        sticky="WENS")
 
         ttk.Label(ViewData, text="Chip Type", relief='groove').pack()
         chip_type = ttk.Combobox(ViewData, values=("Lines", "Vias", "Resistors", "JJs"))
@@ -209,6 +268,9 @@ class MainApplication(Frame):
         ttk.Label(ViewData, text="Operator").pack()
         operator = ttk.Entry(ViewData)
         operator.pack()
+        ttk.Label(ViewData, text="Measurement Type").pack()
+        measurement_type = ttk.Combobox(ViewData, values=("Resistance", "CriticalCurrent", "TempuratureVsResistance"))
+        measurement_type.pack()
         ttk.Label(ViewData, text="Chip Number").pack()
         chip_number = ttk.Entry(ViewData)
         chip_number.pack()
@@ -222,8 +284,9 @@ class MainApplication(Frame):
         chip_input = ttk.Entry(ViewData)
         chip_input.pack()
         ttk.Button(ViewData, text="Search",
-                   command=lambda: SearchDatabase(operator.get(), "CN" + chip_number.get(), "CT" + chip_type.get(),
-                                                  "CI" + chip_input.get(), "T" + time_.get(), "D" + date.get())).pack()
+                   command=lambda: SearchDatabase(operator.get(), "TM" + measurement_type.get(),
+                                                  "CN" + chip_number.get(), "CT" + chip_type.get(),
+                                                  "CI" + chip_input.get(), "H" + time_.get(), "D" + date.get())).pack()
 
     def ClearDatabasePrompt(self):
         def ClearDatabase():
@@ -315,6 +378,7 @@ class MainApplication(Frame):
         self.Mainscreen('2')
 
     def ResistanceMes(self):
+
         def AddMeasToQue():
             global notebook
             _file_ = open("Processes/process_que.txt", "a")
@@ -333,6 +397,29 @@ class MainApplication(Frame):
             ResMes.destroy()
             notebook.destroy()
             self.Mainscreen('4')
+
+        def ApplyRecipe(recipe_):
+            _file_ = open("Recipes/Resistance/" + recipe_ + ".txt", "r")
+            chip_type.insert(0, _file_.readline().rstrip())
+            forcing.insert(0, _file_.readline().rstrip())
+            amount_forced.insert(0, _file_.readline().rstrip())
+            slot_number.insert(0, _file_.readline().rstrip())
+            input_from.insert(0, _file_.readline().rstrip())
+            input_to.insert(0, _file_.readline().rstrip())
+
+        def SaveRecipe(name):
+            _file_ = open("Recipes/Resistance/" + name + ".txt", "w")
+            _file_.write(chip_type.get() + "\n")
+            _file_.write(forcing.get() + "\n")
+            _file_.write(amount_forced.get() + "\n")
+            _file_.write(slot_number.get() + "\n")
+            _file_.write(input_from.get() + "\n")
+            _file_.write(input_to.get() + "\n")
+
+        recipe_list = []
+        for file in os.listdir("Recipes/Resistance/"):
+            if file.endswith(".txt"):
+                recipe_list.append(file[:-4])
         ResMes = Toplevel()
         ttk.Label(ResMes, text="Operator").grid()
         operator = ttk.Entry(ResMes)
@@ -362,12 +449,13 @@ class MainApplication(Frame):
         name_excel = ttk.Entry(ResMes)
         name_excel.grid()
         ttk.Label(ResMes, text='Choose From a Pre-Prgrmaed Resistance Measurement').grid()
-        recipe = ttk.Combobox(ResMes)
+        recipe = ttk.Combobox(ResMes, values=(recipe_list))
         recipe.grid()
+        ttk.Button(ResMes, text="Apply Recipe", command=lambda: ApplyRecipe(recipe.get())).grid()
         ttk.Label(ResMes, text='Save This Resistance Measurement As').grid()
         save_as = ttk.Entry(ResMes)
         save_as.grid()
-        ttk.Button(ResMes, text='Save').grid()
+        ttk.Button(ResMes, text='Save', command=lambda: SaveRecipe(save_as.get())).grid()
         ttk.Button(ResMes, text='Add This Measurement To The Que', command=lambda: AddMeasToQue()).grid()
 
     def CriticalCur(self):
@@ -583,13 +671,14 @@ class MainApplication(Frame):
         while number_of_processes > 0:
             number_of_processes -= 1
             type_of_measurement = _file_.readline().rstrip()
+            if type_of_measurement[18:] == "CriticalCurrent":
+                pass
             if type_of_measurement[18:] == "Resistance":
                 operator = _file_.readline().rstrip()[10:]
                 chip_type = _file_.readline().rstrip()[14:]
                 chip_number = _file_.readline().rstrip()[13:]
                 forcing = _file_.readline().rstrip()[9:]
                 forced_amaount = _file_.readline().rstrip()[8:]
-                print forced_amaount
                 forced_amaount = str(float(forced_amaount.rstrip()) / 1000)
                 slot = _file_.readline().rstrip()[18:]
                 input_from = _file_.readline().rstrip()[17:]
@@ -627,18 +716,23 @@ class MainApplication(Frame):
                     chart = workbook.add_chart({'type': "column"})
                     chart.add_series({'values': '=Sheet1!$B$2:$B$' + str(row + 1)})
                     worksheet.insert_chart('A7', chart)
-                    _file__ = open("Database/" + operator + "CN" + chip_number + "CT" + chip_type + "CI" + str(
-                        input_from) + "T" + str(datetime.datetime.now())[11:-13] + "D" + str(datetime.datetime.now())[
-                                                                                         :-16], "w")
-                    _file__.write(operator)
-                    _file__.write(chip_number)
-                    _file__.write(chip_type)
-                    _file__.write(input_from)
-                    _file__.write(str(datetime.datetime.now())[11:-13])
-                    _file_.write(datetime.datetime.now()[:-16])
+                    _file__ = open(
+                        "Database/" + operator + "CN" + "TM" + "Resistance" + chip_number + "CT" + chip_type + "CI" + str(
+                            input_from) + "H" + str(datetime.datetime.now())[11:-13] + "M" + str(
+                            datetime.datetime.now())[14:-10] + "S" + str(datetime.datetime.now())[17:-7] + "D" + str(
+                            datetime.datetime.now())[:-16], "w")
+                    _file__.write(str(operator) + "\n")
+                    _file__.write(str(chip_number) + "\n")
+                    _file__.write(str(chip_type) + "\n")
+                    _file__.write(str(input_from) + "\n")
+                    _file__.write(
+                        str(datetime.datetime.now())[11:-13] + ":" + str(datetime.datetime.now())[14:-10] + ":" + str(
+                            datetime.datetime.now())[17:-7] + "\n")
+                    _file__.write(str(datetime.datetime.now())[:-16] + "\n")
                     _file__.write(str(float(forced_amaount) * 1000) + "\n")
                     _file__.write(str(float(voltage_meas)) + "\n")
                     _file__.write(str(int((float(voltage_meas) / float(forced_amaount)))) + "\n")
+                    _file__.write("Resistance" + "\n")
                     input_from = int(input_from) + 1
                 workbook.close()
                 _file = open("Processes/process_que_settings.txt", "r")
@@ -651,7 +745,27 @@ class MainApplication(Frame):
                 zip_.write(str(excel_name).rstrip() + '.xlsx')
                 os.remove(str(excel_name).rstrip() + '.xlsx')
                 zip_.close()
-
+                for file in os.listdir("Processes/Send_To/"):
+                    if file.endswith(".txt"):
+                        _file_ = open("Processes/Send_To/" + file, "r")
+                        contact_name = _file_.readline().rstrip()
+                        contact_email = _file_.readline().rstrip()
+                        contact_phone_number = _file_.readline().rstrip()
+                        contact_service_provider = _file_.readline().rstrip()
+                        message = emails.html(
+                            html="<p> Greetings: " + contact_name + ",</p>" + "<p>Here are your measurement results, they were completed on " + str(
+                                datetime.datetime.now())[:-16] + " at " + str(datetime.datetime.now())[
+                                                                          11:-10] + ".</p> <p> War Eagle! </p>",
+                            subject=zip_name + " Results",
+                            mail_from=("Auburn Cryo Measurement System", "cryomeasurementsystem@gmail.com"))
+                        message.attach(data=open("Output_Files/" + zip_name + ".zip", 'rb'), filename=zip_name + ".zip")
+                        r = message.send(to=(contact_name.rstrip(), contact_email), render={"name": "Auburn Cryo"},
+                                         smtp={"host": "smtp.gmail.com", "port": 465, "ssl": True,
+                                               "user": "cryomeasurementsystem", "password": "cryoiscold", "timeout": 5})
+                        assert r.status_code == 250
+                        smtp = emailsms.gmail_smtp('cryomeasurementsystem@gmail.com', 'cryoiscold')
+                        emailsms.send(smtp, contact_phone_number, "Your Measurement Is Completed!",
+                                      contact_service_provider)
     def NumberOfProcesses(self):
         _file_ = open("Processes/process_que.txt", "r")
         number_of_processes = 0
