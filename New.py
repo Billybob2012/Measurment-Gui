@@ -459,73 +459,8 @@ class MainApplication(Frame):
         ttk.Button(ResMes, text='Add This Measurement To The Que', command=lambda: AddMeasToQue()).grid()
 
     def CriticalCur(self):
-        def AddMeasToQue():
-            global notebook
-            _file_ = open("Processes/process_que.txt", "a")
-            _file_.write("Measurement Type: CriticalCurrent" + "\n")
-            _file_.write("Operator: " + str(operator.get()) + "\n")
-            _file_.write("Type of Chip: " + str(chip_type.get()) + "\n")
-            _file_.write(("Chip Number: " + str(chip_number.get()) + "\n"))
-            _file_.write("Starting Current: " + str(starting_Current.get()) + '\n')
-            _file_.write("Current Steps: " + str(current_steps.get()) + '\n')
-            _file_.write("Current Limit: " + str(current_limit.get()) + '\n')
-            _file_.write("Voltage Limit: " + str(voltage_limit.get()) + '\n')
-            _file_.write("Slot Number: " + str(slot_number.get()) + '\n')
-            _file_.write("Input From: " + str(input_from.get()) + '\n')
-            _file_.write("Input To: " + str(input_to.get()) + '\n')
-            _file_.write("Name of Excel File: " + str(excel_name.get()) + '\n')
-            _file_.write("### End Of Measurement ###" + '\n')
-            _file_.close()
-            CritCur.destroy()
-            notebook.destroy()
-            self.Mainscreen('4')
-        recipe_list = []
-        for file in os.listdir("Recipes/CriticalCurrent/"):
-            if file.endswith(".txt"):
-                recipe_list.append(file[:-4])
         CritCur = Toplevel()
-        ttk.Label(CritCur, text="Operator").pack()
-        operator = ttk.Entry(CritCur)
-        operator.pack()
-        ttk.Label(CritCur, text="Type of Chip").pack()
-        chip_type = ttk.Combobox(CritCur, values=("Lines", "Vias", "Resistors", "JJs"))
-        chip_type.pack()
-        ttk.Label(CritCur, text="Chip Number").pack()
-        chip_number = ttk.Entry(CritCur)
-        chip_number.pack()
-        ttk.Label(CritCur, text="Starting Current").pack()
-        starting_Current = ttk.Entry(CritCur)
-        starting_Current.pack()
-        ttk.Label(CritCur, text="Current Steps").pack()
-        current_steps = ttk.Entry(CritCur)
-        current_steps.pack()
-        ttk.Label(CritCur, text="Current Limit").pack()
-        current_limit = ttk.Entry(CritCur)
-        current_limit.pack()
-        ttk.Label(CritCur, text="Voltage Limit").pack()
-        voltage_limit = ttk.Entry(CritCur)
-        voltage_limit.pack()
-        ttk.Label(CritCur, text="Slot Number").pack()
-        slot_number = ttk.Entry(CritCur)
-        slot_number.pack()
-        ttk.Label(CritCur, text="Input From").pack()
-        input_from = ttk.Entry(CritCur)
-        input_from.pack()
-        ttk.Label(CritCur, text="Input To").pack()
-        input_to = ttk.Entry(CritCur)
-        input_to.pack()
-        ttk.Label(CritCur, text="Name of Excel File").pack()
-        excel_name = ttk.Entry(CritCur)
-        excel_name.pack()
-        ttk.Label(CritCur, text='Choose From a Pre-Prgrmaed Resistance Measurement').pack()
-        recipe = ttk.Combobox(CritCur, values=(recipe_list))
-        recipe.pack()
-        ttk.Button(CritCur, text="Apply Recipe").pack()
-        ttk.Label(CritCur, text='Save This Resistance Measurement As').pack()
-        save_as = ttk.Entry(CritCur)
-        save_as.pack()
-        ttk.Button(CritCur, text='Save').pack()
-        ttk.Button(CritCur, text="Add Process to Que", command=lambda: AddMeasToQue()).pack()
+        ttk.Label(CritCur, text="Test").pack()
 
     def TemRes(self):
         TemR = Toplevel()
@@ -737,7 +672,36 @@ class MainApplication(Frame):
             number_of_processes -= 1
             type_of_measurement = _file_.readline().rstrip()
             if type_of_measurement[18:] == "CriticalCurrent":
-                pass
+                operator = _file_.readline().rstrip()[10:]
+                chip_type = _file_.readline().rstrip()[14:]
+                chip_number = _file_.readline().rstrip()[13:]
+                starting_current = _file_.readline().rstrip()[18:]
+                starting_current = str(float(starting_current) / 1000)
+                current_steps = _file_.readline().rstrip()[15:]
+                current_steps = str(float(current_steps) / 1000)
+                current_limit = _file_.readline().rstrip()[15:]
+                current_limit = str(float(current_limit) / 1000)
+                voltage_limit = _file_.readline().rstrip()[15:]
+                slot_number = _file_.readline().rstrip()[13:]
+                input_from = _file_.readline().rstrip()[12:]
+                input_to = _file_.readline().rstrip()[10:]
+                excel_name = _file_.readline().rstrip()[20:]
+                while int(input_from) < int(input_to) + 1:
+                    measured_voltage = '0'
+                    while int(measured_voltage) < int(voltage_limit and float(starting_current) < int(current_limit)):
+                        self.Keithley7002('write', 'close (@' + slot_number + '!' + input_from + ')')
+                        self.Keithley7002('write', 'CONF:SLOT' + str(slot_number).rstrip() + ':POLE 2')
+
+                        self.YokogawaGS200('write', 'SENS:REM ON')
+                        self.YokogawaGS200('write', 'SOUR:FUNC CURR')
+                        self.YokogawaGS200('write', 'SOUR:RANG ' + str(starting_current))
+                        self.YokogawaGS200('write', 'SOUR:LEV ' + str(starting_current))
+                        self.YokogawaGS200('write', 'OUTP ON')
+                        measured_voltage = self.Agilent34410A('ask', 'MEAS:VOLT:DC?').rstrip()
+                        starting_current += int(current_steps)
+                    self.YokogawaGS200('write', 'OUTP OFF')
+                    self.Keithley7002('write', 'open all')
+                    input_from = str(int(input_from) + 1)
             if type_of_measurement[18:] == "Resistance":
                 operator = _file_.readline().rstrip()[10:]
                 chip_type = _file_.readline().rstrip()[14:]
