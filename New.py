@@ -688,19 +688,38 @@ class MainApplication(Frame):
                 excel_name = _file_.readline().rstrip()[20:]
                 while int(input_from) < int(input_to) + 1:
                     measured_voltage = '0'
-                    while int(measured_voltage) < int(voltage_limit and float(starting_current) < int(current_limit)):
+                    forced_current = int(starting_current)
+                    while int(measured_voltage) < int(voltage_limit and float(forced_current) < int(current_limit)):
                         self.Keithley7002('write', 'close (@' + slot_number + '!' + input_from + ')')
                         self.Keithley7002('write', 'CONF:SLOT' + str(slot_number).rstrip() + ':POLE 2')
 
                         self.YokogawaGS200('write', 'SENS:REM ON')
                         self.YokogawaGS200('write', 'SOUR:FUNC CURR')
-                        self.YokogawaGS200('write', 'SOUR:RANG ' + str(starting_current))
-                        self.YokogawaGS200('write', 'SOUR:LEV ' + str(starting_current))
+                        self.YokogawaGS200('write', 'SOUR:RANG ' + str(forced_current))
+                        self.YokogawaGS200('write', 'SOUR:LEV ' + str(forced_current))
                         self.YokogawaGS200('write', 'OUTP ON')
                         measured_voltage = self.Agilent34410A('ask', 'MEAS:VOLT:DC?').rstrip()
-                        starting_current += int(current_steps)
+                        forced_current += int(current_steps)
                     self.YokogawaGS200('write', 'OUTP OFF')
                     self.Keithley7002('write', 'open all')
+                    _file__ = open(
+                        "Database/" + operator + "CN" + "TM" + "CriticalCurrent" + chip_number + "CT" + chip_type + "CI" + str(
+                            input_from) + "H" + str(datetime.datetime.now())[11:-13] + "M" + str(
+                            datetime.datetime.now())[14:-10] + "S" + str(datetime.datetime.now())[17:-7] + "D" + str(
+                            datetime.datetime.now())[:-16], "w")
+                    _file__.write(str(operator) + "\n")
+                    _file__.write(str(chip_number) + "\n")
+                    _file__.write(str(chip_type) + "\n")
+                    _file__.write(str(input_from) + "\n")
+                    _file__.write(
+                        str(datetime.datetime.now())[11:-13] + ":" + str(datetime.datetime.now())[14:-10] + ":" + str(
+                            datetime.datetime.now())[17:-7] + "\n")
+                    _file__.write("" + "\n")
+                    _file__.write("" + "\n")
+                    _file__.write("" + "\n")
+                    _file__.write("Resistance" + "\n")
+                    _file__.write(str(forced_current) + "\n")
+                    _file__.write(current_steps + "\n")
                     input_from = str(int(input_from) + 1)
             if type_of_measurement[18:] == "Resistance":
                 operator = _file_.readline().rstrip()[10:]
