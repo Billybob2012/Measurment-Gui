@@ -10,9 +10,9 @@ import Tix as tk
 
 import visa
 import xlsxwriter
-import matplotlib.pyplot
-import emails
-import emailsms
+#import matplotlib.pyplot
+#import emails
+#import emailsms
 
 file_ = open("Settings/Fonts/LabelFontSize.txt", "r")
 label_font_size = int(file_.readline().rstrip())
@@ -155,7 +155,7 @@ class MainApplication(Frame):
 
         database_button_frame = ttk.Frame(DatabaseFrame)
         database_button_frame.pack()
-        ttk.Button(database_button_frame, text='View Database', command=lambda: self.ViewDatabase()).pack()
+        ttk.Button(database_button_frame, text='Search Database', command=lambda: self.ViewDatabase()).pack()
         ttk.Button(database_button_frame, text="Backup Database").pack()
         ttk.Button(database_button_frame, text="Clear Database", command=lambda: self.ClearDatabasePrompt()).pack()
 
@@ -226,13 +226,17 @@ class MainApplication(Frame):
                         current_steps.append(current_steps_)
                     i += 1
             r = tk.Tk()
+            r.geometry("930x400")
+            r.option_add("*tearOff", False)
+            menubar=Menu(r)
+            r.config(menu = menubar)
+            stats = Menu(menubar)
+            graph = Menu(menubar)
+            menubar.add_cascade(menu = stats, label = "Statistics")
+            menubar.add_cascade(menu = graph, label = "Graphing")
+            graph.add_command(label = "Graph Resistance Over Time",command=lambda:GraphResistance())
             Results = tk.ScrolledWindow(r, scrollbar=tk.Y)
             Results.pack(fill=tk.BOTH, expand=1)
-            ButtonFrame = tk.Frame(r)
-            ButtonFrame.pack(fill="y")
-            ttk.Button(ButtonFrame, text="Graph Resistance Over Time", command=lambda: GraphResistance()).grid(column=0,
-                                                                                                               row=0)
-            ttk.Button(ButtonFrame, text="Percent Difference Of Resistance").grid(column=1, row=0)
             tk.Label(Results.window, text="Operator", relief='ridge').grid(column=0, row=0, sticky="WENS")
             tk.Label(Results.window, text="Time", relief='ridge').grid(column=1, row=0, sticky="WENS")
             tk.Label(Results.window, text="Date", relief='ridge').grid(column=2, row=0, sticky="WENS")
