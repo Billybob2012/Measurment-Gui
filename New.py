@@ -1,4 +1,3 @@
-# TEST CHANGE
 import os
 from Tkinter import *
 import ttk
@@ -7,12 +6,13 @@ import datetime
 import zipfile
 import shutil
 import Tix as tk
+import webbrowser
 
 import visa
 import xlsxwriter
-#import matplotlib.pyplot
-#import emails
-#import emailsms
+import matplotlib.pyplot
+import emails
+import emailsms
 
 file_ = open("Settings/Fonts/LabelFontSize.txt", "r")
 label_font_size = int(file_.readline().rstrip())
@@ -33,6 +33,8 @@ file_ = open("Settings/Fonts/ButtonFontType.txt", "r")
 button_font_type = file_.readline().rstrip()
 file_.close()
 file_ = open("Processes/process_que.txt", "w")
+file_.close()
+file_ = open("Processes/alternate_name.txt", "w")
 file_.close()
 for file in os.listdir("Processes/Send_To/"):
     if file.__contains__(".txt"):
@@ -70,6 +72,9 @@ class MainApplication(Frame):
 
         ### Welcome Frame ###
         ttk.Label(WelcomeFrame, text='Auburn Cryo Measurement System', style='TLabel').pack()
+        ttk.Button(WelcomeFrame, text="View On Git Hub",
+                   command=lambda: webbrowser.open("https://github.com/Billybob2012/Measurement-Gui.git")).pack()
+        ttk.Button(WelcomeFrame, text="View/Edit Source Code", command=lambda: os.system("notepad.exe New.py")).pack()
 
         ### Settings Frame ###
         global settings
@@ -98,24 +103,34 @@ class MainApplication(Frame):
                                                                                                            columnspan=2)
 
         ### Processes Frame ###
+        recipe_list = []
+        for file in os.listdir("Recipes/Process_Recipes/"):
+            if file.endswith(".txt"):
+                recipe_list.append(file[:-4])
+        ### Entries ###
+        process_name = ttk.Entry(ProcessFrame)
+        process_name.grid(column=2, row=4)
         ### Buttons ###
         ttk.Button(ProcessFrame, text='Configure Process Que', command=lambda: self.ConfigProcessQue()).grid(column=0,
                                                                                                              row=0)
-        ttk.Button(ProcessFrame, text='View Process Que').grid(column=0, row=1)
+        ttk.Button(ProcessFrame, text='View/Edit Process Que', command=lambda: self.ViewProcessQue()).grid(column=0,
+                                                                                                           row=1)
         ttk.Button(ProcessFrame, text='Clear Process Que', command=lambda: self.ClearProcessQue()).grid(column=0, row=2)
         ttk.Button(ProcessFrame, text='Execute Process Que', command=lambda: self.ExicuteProcessQue()).grid(column=1,
                                                                                                             row=5,
                                                                                                             pady=25)
-        ttk.Button(ProcessFrame, text='Save').grid(column=2, row=5)
+        ttk.Button(ProcessFrame, text='Save', command=lambda: self.SaveProcessQue(process_name.get())).grid(column=2,
+                                                                                                            row=5)
+        ttk.Button(ProcessFrame, text='Apply', command=lambda: self.ApplyProcessQueRecipe(process_recipe.get())).grid(
+            column=2, row=2)
         ### Labels ###
         ttk.Label(ProcessFrame, text='Pre-Programed Process Ques').grid(column=2, row=0)
         ttk.Label(ProcessFrame, text='Number of Processes in Que').grid(column=1, row=6)
         ttk.Label(ProcessFrame, text='Save This Que As').grid(column=2, row=3)
         ttk.Label(ProcessFrame, text=str(self.NumberOfProcesses())).grid(row=7, column=1)
-        ### Entries ###
-        ttk.Entry(ProcessFrame).grid(column=2, row=4)
         ### Combo Boxes ###
-        ttk.Combobox(ProcessFrame).grid(column=2, row=1)
+        process_recipe = ttk.Combobox(ProcessFrame, values=recipe_list)
+        process_recipe.grid(column=2, row=1)
 
         ### Measurements Frame ###
         ttk.Button(MeasurementFrame, text='Resistance', command=lambda: self.ResistanceMes()).grid()
@@ -156,7 +171,7 @@ class MainApplication(Frame):
         database_button_frame = ttk.Frame(DatabaseFrame)
         database_button_frame.pack()
         ttk.Button(database_button_frame, text='Search Database', command=lambda: self.ViewDatabase()).pack()
-        ttk.Button(database_button_frame, text="Backup Database").pack()
+        ttk.Button(database_button_frame, text="Backup Database", command=lambda: self.BAckupDatabase()).pack()
         ttk.Button(database_button_frame, text="Clear Database", command=lambda: self.ClearDatabasePrompt()).pack()
 
     def ViewDatabase(self):
@@ -167,6 +182,95 @@ class MainApplication(Frame):
                 matplotlib.pyplot.ion()
                 matplotlib.pyplot.plot(day, resistance)
                 matplotlib.pyplot.draw()
+
+            def Statistics():
+                def GetAverageResistance():
+                    global c
+                    c_ = c - 1
+                    total = 0
+                    divide = c
+                    while c_ >= 0:
+                        try:
+                            total = total + resistance[c_]
+                        except:
+                            divide -= 1
+                        c_ -= 1
+                    return total / divide
+
+                def GetLowestRessistance():
+                    pass
+
+                def GetHighestResistance():
+                    pass
+
+                def GetAverageCriticalCurrent():
+                    pass
+
+                StatisticsMenu = Toplevel()
+                ttk.Label(StatisticsMenu, text="Average Resistance: " + str(GetAverageResistance())).pack()
+
+            def Delete():
+                global c
+                c_ = c - 1
+                while c_ >= 0:
+                    os.remove("Database/" + str(operator[c_]) + "CN" + str(chip_number[c_]) + "TM" + str(
+                        measurement_type[c_]) + "CT" + str(chip_type[c_]) + "CI" + str(chip_input[c_]) + "-H" + str(
+                        time_[c_])[0:2] + "M" + str(time_[c_])[3:5] + "S" + str(time_[c_])[6:8] + "D" + str(date[c_]))
+                    c_ -= 1
+                r.destroy()
+
+            def Export():
+                def ExportAs(name):
+                    global c
+                    c_ = c - 1
+                    row = 0
+                    col = 0
+                    row = 0
+                    workbook = xlsxwriter.Workbook(str(name).rstrip() + '.xlsx')
+                    format = workbook.add_format()
+                    format.set_text_wrap()
+                    worksheet = workbook.add_worksheet()
+                    worksheet.set_column('A:P', 13, format)
+                    worksheet.set_row(0, 50, format)
+                    worksheet.write(row, col, 'Operator', format)
+                    worksheet.write(row, col + 1, 'Time', format)
+                    worksheet.write(row, col + 2, 'Date', format)
+                    worksheet.write(row, col + 3, 'Chip\nNumber', format)
+                    worksheet.write(row, col + 4, 'Chip\nType', format)
+                    worksheet.write(row, col + 5, 'Chip\nInput', format)
+                    worksheet.write(row, col + 6, 'Forced', format)
+                    worksheet.write(row, col + 7, 'Voltage\nRead', format)
+                    worksheet.write(row, col + 8, 'Resistance', format)
+                    worksheet.write(row, col + 9, 'Critical\nCurrent', format)
+                    worksheet.write(row, col + 10, 'Current\nSteps', format)
+                    worksheet.write(row, col + 11, 'Type\nof\nMeasurement', format)
+                    row += 1
+                    while c_ >= 0:
+                        worksheet.write(row, col, operator[c_], format)
+                        worksheet.write(row, col + 1, time_[c_], format)
+                        worksheet.write(row, col + 2, date[c_], format)
+                        worksheet.write(row, col + 3, "=" + str(chip_number[c_]), format)
+                        worksheet.write(row, col + 4, chip_type[c_], format)
+                        worksheet.write(row, col + 5, "=" + str(chip_input[c_]), format)
+                        worksheet.write(row, col + 6, "=" + str(forced[c_]), format)
+                        worksheet.write(row, col + 7, "=" + str(voltage[c_]), format)
+                        worksheet.write(row, col + 8, "=" + str(resistance[c_]), format)
+                        worksheet.write(row, col + 9, "=" + str(IC[c_]), format)
+                        worksheet.write(row, col + 10, "=" + str(current_steps[c_]), format)
+                        worksheet.write(row, col + 11, measurement_type[c_], format)
+                        row += 1
+                        c_ -= 1
+                    workbook.close()
+                    ExportWindow.destroy()
+
+                ExportWindow = Toplevel()
+                ttk.Label(ExportWindow, text="Export Table As").pack()
+                excel_name = ttk.Entry(ExportWindow)
+                excel_name.pack()
+                ttk.Button(ExportWindow, text="Export", command=lambda: ExportAs(excel_name.get())).pack()
+
+            if CI != "CI":
+                CI = CI + "-"
             i = 0
             chip_type = []
             operator = []
@@ -195,45 +299,39 @@ class MainApplication(Frame):
                     day.append(date_[8:])
                     date.append(date_)
                     forced_ = _file_.readline().rstrip()
-                    if forced_ == "":
-                        forced.append("-")
-                    else:
-                        forced.append(forced_)
+                    forced.append(forced_)
                     voltage_ = _file_.readline().rstrip()
-                    if voltage_ == "":
-                        voltage.append("-")
-                    else:
-                        voltage.append(voltage_)
+                    try:
+                        voltage.append(float(voltage_))
+                    except:
+                        voltage.append("")
                     resistance_ = _file_.readline().rstrip()
-                    if resistance_ == "":
-                        resistance.append("-")
-                    else:
-                        resistance.append(resistance_)
+                    try:
+                        resistance.append(int(resistance_))
+                    except:
+                        resistance.append("")
                     measurement_type_ = _file_.readline().rstrip()
-                    if measurement_type_ == "":
-                        measurement_type.append("-")
-                    else:
-                        measurement_type.append(measurement_type_)
+                    measurement_type.append(measurement_type_)
                     IC_ = _file_.readline().rstrip()
-                    if IC_ == "":
-                        IC.append("-")
-                    else:
-                        IC.append(IC_)
+                    IC.append(IC_)
                     current_steps_ = _file_.readline().rstrip()
-                    if current_steps_ == "":
-                        current_steps.append("-")
-                    else:
-                        current_steps.append(current_steps_)
+                    current_steps.append(current_steps_)
                     i += 1
             r = tk.Tk()
             r.geometry("930x400")
             r.option_add("*tearOff", False)
             menubar=Menu(r)
             r.config(menu = menubar)
-            stats = Menu(menubar)
+            view = Menu(menubar)
             graph = Menu(menubar)
-            menubar.add_cascade(menu = stats, label = "Statistics")
+            delete = Menu(menubar)
+            file = Menu(menubar)
+            menubar.add_cascade(menu=file, label="File")
+            menubar.add_cascade(menu=view, label="View")
             menubar.add_cascade(menu = graph, label = "Graphing")
+            file.add_command(label="Delete", command=lambda: Delete())
+            file.add_command(label="Export As", command=lambda: Export())
+            view.add_command(label="Statistics", command=lambda: Statistics())
             graph.add_command(label = "Graph Resistance Over Time",command=lambda:GraphResistance())
             Results = tk.ScrolledWindow(r, scrollbar=tk.Y)
             Results.pack(fill=tk.BOTH, expand=1)
@@ -249,6 +347,8 @@ class MainApplication(Frame):
             tk.Label(Results.window, text="Critical Current (ma)", relief='ridge').grid(column=9, row=0, sticky="WENS")
             tk.Label(Results.window, text="Current Steps (ma)", relief='ridge').grid(column=10, row=0, sticky="WENS")
             tk.Label(Results.window, text="Type Of Measurement", relief='ridge').grid(column=11, row=0, sticky="WENS")
+            global c
+            c = i
             while i > 0:
                 i -= 1
                 tk.Label(Results.window, text=operator[i], relief='ridge').grid(column=0, row=i + 1, sticky="WENS")
@@ -265,6 +365,7 @@ class MainApplication(Frame):
                                                                                      sticky="WENS")
                 tk.Label(Results.window, text=measurement_type[i], relief='ridge').grid(column=11, row=i + 1,
                                                                                         sticky="WENS")
+            self.Prggressbar("stop")
 
         ttk.Label(ViewData, text="Chip Type", relief='groove').pack()
         chip_type = ttk.Combobox(ViewData, values=("Lines", "Vias", "Resistors", "JJs"))
@@ -278,9 +379,12 @@ class MainApplication(Frame):
         ttk.Label(ViewData, text="Chip Number").pack()
         chip_number = ttk.Entry(ViewData)
         chip_number.pack()
-        ttk.Label(ViewData, text="Date").pack()
+        ttk.Label(ViewData, text="Date From").pack()
         date = ttk.Entry(ViewData)
         date.pack()
+        ttk.Label(ViewData, text="Date To").pack()
+        date_to = ttk.Entry(ViewData)
+        date_to.pack()
         ttk.Label(ViewData, text="Time (Hour)").pack()
         time_ = ttk.Entry(ViewData)
         time_.pack()
@@ -301,6 +405,23 @@ class MainApplication(Frame):
         CDP = Toplevel()
         ttk.Label(CDP, text="Are You Sure You Want To Clear The Database?").pack()
         ttk.Button(CDP, text="Yes Clear Database", command=lambda: ClearDatabase()).pack()
+
+    def BAckupDatabase(self):
+        def Backup(name):
+            zip_ = zipfile.ZipFile("Output_Files/" + name + '.zip', 'w')
+            zip_.close()
+            zip_ = zipfile.ZipFile("Output_Files/" + name + '.zip', 'a')
+            for file in os.listdir("Database/"):
+                print str(file)
+                zip_.write("Database/" + str(file))
+            zip_.close()
+            BD.destroy()
+
+        BD = Toplevel()
+        ttk.Label(BD, text="Backup Data Base As").pack()
+        backup_name = ttk.Entry(BD)
+        backup_name.pack()
+        ttk.Button(BD, text="Backup", command=lambda: Backup(backup_name.get())).pack()
 
     def ContactDec(self, callback):
         global cont
@@ -484,6 +605,28 @@ class MainApplication(Frame):
             notebook.destroy()
             self.Mainscreen('4')
 
+        def ApplyRecipe(recipe_):
+            _file_ = open("Recipes/CriticalCurrent/" + recipe_ + ".txt", "r")
+            chip_type.insert(0, _file_.readline().rstrip())
+            starting_Current.insert(0, _file_.readline().rstrip())
+            current_steps.insert(0, _file_.readline().rstrip())
+            current_limit.insert(0, _file_.readline().rstrip())
+            voltage_limit.insert(0, _file_.readline().rstrip())
+            slot_number.insert(0, _file_.readline().rstrip())
+            input_from.insert(0, _file_.readline().rstrip())
+            input_to.insert(0, _file_.readline().rstrip())
+
+        def SaveRecipe(name):
+            _file_ = open("Recipes/CriticalCurrent/" + name + ".txt", "w")
+            _file_.write(chip_type.get() + "\n")
+            _file_.write(starting_Current.get() + "\n")
+            _file_.write(current_steps.get() + "\n")
+            _file_.write(current_limit.get() + "\n")
+            _file_.write(voltage_limit.get() + "\n")
+            _file_.write(slot_number.get() + "\n")
+            _file_.write(input_to.get() + "\n")
+            _file_.write(input_from.get() + "\n")
+
         recipe_list = []
         for file in os.listdir("Recipes/CriticalCurrent/"):
             if file.endswith(".txt"):
@@ -525,11 +668,11 @@ class MainApplication(Frame):
         ttk.Label(CritCur, text='Choose From a Pre-Prgrmaed Resistance Measurement').pack()
         recipe = ttk.Combobox(CritCur, values=(recipe_list))
         recipe.pack()
-        ttk.Button(CritCur, text="Apply Recipe").pack()
+        ttk.Button(CritCur, text="Apply Recipe", command=lambda: ApplyRecipe(recipe.get())).pack()
         ttk.Label(CritCur, text='Save This Resistance Measurement As').pack()
         save_as = ttk.Entry(CritCur)
         save_as.pack()
-        ttk.Button(CritCur, text='Save').pack()
+        ttk.Button(CritCur, text='Save', command=lambda: SaveRecipe(save_as.get())).pack()
         ttk.Button(CritCur, text="Add Process to Que", command=lambda: AddMeasToQue()).pack()
 
     def TemRes(self):
@@ -537,22 +680,40 @@ class MainApplication(Frame):
 
     def ConfigProcessQue(self):
         ConfigProcess = Toplevel()
+
+        def ChangeZipName(name):
+            _file_ = open("Processes/alternate_name.txt", "w")
+            _file_.write(name)
+            _file_.close()
+            ConfigProcess.destroy()
         ttk.Checkbutton(ConfigProcess, text="Include Date and Time of Completion").pack()
         ttk.Label(ConfigProcess, text="Save Zip File As").pack()
-        ttk.Entry(ConfigProcess).pack()
-        ttk.Button(ConfigProcess, text="Save").pack()
+        zip_name = ttk.Entry(ConfigProcess)
+        zip_name.pack()
+        ttk.Button(ConfigProcess, text="Save", command=lambda: ChangeZipName(zip_name.get())).pack()
 
     def ViewProcessQue(self):
-        ViewProcess = Toplevel()
-        _file_ = open("process_que.txt", "r")
-        process_que = _file_.readline().rstrip()
-        while process_que != "### End Of Measurement ###":
-            pass
+        global notebook
+        os.system("notepad.exe Processes/process_que.txt")
+        notebook.destroy()
+        self.Mainscreen("5")
 
     def ClearProcessQue(self):
         global notebook
         file_ = open("Processes/process_que.txt", "w")
         file_.close()
+        notebook.destroy()
+        self.Mainscreen('5')
+
+    def SaveProcessQue(self, name):
+        shutil.copy("Processes/process_que.txt", "Recipes/Process_Recipes/")
+        os.rename("Recipes/Process_Recipes/process_que.txt", "Recipes/Process_Recipes/" + name + ".txt")
+
+    def ApplyProcessQueRecipe(self, name):
+        global notebook
+        os.remove("Processes/process_que.txt")
+        shutil.copy("Recipes/Process_Recipes/" + name + ".txt", "Processes/")
+        os.rename("Processes/" + name + ".txt", "Processes/process_que.txt")
         notebook.destroy()
         self.Mainscreen('5')
 
@@ -735,6 +896,17 @@ class MainApplication(Frame):
             return inst.query(command)
         inst.close()
 
+    def Prggressbar(self, command):
+        PBAR = Toplevel()
+        progress = ttk.Progressbar(PBAR, orient=HORIZONTAL, length=100)
+        progress.pack()
+        progress.config(mode='indeterminate')
+        if command == "start":
+            progress.start()
+        if command == "stop":
+            progress.stop()
+            PBAR.destroy()
+
     def ExicuteProcessQue(self):
         number_of_processes = self.NumberOfProcesses()
         _file_ = open("Processes/process_que.txt", "r")
@@ -764,8 +936,7 @@ class MainApplication(Frame):
                         print str(current_limit) + " " + str(forced_current)
                         self.Keithley7002('write', 'close (@' + slot_number + '!' + input_from + ')')
                         self.Keithley7002('write', 'CONF:SLOT' + str(slot_number).rstrip() + ':POLE 2')
-
-                        self.YokogawaGS200('write', 'SENS:REM ON')
+                        self.YokogawaGS200('write', 'SENS OFF')
                         self.YokogawaGS200('write', 'SOUR:FUNC CURR')
                         self.YokogawaGS200('write', 'SOUR:RANG ' + str(forced_current))
                         self.YokogawaGS200('write', 'SOUR:LEV ' + str(forced_current))
@@ -776,7 +947,7 @@ class MainApplication(Frame):
                     self.Keithley7002('write', 'open all')
                     _file__ = open(
                         "Database/" + operator + "CN" + chip_number + "TM" + "CriticalCurrent" + "CT" + chip_type + "CI" + str(
-                            input_from) + "H" + str(datetime.datetime.now())[11:-13] + "M" + str(
+                            input_from) + "-" + "H" + str(datetime.datetime.now())[11:-13] + "M" + str(
                             datetime.datetime.now())[14:-10] + "S" + str(datetime.datetime.now())[17:-7] + "D" + str(
                             datetime.datetime.now())[:-16], "w")
                     _file__.write(str(operator) + "\n")
@@ -812,7 +983,7 @@ class MainApplication(Frame):
                 worksheet = workbook.add_worksheet()
                 self.Keithley7002('write', 'open all')
                 self.Keithley7002('write', 'CONF:SLOT' + str(slot).rstrip() + ':POLE 4')
-                time.sleep(1)
+                time.sleep(3)
                 row = 0
                 col = 0
                 worksheet.write(row, col, 'Current', format)
@@ -839,7 +1010,7 @@ class MainApplication(Frame):
                     worksheet.insert_chart('A7', chart)
                     _file__ = open(
                         "Database/" + operator + "CN" + chip_number + "TM" + "Resistance" + "CT" + chip_type + "CI" + str(
-                            input_from) + "H" + str(datetime.datetime.now())[11:-13] + "M" + str(
+                            input_from) + "-" + "H" + str(datetime.datetime.now())[11:-13] + "M" + str(
                             datetime.datetime.now())[14:-10] + "S" + str(datetime.datetime.now())[17:-7] + "D" + str(
                             datetime.datetime.now())[:-16], "w")
                     _file__.write(str(operator) + "\n")
@@ -856,10 +1027,16 @@ class MainApplication(Frame):
                     _file__.write("Resistance" + "\n")
                     input_from = int(input_from) + 1
                 workbook.close()
-                _file = open("Processes/process_que_settings.txt", "r")
+                _file = open("Processes/alternate_name.txt", "r")
+                process_name = _file.readline().rstrip()
                 time_completed = str(datetime.datetime.now())[11:-10]
                 date_completed = str(datetime.datetime.now())[:-16]
-                zip_name = _file.readline().rstrip() + " " + time_completed + " " + date_completed
+                if process_name != "":
+                    zip_name = str(process_name)
+                else:
+                    zip_name = ("Date" + str(date_completed) + "Chip" + str(chip_number) + "Type" + str(
+                        chip_type) + "Operator" + str(operator))
+                    print time_completed
                 zip_ = zipfile.ZipFile("Output_Files/" + zip_name + '.zip', 'w')
                 zip_.close()
                 zip_ = zipfile.ZipFile("Output_Files/" + zip_name + '.zip', 'a')
