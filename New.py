@@ -36,12 +36,17 @@ file_ = open("Processes/process_que.txt", "w")
 file_.close()
 file_ = open("Processes/alternate_name.txt", "w")
 file_.close()
+file_ = open("Settings/File Locations/OutputFiles.txt", "r")
+OutputFolder = file_.readline().rstrip()
+file_.close()
+
 for file in os.listdir("Processes/Send_To/"):
     if file.__contains__(".txt"):
         os.remove(str("Processes/Send_To/" + file))
 print str(datetime.datetime.now())
 class MainApplication(Frame):
     def Mainscreen(self, place):
+        
         global notebook
         style = ttk.Style()
         style.configure('TButton', foreground=button_font_color, font=(button_font_type, button_font_size))
@@ -95,6 +100,8 @@ class MainApplication(Frame):
         settings.insert('button_fonts', '0', 'button_font_size', text='Button Font Size')
         settings.insert('button_fonts', '1', 'button_font_color', text='Button Font Color')
         settings.insert('button_fonts', '2', 'button_font_type', text='Button Font Type')
+        settings.insert('', '2','file_locations',text='File Locations')
+        settings.insert('file_locations','0','output_folder',text='Output Files Location')
         settings.bind('<<TreeviewSelect>>', self.SettingsDec)
 
         ### Devices Frame ###
@@ -133,9 +140,12 @@ class MainApplication(Frame):
         process_recipe.grid(column=2, row=1)
 
         ### Measurements Frame ###
+        ttk.Label(MeasurementFrame, text="Short Term Tests").grid()
         ttk.Button(MeasurementFrame, text='Resistance', command=lambda: self.ResistanceMes()).grid()
         ttk.Button(MeasurementFrame, text='Critical Current', command=lambda: self.CriticalCur()).grid()
         ttk.Button(MeasurementFrame, text='Temperature Vs Resistance', command=lambda: self.TemRes()).grid()
+        ttk.Label(MeasurementFrame, text="Long Term Tests").grid(column = 1, row=0)
+        ttk.Button(MeasurementFrame, text="Resistance",command=lambda:self.ResistanceMesLongTerm()).grid(column=1, row=1)
 
         ### Contacts Frame ###
         global cont
@@ -408,9 +418,9 @@ class MainApplication(Frame):
 
     def BAckupDatabase(self):
         def Backup(name):
-            zip_ = zipfile.ZipFile("Output_Files/" + name + '.zip', 'w')
+            zip_ = zipfile.ZipFile(OutputFolder + name + '.zip', 'w')
             zip_.close()
-            zip_ = zipfile.ZipFile("Output_Files/" + name + '.zip', 'a')
+            zip_ = zipfile.ZipFile(OutputFolder + name + '.zip', 'a')
             for file in os.listdir("Database/"):
                 print str(file)
                 zip_.write("Database/" + str(file))
@@ -501,6 +511,53 @@ class MainApplication(Frame):
         shutil.copy("Contacts/" + selection + ".txt", "Processes/Send_To")
         notebook.destroy()
         self.Mainscreen('2')
+
+    def ResistanceMesLongTerm(self):
+        global notebook
+        def ApplyRecipe():
+            pass
+        def AddMeasToQue():
+            _file_ = open("Processes/process_que.txt", "a")
+            _file_.write("Measurement Type: Long Term Resistance" + "\n")
+            _file_.write("Operator: " + str(operator.get()) + "\n")
+            _file_.write("Type of Chip: " + str(chip_type.get()) + "\n")
+            _file_.write(("Chip Number: " + str(chip_number.get()) + "\n"))
+            _file_.write(("Super Conducting Voltage: " + str(s_voltage.get()) + "\n"))
+            _file_.write(("Normal Conductance Voltage: " + str(r_voltage.get()) + "\n"))
+            _file_.write("### End Of Measurement ###" + '\n')
+            _file_.close()
+            ResMenu.destroy()
+            notebook.destroy()
+            self.Mainscreen('4')
+        ResMenu = Toplevel()
+        recipe_list = []
+        for file in os.listdir("Recipes/ResistanceLongTerm/"):
+            if file.endswith(".txt"):
+                recipe_list.append(file[:-4])
+        ttk.Label(ResMenu, text="Operator").grid()
+        operator = ttk.Entry(ResMenu)
+        operator.grid()
+        ttk.Label(ResMenu, text="Type of Chip").grid()
+        chip_type = ttk.Combobox(ResMenu, values=("Lines", "Vias", "Resistors", "JJs"))
+        chip_type.grid()
+        ttk.Label(ResMenu, text="Chip Number").grid()
+        chip_number = ttk.Entry(ResMenu)
+        chip_number.grid()
+        ttk.Label(ResMenu, text="Super Conducting Voltage").grid()
+        s_voltage = ttk.Entry(ResMenu)
+        s_voltage.grid()
+        ttk.Label(ResMenu, text="Normal Conductance Voltage").grid()
+        r_voltage = ttk.Entry(ResMenu)
+        r_voltage.grid()
+        ttk.Label(ResMenu, text='Choose From a Pre-Prgrmaed Resistance Measurement').grid()
+        recipe = ttk.Combobox(ResMenu, values=(recipe_list))
+        recipe.grid()
+        ttk.Button(ResMenu, text="Apply Recipe", command=lambda: ApplyRecipe(recipe.get())).grid()
+        ttk.Label(ResMenu, text='Save This Resistance Measurement As').grid()
+        save_as = ttk.Entry(ResMenu)
+        save_as.grid()
+        ttk.Button(ResMenu, text='Save', command=lambda: SaveRecipe(save_as.get())).grid()
+        ttk.Button(ResMenu, text='Add This Measurement To The Que', command=lambda: AddMeasToQue()).grid()
 
     def ResistanceMes(self):
 
@@ -837,6 +894,12 @@ class MainApplication(Frame):
             ttk.Button(change_setting, text='Save',
                        command=lambda: save_new_adress('Settings/Fonts/ButtonFontColor.txt',
                                                        button_font_color_.get())).pack()
+        if str(settings.selection()) == "('output_folder',)":
+            change_setting = Toplevel()
+            ttk.Label(change_setting, text="Folder Location").pack()
+            folder_location = ttk.Entry(change_setting)
+            folder_location.pack()
+            ttk.Button(change_setting, text="Save", command=lambda:save_new_adress("Settings/File Locations/OutputFiles.txt",folder_location.get())).pack()
 
     def Agilent34410AMainMenu(self):
         AgiltentMen = Toplevel()
@@ -1037,9 +1100,9 @@ class MainApplication(Frame):
                     zip_name = ("Date" + str(date_completed) + "Chip" + str(chip_number) + "Type" + str(
                         chip_type) + "Operator" + str(operator))
                     print time_completed
-                zip_ = zipfile.ZipFile("Output_Files/" + zip_name + '.zip', 'w')
+                zip_ = zipfile.ZipFile(OutputFolder + zip_name + '.zip', 'w')
                 zip_.close()
-                zip_ = zipfile.ZipFile("Output_Files/" + zip_name + '.zip', 'a')
+                zip_ = zipfile.ZipFile(OutputFolder + zip_name + '.zip', 'a')
                 zip_.write(str(excel_name).rstrip() + '.xlsx')
                 os.remove(str(excel_name).rstrip() + '.xlsx')
                 zip_.close()
@@ -1056,7 +1119,7 @@ class MainApplication(Frame):
                                                                           11:-10] + ".</p> <p> War Eagle! </p>",
                             subject=zip_name + " Results",
                             mail_from=("Auburn Cryo Measurement System", "cryomeasurementsystem@gmail.com"))
-                        message.attach(data=open("Output_Files/" + zip_name + ".zip", 'rb'), filename=zip_name + ".zip")
+                        message.attach(data=open(OutputFolder + zip_name + ".zip", 'rb'), filename=zip_name + ".zip")
                         r = message.send(to=(contact_name.rstrip(), contact_email), render={"name": "Auburn Cryo"},
                                          smtp={"host": "smtp.gmail.com", "port": 465, "ssl": True,
                                                "user": "cryomeasurementsystem", "password": "cryoiscold", "timeout": 5})
