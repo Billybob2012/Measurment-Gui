@@ -524,6 +524,9 @@ class MainApplication(Frame):
             _file_.write(("Chip Number: " + str(chip_number.get()) + "\n"))
             _file_.write(("Super Conducting Voltage: " + str(s_voltage.get()) + "\n"))
             _file_.write(("Normal Conductance Voltage: " + str(r_voltage.get()) + "\n"))
+            _file_.write(("Inline Resistor Value: "+str(resistor_value.get())+"\n"))
+            _file_.write(("Card Slot Number: "+str(slot_number.get())+"\n"))
+            _file_.write(("Input Number: "+str(input_number.get())+"\n"))
             _file_.write("### End Of Measurement ###" + '\n')
             _file_.close()
             ResMenu.destroy()
@@ -549,6 +552,15 @@ class MainApplication(Frame):
         ttk.Label(ResMenu, text="Normal Conductance Voltage").grid()
         r_voltage = ttk.Entry(ResMenu)
         r_voltage.grid()
+        ttk.Label(ResMenu, text="Inline Resistor Value").grid()
+        resistor_value = ttk.Entry(ResMenu)
+        resistor_value.grid()
+        ttk.Label(ResMenu, text="Slot Number").grid()
+        slot_number = ttk.Entry(ResMenu)
+        slot_number.grid()
+        ttk.Label(ResMenu, text="Input Number").grid()
+        input_number = ttk.Entry(ResMenu)
+        input_number.grid()
         ttk.Label(ResMenu, text='Choose From a Pre-Prgrmaed Resistance Measurement').grid()
         recipe = ttk.Combobox(ResMenu, values=(recipe_list))
         recipe.grid()
@@ -976,6 +988,19 @@ class MainApplication(Frame):
         while number_of_processes > 0:
             number_of_processes -= 1
             type_of_measurement = _file_.readline().rstrip()
+            if type_of_measurement[:] == "LongTermResistance":
+                operator = _file_.readline().rstrip()[10:]
+                chip_type = _file_.readline().rstrip()[14:]
+                chip_number = _file_.readline().rstrip()[13:]
+                super_conducting_voltage = _file_.readline().rstrip()[26:]
+                normal_conductance_voltage = _file_.readline().rstrip()[28:]
+                resistor_value = _file_.readline().rstrip()[23:]
+                slot_number = _file_.readline().rstrip()[18:]
+                input_number = _file_.readline().rstrip()[14:]
+                self.Keithley7002('write', 'close (@' + slot_number + '!' + input_number + ')')
+                self.Keithley7002('write', 'CONF:SLOT' + str(slot_number).rstrip() + ':POLE 2')
+                self.YokogawaGS200('write', 'SENS OFF')
+                self.YokogawaGS200('write', 'SOUR:FUNC VOLT')
             if type_of_measurement[18:] == "CriticalCurrent":
                 operator = _file_.readline().rstrip()[10:]
                 chip_type = _file_.readline().rstrip()[14:]
