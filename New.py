@@ -1001,6 +1001,21 @@ class MainApplication(Frame):
                 self.Keithley7002('write', 'CONF:SLOT' + str(slot_number).rstrip() + ':POLE 2')
                 self.YokogawaGS200('write', 'SENS OFF')
                 self.YokogawaGS200('write', 'SOUR:FUNC VOLT')
+                temp = float(self.LakeShore336("kelvin", "KRDG? A"))
+                if temp < 5.0:
+                    forced_voltage = float(super_conducting_voltage)
+                else:
+                    forced_voltage = float(normal_conductance_voltage)
+
+                self.YokogawaGS200('write', 'SOUR:RANG ' + str(forced_voltage))
+                self.YokogawaGS200('write', 'SOUR:LEV ' + str(forced_voltage))
+                self.YokogawaGS200('write', 'OUTP ON')
+                time.sleep(0.25)
+                measured_voltage = self.Agilent34410A('ask', 'MEAS:VOLT:DC?').rstrip()
+                self.YokogawaGS200('write', 'OUTP OFF')
+                self.Keithley7002('write', 'open all')
+                dum_resistance = ((forced_voltage*float(resistor_value))/measured_voltage)-resistor_value
+                print dum_resistance
             if type_of_measurement[18:] == "CriticalCurrent":
                 operator = _file_.readline().rstrip()[10:]
                 chip_type = _file_.readline().rstrip()[14:]
