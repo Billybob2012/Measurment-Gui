@@ -187,7 +187,7 @@ class MainApplication(Frame):
     def ViewDatabase(self):
         ViewData = Toplevel()
 
-        def SearchDatabase(OP, TM, CN, CT, CI, T, D):
+        def SearchDatabase(OP, TM, CN, CT, CI, T, D, TMP):
             def GraphResistance():
                 matplotlib.pyplot.ion()
                 matplotlib.pyplot.plot(day, resistance)
@@ -291,6 +291,7 @@ class MainApplication(Frame):
             time_ = []
             resistance = []
             voltage = []
+            temp = []
             IC = []
             current_steps = []
             day = []
@@ -298,7 +299,7 @@ class MainApplication(Frame):
             for file in os.listdir("Database/"):
                 if file.__contains__(OP) and file.__contains__(TM) and file.__contains__(CN) and file.__contains__(
                         CT) and file.__contains__(
-                        CI) and file.__contains__(T) and file.__contains__(D):
+                    CI) and file.__contains__(T) and file.__contains__(D) and file.__contains__(TMP):
                     _file_ = open("Database/" + file, "r")
                     operator.append(_file_.readline().rstrip())
                     chip_number.append(_file_.readline().rstrip())
@@ -316,10 +317,12 @@ class MainApplication(Frame):
                     except:
                         voltage.append("")
                     resistance_ = _file_.readline().rstrip()
+                    print resistance_
                     try:
                         resistance.append(int(resistance_))
                     except:
                         resistance.append("")
+                    temp.append(_file_.readline().rstrip())
                     measurement_type_ = _file_.readline().rstrip()
                     measurement_type.append(measurement_type_)
                     IC_ = _file_.readline().rstrip()
@@ -328,7 +331,7 @@ class MainApplication(Frame):
                     current_steps.append(current_steps_)
                     i += 1
             r = tk.Tk()
-            r.geometry("930x400")
+            r.geometry("1050x400")
             r.option_add("*tearOff", False)
             menubar=Menu(r)
             r.config(menu = menubar)
@@ -351,12 +354,13 @@ class MainApplication(Frame):
             tk.Label(Results.window, text="Chip Number", relief='ridge').grid(column=3, row=0, sticky="WENS")
             tk.Label(Results.window, text="Chip Type", relief='ridge').grid(column=4, row=0, sticky="WENS")
             tk.Label(Results.window, text="Chip Input", relief='ridge').grid(column=5, row=0, sticky="WENS")
-            tk.Label(Results.window, text="Forced", relief='ridge').grid(column=6, row=0, sticky="WENS")
-            tk.Label(Results.window, text="Voltage Read", relief='ridge').grid(column=7, row=0, sticky="WENS")
-            tk.Label(Results.window, text="Resistance", relief='ridge').grid(column=8, row=0, sticky="WENS")
-            tk.Label(Results.window, text="Critical Current (ma)", relief='ridge').grid(column=9, row=0, sticky="WENS")
-            tk.Label(Results.window, text="Current Steps (ma)", relief='ridge').grid(column=10, row=0, sticky="WENS")
-            tk.Label(Results.window, text="Type Of Measurement", relief='ridge').grid(column=11, row=0, sticky="WENS")
+            tk.Label(Results.window, text="Chip Temperature", relief='ridge').grid(column=6, row=0, sticky="WENS")
+            tk.Label(Results.window, text="Forced", relief='ridge').grid(column=7, row=0, sticky="WENS")
+            tk.Label(Results.window, text="Voltage Read", relief='ridge').grid(column=8, row=0, sticky="WENS")
+            tk.Label(Results.window, text="Resistance", relief='ridge').grid(column=9, row=0, sticky="WENS")
+            tk.Label(Results.window, text="Critical Current (ma)", relief='ridge').grid(column=10, row=0, sticky="WENS")
+            tk.Label(Results.window, text="Current Steps (ma)", relief='ridge').grid(column=11, row=0, sticky="WENS")
+            tk.Label(Results.window, text="Type Of Measurement", relief='ridge').grid(column=12, row=0, sticky="WENS")
             global c
             c = i
             while i > 0:
@@ -367,13 +371,14 @@ class MainApplication(Frame):
                 tk.Label(Results.window, text=chip_number[i], relief='ridge').grid(column=3, row=i + 1, sticky="WENS")
                 tk.Label(Results.window, text=chip_type[i], relief='ridge').grid(column=4, row=i + 1, sticky="WENS")
                 tk.Label(Results.window, text=chip_input[i], relief='ridge').grid(column=5, row=i + 1, sticky="WENS")
-                tk.Label(Results.window, text=forced[i], relief='ridge').grid(column=6, row=i + 1, sticky="WENS")
-                tk.Label(Results.window, text=voltage[i], relief='ridge').grid(column=7, row=i + 1, sticky="WENS")
-                tk.Label(Results.window, text=resistance[i], relief='ridge').grid(column=8, row=i + 1, sticky="WENS")
-                tk.Label(Results.window, text=IC[i], relief='ridge').grid(column=9, row=i + 1, sticky="WENS")
-                tk.Label(Results.window, text=current_steps[i], relief='ridge').grid(column=10, row=i + 1,
+                tk.Label(Results.window, text=temp[i], relief='ridge').grid(column=6, row=i + 1, sticky="WENS")
+                tk.Label(Results.window, text=forced[i], relief='ridge').grid(column=7, row=i + 1, sticky="WENS")
+                tk.Label(Results.window, text=voltage[i], relief='ridge').grid(column=8, row=i + 1, sticky="WENS")
+                tk.Label(Results.window, text=resistance[i], relief='ridge').grid(column=9, row=i + 1, sticky="WENS")
+                tk.Label(Results.window, text=IC[i], relief='ridge').grid(column=10, row=i + 1, sticky="WENS")
+                tk.Label(Results.window, text=current_steps[i], relief='ridge').grid(column=11, row=i + 1,
                                                                                      sticky="WENS")
-                tk.Label(Results.window, text=measurement_type[i], relief='ridge').grid(column=11, row=i + 1,
+                tk.Label(Results.window, text=measurement_type[i], relief='ridge').grid(column=12, row=i + 1,
                                                                                         sticky="WENS")
             self.Prggressbar("stop")
 
@@ -389,6 +394,9 @@ class MainApplication(Frame):
         ttk.Label(ViewData, text="Chip Number").pack()
         chip_number = ttk.Entry(ViewData)
         chip_number.pack()
+        ttk.Label(ViewData, text="Chip Tempurature").pack()
+        temp = ttk.Combobox(ViewData, values=("Superconducting", "Normal"))
+        temp.pack()
         ttk.Label(ViewData, text="Date From").pack()
         date = ttk.Entry(ViewData)
         date.pack()
@@ -404,7 +412,8 @@ class MainApplication(Frame):
         ttk.Button(ViewData, text="Search",
                    command=lambda: SearchDatabase(operator.get(), "TM" + measurement_type.get(),
                                                   "CN" + chip_number.get(), "CT" + chip_type.get(),
-                                                  "CI" + chip_input.get(), "H" + time_.get(), "D" + date.get())).pack()
+                                                  "CI" + chip_input.get(), "H" + time_.get(), "D" + date.get(),
+                                                  "TMP" + temp.get())).pack()
 
     def ClearDatabasePrompt(self):
         def ClearDatabase():
@@ -983,12 +992,11 @@ class MainApplication(Frame):
             PBAR.destroy()
 
     def ExicuteProcessQue(self):
-        number_of_processes = self.NumberOfProcesses()
         _file_ = open("Processes/process_que.txt", "r")
-        while number_of_processes > 0:
-            number_of_processes -= 1
+        type_of_measurement = "T"
+        while type_of_measurement != "":
             type_of_measurement = _file_.readline().rstrip()
-            if type_of_measurement[:] == "LongTermResistance":
+            if type_of_measurement[18:] == "Long Term Resistance":
                 operator = _file_.readline().rstrip()[10:]
                 chip_type = _file_.readline().rstrip()[14:]
                 chip_number = _file_.readline().rstrip()[13:]
@@ -1001,11 +1009,13 @@ class MainApplication(Frame):
                 self.Keithley7002('write', 'CONF:SLOT' + str(slot_number).rstrip() + ':POLE 2')
                 self.YokogawaGS200('write', 'SENS OFF')
                 self.YokogawaGS200('write', 'SOUR:FUNC VOLT')
-                temp = float(self.LakeShore336("kelvin", "KRDG? A"))
+                temp = self.LakeShore336("ask", "KRDG? A")
                 if temp < 5.0:
                     forced_voltage = float(super_conducting_voltage)
+                    temp_cond = "Superconducting"
                 else:
                     forced_voltage = float(normal_conductance_voltage)
+                    temp_cond = "Normal"
 
                 self.YokogawaGS200('write', 'SOUR:RANG ' + str(forced_voltage))
                 self.YokogawaGS200('write', 'SOUR:LEV ' + str(forced_voltage))
@@ -1014,8 +1024,27 @@ class MainApplication(Frame):
                 measured_voltage = self.Agilent34410A('ask', 'MEAS:VOLT:DC?').rstrip()
                 self.YokogawaGS200('write', 'OUTP OFF')
                 self.Keithley7002('write', 'open all')
-                dum_resistance = ((forced_voltage*float(resistor_value))/measured_voltage)-resistor_value
-                print dum_resistance
+                dum_resistance = int(
+                    ((forced_voltage * float(resistor_value)) / float(measured_voltage)) - float(resistor_value))
+                _file__ = open(
+                    "Database/" + operator + "CN" + chip_number + "TM" + "Resistance" + "CT" + chip_type + "CI" + str(
+                        input_number) + "-" + "H" + str(datetime.datetime.now())[11:-13] + "M" + str(
+                        datetime.datetime.now())[14:-10] + "S" + str(datetime.datetime.now())[17:-7] + "D" + str(
+                        datetime.datetime.now())[:-16] + "TMP" + temp_cond, "w")
+                _file__.write(str(operator) + "\n")
+                _file__.write(str(chip_number) + "\n")
+                _file__.write(str(chip_type) + "\n")
+                _file__.write(str(input_number) + "\n")
+                _file__.write(
+                    str(datetime.datetime.now())[11:-13] + ":" + str(datetime.datetime.now())[14:-10] + ":" + str(
+                        datetime.datetime.now())[17:-7] + "\n")
+                _file__.write(str(datetime.datetime.now())[:-16] + "\n")
+                _file__.write(str(float(forced_voltage)) + "\n")
+                _file__.write(str(float(measured_voltage)) + "\n")
+                _file__.write(str(dum_resistance) + "\n")
+                _file__.write(str(temp))
+                _file__.write("Resistance" + "\n")
+                _file__.close()
             if type_of_measurement[18:] == "CriticalCurrent":
                 operator = _file_.readline().rstrip()[10:]
                 chip_type = _file_.readline().rstrip()[14:]
