@@ -116,7 +116,9 @@ class MainApplication(Frame):
                 recipe_list.append(file[:-4])
         ### Entries ###
         process_name = ttk.Entry(ProcessFrame)
-        process_name.grid(column=2, row=4)
+        process_name.grid(column=2, row=6)
+        time_delay = ttk.Entry(ProcessFrame)
+        time_delay.grid(column=0, row=5)
         ### Buttons ###
         ttk.Button(ProcessFrame, text='Configure Process Que', command=lambda: self.ConfigProcessQue()).grid(column=0,
                                                                                                              row=0)
@@ -127,14 +129,19 @@ class MainApplication(Frame):
                                                                                                             row=5,
                                                                                                             pady=25)
         ttk.Button(ProcessFrame, text='Save', command=lambda: self.SaveProcessQue(process_name.get())).grid(column=2,
-                                                                                                            row=5)
+                                                                                                            row=7)
         ttk.Button(ProcessFrame, text='Apply', command=lambda: self.ApplyProcessQueRecipe(process_recipe.get())).grid(
             column=2, row=2)
+        ttk.Button(ProcessFrame, text="Add To Que", command=lambda: self.AddToProcessQue(process_recipe.get())).grid(
+            column=2, row=3)
+        ttk.Button(ProcessFrame, text="Add Delay", command=lambda: self.AddDelayToQue(time_delay.get())).grid(column=0,
+                                                                                                              row=6)
         ### Labels ###
         ttk.Label(ProcessFrame, text='Pre-Programed Process Ques').grid(column=2, row=0)
         ttk.Label(ProcessFrame, text='Number of Processes in Que').grid(column=1, row=6)
-        ttk.Label(ProcessFrame, text='Save This Que As').grid(column=2, row=3)
+        ttk.Label(ProcessFrame, text='Save This Que As').grid(column=2, row=5)
         ttk.Label(ProcessFrame, text=str(self.NumberOfProcesses())).grid(row=7, column=1)
+        ttk.Label(ProcessFrame, text="Add delay in process que (s)").grid(column=0, row=4)
         ### Combo Boxes ###
         process_recipe = ttk.Combobox(ProcessFrame, values=recipe_list)
         process_recipe.grid(column=2, row=1)
@@ -183,6 +190,15 @@ class MainApplication(Frame):
         ttk.Button(database_button_frame, text='Search Database', command=lambda: self.ViewDatabase()).pack()
         ttk.Button(database_button_frame, text="Backup Database", command=lambda: self.BAckupDatabase()).pack()
         ttk.Button(database_button_frame, text="Clear Database", command=lambda: self.ClearDatabasePrompt()).pack()
+
+    def AddDelayToQue(self, delay):
+        global notebook
+        _file = open("Processes/process_que.txt", "a")
+        _file.write("Wait" + "\n")
+        _file.write(delay + "\n")
+        _file.close()
+        notebook.destroy()
+        self.Mainscreen("5")
 
     def ViewDatabase(self):
         ViewData = Toplevel()
@@ -797,6 +813,24 @@ class MainApplication(Frame):
         notebook.destroy()
         self.Mainscreen('5')
 
+    def AddToProcessQue(self, name):
+        global notebook
+        recipe = open("Recipes/Process_Recipes/" + name + ".txt", "r")
+        process_que = open("Processes/process_que.txt", "a")
+        copy_line = "null"
+        while copy_line != "":
+            copy_line = recipe.readline().rstrip()
+            check_line = recipe.readline().rstrip()
+            if check_line != "":
+                process_que.write(copy_line + "\n")
+                process_que.write(check_line + "\n")
+            else:
+                process_que.write((copy_line))
+                copy_line = ""
+        process_que.close()
+        recipe.close()
+        notebook.destroy()
+        self.Mainscreen("5")
     def SettingsDec(self, callback):
         global settings
         global notebook
@@ -998,6 +1032,122 @@ class MainApplication(Frame):
         type_of_measurement = "T"
         while type_of_measurement != "":
             type_of_measurement = _file_.readline().rstrip()
+            if type_of_measurement == "Wait":
+                print "Lol"
+                wait_time = _file_.readline().rstrip()
+                i = 0
+                chip_type = []
+                operator = []
+                chip_number = []
+                chip_input = []
+                forced = []
+                date = []
+                time_ = []
+                resistance = []
+                voltage = []
+                temp = []
+                IC = []
+                current_steps = []
+                day = []
+                measurement_type = []
+                for file in os.listdir("Database/"):
+                    if file.__contains__("CN"):
+                        print "LL"
+                        _file__ = open("Database/" + file, "r")
+                        operator.append(_file__.readline().rstrip())
+                        chip_number.append(_file__.readline().rstrip())
+                        chip_type.append(_file__.readline().rstrip())
+                        chip_input.append(_file__.readline().rstrip())
+                        time_.append(_file__.readline().rstrip())
+                        date_ = _file__.readline().rstrip()
+                        day.append(date_[8:])
+                        date.append(date_)
+                        forced_ = _file__.readline().rstrip()
+                        forced.append(forced_)
+                        voltage_ = _file__.readline().rstrip()
+                        try:
+                            voltage.append(float(voltage_))
+                        except:
+                            voltage.append("")
+                        resistance_ = _file__.readline().rstrip()
+                        print resistance_
+                        try:
+                            resistance.append(int(resistance_))
+                        except:
+                            resistance.append("")
+                        temp.append(_file__.readline().rstrip())
+                        measurement_type_ = _file__.readline().rstrip()
+                        measurement_type.append(measurement_type_)
+                        IC_ = _file__.readline().rstrip()
+                        IC.append(IC_)
+                        current_steps_ = _file__.readline().rstrip()
+                        current_steps.append(current_steps_)
+                        i += 1
+                c_ = i - 1
+                row = 0
+                col = 0
+                row = 0
+                workbook = xlsxwriter.Workbook('Database.xlsx')
+                format = workbook.add_format()
+                format.set_text_wrap()
+                worksheet = workbook.add_worksheet()
+                worksheet.set_column('A:P', 13, format)
+                worksheet.set_row(0, 50, format)
+                worksheet.write(row, col, 'Operator', format)
+                worksheet.write(row, col + 1, 'Time', format)
+                worksheet.write(row, col + 2, 'Date', format)
+                worksheet.write(row, col + 3, 'Chip\nNumber', format)
+                worksheet.write(row, col + 4, 'Chip\nType', format)
+                worksheet.write(row, col + 5, 'Chip\nInput', format)
+                worksheet.write(row, col + 6, 'Chip Temperature' + "\n", format)
+                worksheet.write(row, col + 7, 'Forced', format)
+                worksheet.write(row, col + 8, 'Voltage\nRead', format)
+                worksheet.write(row, col + 9, 'Resistance', format)
+                worksheet.write(row, col + 10, 'Critical\nCurrent', format)
+                worksheet.write(row, col + 11, 'Current\nSteps', format)
+                worksheet.write(row, col + 12, 'Type\nof\nMeasurement', format)
+                row += 1
+                while c_ >= 0:
+                    print c_
+                    worksheet.write(row, col, operator[c_], format)
+                    worksheet.write(row, col + 1, time_[c_], format)
+                    worksheet.write(row, col + 2, date[c_], format)
+                    worksheet.write(row, col + 3, "=" + str(chip_number[c_]), format)
+                    worksheet.write(row, col + 4, chip_type[c_], format)
+                    worksheet.write(row, col + 5, "=" + str(chip_input[c_]), format)
+                    worksheet.write(row, col + 6, "=" + str(temp[c_])[1:], format)
+                    worksheet.write(row, col + 7, "=" + str(forced[c_]), format)
+                    worksheet.write(row, col + 8, "=" + str(voltage[c_]), format)
+                    worksheet.write(row, col + 9, "=" + str(resistance[c_]), format)
+                    worksheet.write(row, col + 10, "=" + str(IC[c_]), format)
+                    worksheet.write(row, col + 11, "=" + str(current_steps[c_]), format)
+                    worksheet.write(row, col + 12, measurement_type[c_], format)
+                    row += 1
+                    c_ -= 1
+                workbook.close()
+                zip_ = zipfile.ZipFile("DatabaseExcelFile" + '.zip', 'w')
+                zip_.close()
+                zip_ = zipfile.ZipFile("DatabaseExcelFile" + '.zip', 'a')
+                zip_.write('Database.xlsx')
+                zip_.close()
+                for file in os.listdir("Processes/Send_To/"):
+                    print "TEST"
+                    if file.endswith(".txt"):
+                        _file__ = open("Processes/Send_To/" + file, "r")
+                        contact_name = _file__.readline().rstrip()
+                        contact_email = _file__.readline().rstrip()
+                        message = emails.html(
+                            html="<p> Greetings: " + contact_name + ",</p>" + "<p>The Auburn Cryo Measurement database was just updated! It was Updated on " + str(
+                                datetime.datetime.now())[:-16] + " at " + str(datetime.datetime.now())[
+                                                                          11:-10] + ".</p> <p> War Eagle! </p>",
+                            subject="Latest Database",
+                            mail_from=("Auburn Cryo Measurement System", "cryomeasurementsystem@gmail.com"))
+                        message.attach(data=open("DatabaseExcelFile.zip", 'rb'), filename="DatabaseExcelFile" + ".zip")
+                        r = message.send(to=(contact_name.rstrip(), contact_email), render={"name": "Auburn Cryo"},
+                                         smtp={"host": "smtp.gmail.com", "port": 465, "ssl": True,
+                                               "user": "cryomeasurementsystem", "password": "cryoiscold", "timeout": 5})
+                time.sleep(float(wait_time))
+
             if type_of_measurement[18:] == "Long Term Resistance":
                 operator = _file_.readline().rstrip()[10:]
                 chip_type = _file_.readline().rstrip()[14:]
@@ -1013,18 +1163,22 @@ class MainApplication(Frame):
                 self.YokogawaGS200('write', 'SOUR:FUNC VOLT')
                 temp = self.LakeShore336("ask", "KRDG? A")
                 if temp < 5.0:
+                    i = 0
                     forced_voltage = float(super_conducting_voltage)
                     temp_cond = "Superconducting"
                 else:
                     forced_voltage = float(normal_conductance_voltage)
                     temp_cond = "Normal"
+                i = 0
+                while i < float(forced_voltage):
+                    i += 1
+                    time.sleep(1)
+                    self.YokogawaGS200('write', 'SOUR:RANG ' + str(i))
+                    self.YokogawaGS200('write', 'SOUR:LEV ' + str(i))
+                    self.YokogawaGS200('write', 'OUTP ON')
 
-                self.YokogawaGS200('write', 'SOUR:RANG ' + str(forced_voltage))
-                self.YokogawaGS200('write', 'SOUR:LEV ' + str(forced_voltage))
-                self.YokogawaGS200('write', 'OUTP ON')
                 time.sleep(0.25)
                 measured_voltage = self.Agilent34410A('ask', 'MEAS:VOLT:DC?').rstrip()
-                self.YokogawaGS200('write', 'OUTP OFF')
                 self.Keithley7002('write', 'open all')
                 dum_resistance = int(
                     ((forced_voltage * float(resistor_value)) / float(measured_voltage)) - float(resistor_value))
