@@ -280,7 +280,7 @@ class MainApplication(Frame):
                         worksheet.write(row, col + 3, "=" + str(chip_number[c_]), format)
                         worksheet.write(row, col + 4, chip_type[c_], format)
                         worksheet.write(row, col + 5, "=" + str(chip_input[c_]), format)
-                        worksheet.write(row, col +6, "="+str(temp[c_])[1:], format)
+                        worksheet.write(row, col + 6, "=" + str(temp[c_])[:], format)
                         worksheet.write(row, col + 7, "=" + str(forced[c_]), format)
                         worksheet.write(row, col + 8, "=" + str(voltage[c_]), format)
                         worksheet.write(row, col + 9, "=" + str(resistance[c_]), format)
